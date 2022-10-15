@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="{{ LANGUAGE_CODE|default:'en_us' }}">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'app/main.css' %}"></link>
+    {% if title %}
+        <title>Our app name - {{ title }}</title>
+    {% else %}
+        <title>Our app name</title>
+    {% endif %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% load bootstrap5 %}
+    <!-- Bootstrap CSS -->
+    {% bootstrap_css %}
+    <!-- Bootstrap JavaScript if it is in head -->
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+</head>
+
+<body>
+    {% block base %}{% endblock %}
+</body>
+
+</html>
