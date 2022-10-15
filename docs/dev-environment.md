@@ -2,8 +2,8 @@
 
 1. `virtualenv venv --python=python3`
 1. `source venv/bin/activate`
-1. `pip install -r requirements.txt`
-1. rename `.env.dev -> .env`
+1. `pip install -r ./social_distribution/requirements.txt`
+1. rename `./social_distribution/.env.dev -> ./social_distribution/.env`
 1. `python ./social_distribution/manage.py runserver`
 
 ### To run in docker:
