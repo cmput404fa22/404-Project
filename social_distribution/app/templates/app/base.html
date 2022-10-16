@@ -1,0 +1,12 @@
+{% extends 'app/bootstrap.html' %}
+
+{% load bootstrap5 %}
+
+{% block base %}
+<div class="container">
+    <h1>this text is in the base.html</h1>
+
+    {% block content %}(no content){% endblock %}
+</div>
+
+{% endblock %}
