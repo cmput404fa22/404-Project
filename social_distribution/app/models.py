@@ -11,18 +11,18 @@ class Author(models.Model):
 
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
-    host = models.CharField(max_length=64)
-    display_name = models.CharField(max_length=32)
-    url = models.CharField(max_length=200)
-    github = models.CharField(max_length=64)
-    profile_image_url = models.CharField(max_length=200)
+    host = models.TextField()
+    display_name = models.TextField()
+    url = models.TextField()
+    github = models.TextField()
+    profile_image_url = models.TextField()
 
 
 class Follower(models.Model):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
 
-    follower_url = models.CharField(max_length=200)
+    follower_url = models.TextField()
 
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)  # author has followers
@@ -36,8 +36,8 @@ class InboxItem(models.Model):
         ('COMMENT', 'comment'),
         ('LIKE', 'like'),
     )
-    type = models.CharField(max_length=1, choices=TYPE_CHOICES)
-    object_url = models.CharField(max_length=200)  # remote or local
+    type = models.CharField(max_length=1, choices=TYPE_CHOICES)  # CharField seems good for this one
+    object_url = models.TextField()  # remote or local
 
     author = models.ForeignKey(Author)  # author has InboxItems
 
@@ -46,23 +46,23 @@ class Post(models.Model):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
 
-    url = models.CharField(max_length=200)
-    title = models.CharField(max_length=64)
+    url = models.TextField()
+    title = models.TextField()
     date_published = models.DateTimeField(default=timezone.now)
-    source = models.CharField(max_length=64)
-    origin = models.CharField(max_length=64)
-    description = models.CharField(max_length=64)
-    content_type = models.CharField(max_length=64)
-    categories = models.CharField(max_length=64)
-    comments_count = models.CharField(max_length=64)
-    comments_url = models.CharField(max_length=64)
+    source = models.TextField()
+    origin = models.TextField()
+    description = models.TextField()
+    content_type = models.TextField()
+    categories = models.TextField()
+    comments_count = models.TextField()
+    comments_url = models.TextField()
     VISIBILITY_CHOICES = (
         ('PUBLIC', 'public'),
         ('PRIVATE', 'private'),
     )
-    visibility = models.CharField(max_length=1, choices=VISIBILITY_CHOICES)
+    visibility = models.CharField(max_length=1, choices=VISIBILITY_CHOICES)  # again probably good CharField
     unlisted = models.BooleanField(default=False)
-    author_url = models.CharField(max_length=200)
+    author_url = models.TextField()
 
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)  # posts have authors
@@ -72,9 +72,9 @@ class Comment(models.Model):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
 
-    commenter_url = models.CharField(max_length=200)
-    comment = models.CharField(max_length=64)
-    content_type = models.CharField(max_length=64)
+    commenter_url = models.TextField()
+    comment = models.TextField()
+    content_type = models.TextField()
     date_published = models.DateTimeField(default=timezone.now)
 
     post = models.ForeignKey(Post)  # posts have comments
@@ -84,7 +84,7 @@ class Like(models.Model):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
 
-    liker_url = models.CharField(max_length=200)
+    liker_url = models.TextField()
 
     post = models.ForeignKey(Post)  # posts have likes
     comment = models.ForeignKey(Comment)  # comments have likes
