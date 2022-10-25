@@ -36,10 +36,10 @@ class InboxItem(models.Model):
         ('COMMENT', 'comment'),
         ('LIKE', 'like'),
     )
-    type = models.CharField(max_length=1, choices=TYPE_CHOICES)  # CharField seems good for this one
+    type = models.CharField(max_length=7, choices=TYPE_CHOICES)  # CharField seems good for this one
     object_url = models.TextField()  # remote or local
 
-    author = models.ForeignKey(Author)  # author has InboxItems
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)  # author has InboxItems
 
 
 class Post(models.Model):
@@ -60,7 +60,7 @@ class Post(models.Model):
         ('PUBLIC', 'public'),
         ('PRIVATE', 'private'),
     )
-    visibility = models.CharField(max_length=1, choices=VISIBILITY_CHOICES)  # again probably good CharField
+    visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)  # again probably good CharField
     unlisted = models.BooleanField(default=False)
     author_url = models.TextField()
 
@@ -77,7 +77,7 @@ class Comment(models.Model):
     content_type = models.TextField()
     date_published = models.DateTimeField(default=timezone.now)
 
-    post = models.ForeignKey(Post)  # posts have comments
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # posts have comments
 
 
 class Like(models.Model):
@@ -86,5 +86,5 @@ class Like(models.Model):
 
     liker_url = models.TextField()
 
-    post = models.ForeignKey(Post)  # posts have likes
-    comment = models.ForeignKey(Comment)  # comments have likes
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # posts have likes
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)  # comments have likes
