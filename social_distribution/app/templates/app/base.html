@@ -4,6 +4,12 @@
 
 {% block base %}
 <div class="container">
+    {% if user.is_authenticated %}
+        <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
+        <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
+    {% else %}
+        <a class="btn btn-primary mt-2" href="{% url 'login-page' %}">Login</a>
+    {% endif %}
     <h1>this text is in the base.html</h1>
 
     {% block content %}(no content){% endblock %}
