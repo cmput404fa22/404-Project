@@ -1,5 +1,6 @@
 from email.policy import default
 import uuid
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -10,12 +11,11 @@ class Author(models.Model):
         User, on_delete=models.CASCADE)  # extend user model
 
     uuid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    host = models.TextField()
-    display_name = models.TextField()
+        default=uuid.uuid4, primary_key=True, editable=False)
+    host = models.TextField(default=settings.HOSTNAME)
     url = models.TextField()
     github = models.TextField()
-    profile_image_url = models.TextField()
+    profile_image_url = models.TextField(default='default.jpg')
 
 
 class Follower(models.Model):
@@ -36,10 +36,12 @@ class InboxItem(models.Model):
         ('COMMENT', 'comment'),
         ('LIKE', 'like'),
     )
-    type = models.CharField(max_length=7, choices=TYPE_CHOICES)  # CharField seems good for this one
+    # CharField seems good for this one
+    type = models.CharField(max_length=7, choices=TYPE_CHOICES)
     object_url = models.TextField()  # remote or local
 
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)  # author has InboxItems
+    author = models.ForeignKey(
+        Author, on_delete=models.CASCADE)  # author has InboxItems
 
 
 class Post(models.Model):
@@ -53,14 +55,15 @@ class Post(models.Model):
     origin = models.TextField()
     description = models.TextField()
     content_type = models.TextField()
+    content = models.TextField()
     categories = models.TextField()
-    comments_count = models.TextField()
+    comments_count = models.IntegerField(default=0)
     comments_url = models.TextField()
     VISIBILITY_CHOICES = (
         ('PUBLIC', 'public'),
         ('PRIVATE', 'private'),
     )
-    visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)  # again probably good CharField
+    visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)
     unlisted = models.BooleanField(default=False)
     author_url = models.TextField()
 
@@ -77,7 +80,8 @@ class Comment(models.Model):
     content_type = models.TextField()
     date_published = models.DateTimeField(default=timezone.now)
 
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # posts have comments
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE)  # posts have comments
 
 
 class Like(models.Model):
@@ -86,5 +90,7 @@ class Like(models.Model):
 
     liker_url = models.TextField()
 
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # posts have likes
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)  # comments have likes
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE)  # posts have likes
+    comment = models.ForeignKey(
+        Comment, on_delete=models.CASCADE)  # comments have likes

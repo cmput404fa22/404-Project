@@ -1,9 +1,14 @@
 from django.urls import path
-from . import views
+from .views import user, home, posts
 
 urlpatterns = [
-    path('', views.root, name='root-page'),
-    path('login/', views.login, name='login-page'),
-    path('account/', views.account, name='account-page'),
-    path('signup/', views.signup, name='signup-page'),
+    path('', home.root, name='root-page'),
+    path('login/', user.login_user, name='login-page'),
+    path('logout/', user.logout_user, name='logout-page'),
+
+    # path('author/', user.author, name='account-page'),
+    path('signup/', user.signup, name='signup-page'),
+
+    path('post/new/', posts.create_public_post, name='new-post-page'),
+
 ]
