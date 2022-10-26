@@ -1,0 +1,16 @@
+on: 
+  push:
+  # pull_request:
+  #   types: [opened, reopened, synchronize]
+    branches:
+      - main
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest 
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run tests
+        run: |-
+          docker-compose -f ./docker-compose-tests.yaml up --exit-code-from web --build

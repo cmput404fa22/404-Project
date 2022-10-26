@@ -1,0 +1,16 @@
+version: "3.9"
+   
+services:
+  web:
+    command: ./manage.py test
+    build:
+      context: ./social_distribution
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./social_distribution:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=super-secret
+      - DEBUG=True
+      - HOSTNAME=web
