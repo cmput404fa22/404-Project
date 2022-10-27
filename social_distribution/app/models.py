@@ -35,9 +35,9 @@ class InboxItem(models.Model):
         ('POST', 'post'),
         ('COMMENT', 'comment'),
         ('LIKE', 'like'),
+        ('FRIENDREQUEST', 'friendrequest'),
     )
-    # CharField seems good for this one
-    type = models.CharField(max_length=7, choices=TYPE_CHOICES)
+    type = models.CharField(max_length=13, choices=TYPE_CHOICES)
     object_url = models.TextField()  # remote or local
 
     author = models.ForeignKey(
@@ -94,3 +94,13 @@ class Like(models.Model):
         Post, on_delete=models.CASCADE)  # posts have likes
     comment = models.ForeignKey(
         Comment, on_delete=models.CASCADE)  # comments have likes
+
+
+class FriendRequest(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+
+    requester_url = models.TextField()
+
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE)  # friend requests have authors
