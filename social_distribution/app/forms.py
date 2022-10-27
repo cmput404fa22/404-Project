@@ -32,5 +32,6 @@ class CreatePostForm(forms.Form):
     content = forms.CharField(
         label='Content', widget=forms.TextInput(attrs={'': ''}))
 
+
 class SendFriendRequestForm(forms.Form):
     username = forms.CharField(label='Username', max_length=50, required=True)

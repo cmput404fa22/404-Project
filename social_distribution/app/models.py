@@ -100,7 +100,7 @@ class FriendRequest(models.Model):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
 
-    requester_url = models.TextField()
-
+    target = models.ForeignKey(
+        User, on_delete=models.CASCADE)  # friend requests have targets
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)  # friend requests have authors
