@@ -23,4 +23,4 @@ def send_friend_request(request):
 
             return redirect('login-page')
 
-    return render(request, "app/create_post.html", context)  # TODO: html
+    return render(request, "app/send_friend_request.html", context)

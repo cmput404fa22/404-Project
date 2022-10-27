@@ -101,6 +101,7 @@ class FriendRequest(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False)
 
     target = models.ForeignKey(
-        User, on_delete=models.CASCADE)  # friend requests have targets
+        User, on_delete=models.CASCADE, related_name="request_target")  # friend requests have targets
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE)  # friend requests have authors
+        User, on_delete=models.CASCADE, related_name="request_author")  # friend requests have authors
+    # related name possibly breaks things?
