@@ -9,6 +9,11 @@ from django.contrib.auth.decorators import login_required
 def send_private_post(request):
     pass
 
+@login_required
+def list_posts(request):
+    posts = [] # Post.objects.filter(author=request.user)
+    context = {'posts': posts}
+    return render(request, 'app/author_posts.html', context)
 
 @login_required
 def create_public_post(request):
@@ -17,7 +22,7 @@ def create_public_post(request):
     if request.method == 'POST':
         form = CreatePostForm(request.POST)
         if form.is_valid():
-            new_post = Post(title=form.cleaned_data['title'],
+            new_post = Post.objects.create(title=form.cleaned_data['title'],
                             description=form.cleaned_data['description'],
                             content_type=form.cleaned_data['content_type'],
                             content=form.cleaned_data['content_type'],
@@ -32,6 +37,21 @@ def create_public_post(request):
             new_post.save()
             messages.success(request, 'Post created')
 
-            return redirect('login-page')
+            return redirect('author-posts')
 
     return render(request, "app/create_post.html", context)
+
+def edit_post(request, post_id):
+    post = Post.objects.get(id=post_id)
+
+    if request.method != 'POST':
+        form = CreatePostForm(instance=post)
+
+    else: 
+        form = CreatePostForm(instance=post, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('author-posts')
+
+    context = {'post': post, 'form': form}
+    return render(request, 'app/edit_post.html', context)

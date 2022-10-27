@@ -1,0 +1,22 @@
+{% extends 'app/base.html' %}
+{% load bootstrap5 %}
+
+
+{% block content %}
+<div class="card">
+    <div class="card-header">Posts</div>
+    <div class="card-body">
+        <ul>
+        {% for post in posts %}
+            <!-- <li><p> {{ post.title }} </p> </li>
+            <p>
+                Edit
+                 <a href="{% url 'post/edit/' post.id %}">Edit post</a>
+            </p> -->
+        {% empty %}
+            <li>No posts yet.</li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
