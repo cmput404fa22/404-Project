@@ -8,7 +8,11 @@ urlpatterns = [
 
     # path('author/', user.author, name='account-page'),
     path('signup/', user.signup, name='signup-page'),
+    path('profile/', user.profile, name='profile-page'),
 
-    path('post/new/', posts.create_public_post, name='new-post-page'),
+    path('authorposts/', posts.list_posts, name='author-posts'),
+    path('authorposts/new/', posts.create_public_post, name='new-post-page'),
+    path('authorposts/edit/<uuid:uuid>', posts.edit_post, name='edit-post-page'),
+    path('authorposts/delete/<uuid:uuid>', posts.delete_post, name='delete')
 
 ]

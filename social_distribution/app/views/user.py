@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from ..models import *
 from django.contrib import messages
 from django.shortcuts import redirect
-from ..forms import SignupForm, LoginForm
+from ..forms import SignupForm, LoginForm, UserUpdateForm, AuthorUpdateForm
 from django.contrib.auth import authenticate, login, logout
 import os
 
@@ -56,7 +56,7 @@ def login_user(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, 'Logged in')
-                return redirect('login-page')
+                return redirect('author-posts')
             else:
                 messages.error(request, "Could not authenticate")
                 return redirect('login-page')
@@ -68,3 +68,24 @@ def logout_user(request):
     logout(request)
 
     return redirect('root-page')
+
+def profile(request):
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance = request.user)
+        author_form = AuthorUpdateForm(request.POST, request.FILES, instance = request.user.author)
+        
+        if user_form.is_valid() and author_form.is_valid():
+            user_form.save()
+            author_form.save()
+            messages.success(request, 'Your profile has been updated.')
+            return redirect('profile-page')
+    else:
+        user_form = UserUpdateForm(instance = request.user)
+        author_form = AuthorUpdateForm(instance = request.user.author)
+
+    context = {
+        'user_form': user_form,
+        'author_form': author_form
+    }
+
+    return render(request, 'app/profile.html', context)
