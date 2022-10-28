@@ -5,26 +5,27 @@
 {% block base %}
 {% comment %} <div class="container"> {% endcomment %}
 <div>
-    <div class="horizontalFlex">
-        
-        {% comment %} TODO: Conditionally render the sidebar so that it is not shown if logged out. {% endcomment %}
-        <div class="sidebarContainer verticalFlex">
-            <h1>AppName</h1>
-            hello, I am the sidebar. nice to meet you
-            
-            {% if user.is_authenticated %}
+    <div class="{% if user.is_authenticated %}horizontalFlex{% endif %}">
+        {% if user.is_authenticated %}
+            <div class="sidebarContainer verticalFlex">
+                <h1>AppName</h1>
+                {% comment %} <a class="btn btn-info mt-2" href="{% url '' %}">Home</a> {% endcomment %}
+                <a class="btn btn-success mt-2" href="{% url 'new-post-page' %}">New Post +</a>
+                <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Home</a>
+                <a class="btn btn-info mt-2" href="{% url 'author-posts' %}">Your Page</a>
+                <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Inbox (1)</a> {% comment %} TODO: make this page {% endcomment %}
                 <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
-                {% comment %} <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a> {% endcomment %}
-            {% else %}
-                <a class="btn btn-primary mt-2" href="{% url 'login-page' %}">Login</a>
-            {% endif %}
+            </div>
+        {% else %}
+            <a class="btn btn-primary mt-2" href="{% url 'login-page' %}">Login</a>
+        {% endif %}
+            
+            {% comment %} <h1>this text is in the base.html</h1> {% endcomment %}
+            <div class="contentContainer verticalFlex">
+                {% block content %}(no content){% endblock %}
+            </div>
         </div>
-    
-        {% comment %} <h1>this text is in the base.html</h1> {% endcomment %}
-        <div class="contentContainer verticalFlex">
-            {% block content %}(no content){% endblock %}
-        </div>
-    </div>
+
 
 
 </div>
