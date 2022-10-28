@@ -19,6 +19,16 @@ class Author(models.Model):
     profile_image_url = models.TextField(
         default='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png')
 
+    profile_image_url = models.TextField(default='default.jpg')
+    registered = models.BooleanField(default=False)
+
+    def get_json_object(self):
+        author_object = {"type": "author", "id": self.url,
+                         "host": self.host, "displayName": self.user.username,
+                         "url": self.url, "github": self.github,
+                         "profileImage": self.profile_image_url}
+        return author_object
+
 
 class Follower(models.Model):
     uuid = models.UUIDField(
