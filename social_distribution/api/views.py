@@ -48,3 +48,9 @@ def get_posts(request, author_id):
         visibility='PUBLIC', author=Author.objects.get(uuid=author_id).user)
     response = get_paginated_response(posts, page, size)
     return Response(response)
+
+
+@api_view(["POST"])
+def post_to_inbox(request, author_id):
+
+    return Response(response)
