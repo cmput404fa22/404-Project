@@ -1,7 +1,21 @@
-from urllib import request
 from django import forms
-from .models import Follower
+from .models import *
 
+class UserUpdateForm(forms.ModelForm):
+    email = forms.EmailField(label='Email', required=True)
+    username = forms.CharField(label='Username', max_length=50, required=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+class AuthorUpdateForm(forms.ModelForm):
+    github = forms.CharField(label='Github url', required=False)
+    profile_image_url = forms.CharField(label='Profile image url', required=False)
+
+    class Meta:
+        model = Author
+        fields = ['github', 'profile_image_url']
 
 class SignupForm(forms.Form):
     username = forms.CharField(label='Username', max_length=50, required=True)
