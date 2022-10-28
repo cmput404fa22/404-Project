@@ -10,7 +10,7 @@
         {% for post in posts %}
             <li><p> {{ post.title }} </p> </li>
             <p>
-                 <a href="edit/{{ post.id }}">Edit</a>
+                 <a href="edit/{{ post.uuid }}">Edit</a>
             </p>
         {% empty %}
             <li>No posts yet.</li>

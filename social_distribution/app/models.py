@@ -49,7 +49,6 @@ class Post(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False)
 
     url = models.TextField()
-    id = models.TextField(default="1")
     title = models.TextField()
     date_published = models.DateTimeField(default=timezone.now)
     source = models.TextField()
