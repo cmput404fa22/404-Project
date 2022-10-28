@@ -68,3 +68,8 @@ def edit_post(request, uuid):
 
     context = {"post":post, "form":form}
     return render(request, 'app/edit_post.html', context)
+
+def delete_post(request, uuid):
+    post = Post.objects.get(uuid=uuid)
+    post.delete()
+    return redirect('author-posts')

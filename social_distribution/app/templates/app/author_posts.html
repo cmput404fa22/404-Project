@@ -6,11 +6,15 @@
 <div class="card">
     <div class="card-header">Your Posts</div>
     <div class="card-body">
+        <p>
+            <a href="new/">Create New Post</a>
+        </p>
         <ul>
         {% for post in posts %}
             <li><p> {{ post.title }} </p> </li>
             <p>
                  <a href="edit/{{ post.uuid }}">Edit</a>
+                 <a href="delete/{{ post.uuid }}">Delete</a>
             </p>
         {% empty %}
             <li>No posts yet.</li>
