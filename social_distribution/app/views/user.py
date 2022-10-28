@@ -53,7 +53,7 @@ def login_user(request):
         if form.is_valid():
             user = authenticate(request, username=form.cleaned_data['username'],
                                 password=form.cleaned_data['password'])
-            if user is not None:
+            if user is not None and user.author.registered:
                 login(request, user)
                 messages.success(request, 'Logged in')
                 return redirect('author-posts')
@@ -69,19 +69,21 @@ def logout_user(request):
 
     return redirect('root-page')
 
+
 def profile(request):
     if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance = request.user)
-        author_form = AuthorUpdateForm(request.POST, request.FILES, instance = request.user.author)
-        
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        author_form = AuthorUpdateForm(
+            request.POST, request.FILES, instance=request.user.author)
+
         if user_form.is_valid() and author_form.is_valid():
             user_form.save()
             author_form.save()
             messages.success(request, 'Your profile has been updated.')
             return redirect('profile-page')
     else:
-        user_form = UserUpdateForm(instance = request.user)
-        author_form = AuthorUpdateForm(instance = request.user.author)
+        user_form = UserUpdateForm(instance=request.user)
+        author_form = AuthorUpdateForm(instance=request.user.author)
 
     context = {
         'user_form': user_form,
