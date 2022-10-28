@@ -16,6 +16,14 @@ class Author(models.Model):
     url = models.TextField()
     github = models.TextField()
     profile_image_url = models.TextField(default='default.jpg')
+    registered = models.BooleanField(default=False)
+
+    def get_json_object(self):
+        author_object = {"type": "author", "id": self.url,
+                         "host": self.host, "displayName": self.user.username,
+                         "url": self.url, "github": self.github,
+                         "profileImage": self.profile_image_url}
+        return author_object
 
 
 class Follower(models.Model):
@@ -23,6 +31,7 @@ class Follower(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False)
 
     follower_url = models.TextField()
+    # approved = models.BooleanField(default=False)
 
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)  # author has followers
@@ -69,6 +78,13 @@ class Post(models.Model):
 
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)  # posts have authors
+
+    def get_json_object(self):
+        post_object = {"type": "post", "id": self.url, "source": self.source,
+                       "origin": self.origin, "description": self.description, "contentType": self.content_type, "content": self.content,
+                       "author": self.author.author.get_json_object(), "count": self.comments_count, "comments": self.comments_url,
+                       "published": self.date_published.isoformat(), "visibility": self.visibility, "unlisted": self.unlisted}
+        return post_object
 
 
 class Comment(models.Model):

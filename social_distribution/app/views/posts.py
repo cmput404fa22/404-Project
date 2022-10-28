@@ -20,7 +20,7 @@ def create_public_post(request):
             new_post = Post(title=form.cleaned_data['title'],
                             description=form.cleaned_data['description'],
                             content_type=form.cleaned_data['content_type'],
-                            content=form.cleaned_data['content_type'],
+                            content=form.cleaned_data['content'],
                             author=request.user,
                             visibility='PUBLIC',
                             source=request.user.author.host,
