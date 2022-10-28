@@ -15,12 +15,12 @@ def send_friend_request(request):
         form = SendFriendRequestForm(request.POST)
         if form.is_valid():
             target = User.objects.filter(username=form.cleaned_data['username']).first()
-            friend_request = FriendRequest(target=target,
-                                           author=request.user)
+            friend_request = FriendRequest.objects.create(target=target,
+                                                          author=request.user)
 
             friend_request.save()
             messages.success(request, 'Friend request sent')
 
-            return redirect('login-page')
+            return redirect('root-page')
 
     return render(request, "app/send_friend_request.html", context)
