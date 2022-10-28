@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.shortcuts import render
 from ..forms import CreatePostForm
 from ..models import Post
@@ -9,6 +10,11 @@ from django.contrib.auth.decorators import login_required
 def send_private_post(request):
     pass
 
+@login_required
+def list_posts(request):
+    posts = Post.objects.filter(author=request.user)
+    context = {'posts': posts}
+    return render(request, 'app/author_posts.html', context)
 
 @login_required
 def create_public_post(request):
@@ -17,10 +23,10 @@ def create_public_post(request):
     if request.method == 'POST':
         form = CreatePostForm(request.POST)
         if form.is_valid():
-            new_post = Post(title=form.cleaned_data['title'],
+            new_post = Post.objects.create(title=form.cleaned_data['title'],
                             description=form.cleaned_data['description'],
                             content_type=form.cleaned_data['content_type'],
-                            content=form.cleaned_data['content_type'],
+                            content=form.cleaned_data['content'],
                             author=request.user,
                             visibility='PUBLIC',
                             source=request.user.author.host,
@@ -32,6 +38,38 @@ def create_public_post(request):
             new_post.save()
             messages.success(request, 'Post created')
 
-            return redirect('login-page')
+            return redirect('author-posts')
 
     return render(request, "app/create_post.html", context)
+
+def edit_post(request, uuid):
+    context = {}
+    form = CreatePostForm()
+    post = Post.objects.get(uuid=uuid)
+
+    if request.method != 'POST':
+        form = CreatePostForm(initial={"title":post.title,
+                                "description":post.description, 
+                                "content_type":post.content_type,
+                                "content":post.content})    
+    
+    else:
+        form = CreatePostForm(request.POST, initial={"title":post.title,
+                                "description":post.description, 
+                                "content_type":post.content_type,
+                                "content":post.content})
+        if form.is_valid():
+            post.title = form.cleaned_data['title']
+            post.description = form.cleaned_data['description']
+            post.content_type = form.cleaned_data['content_type']
+            post.content = form.cleaned_data['content']
+            post.save()
+            return redirect('author-posts')
+
+    context = {"post":post, "form":form}
+    return render(request, 'app/edit_post.html', context)
+
+def delete_post(request, uuid):
+    post = Post.objects.get(uuid=uuid)
+    post.delete()
+    return redirect('author-posts')
