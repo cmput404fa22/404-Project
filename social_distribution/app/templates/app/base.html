@@ -3,16 +3,30 @@
 {% load bootstrap5 %}
 
 {% block base %}
-<div class="container">
-    {% if user.is_authenticated %}
-        <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
-        <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
-    {% else %}
-        <a class="btn btn-primary mt-2" href="{% url 'login-page' %}">Login</a>
-    {% endif %}
-    <h1>this text is in the base.html</h1>
+{% comment %} <div class="container"> {% endcomment %}
+<div>
+    <div class="horizontalFlex">
+        
+        {% comment %} TODO: Conditionally render the sidebar so that it is not shown if logged out. {% endcomment %}
+        <div class="sidebarContainer verticalFlex">
+            <h1>AppName</h1>
+            hello, I am the sidebar. nice to meet you
+            
+            {% if user.is_authenticated %}
+                <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
+                {% comment %} <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a> {% endcomment %}
+            {% else %}
+                <a class="btn btn-primary mt-2" href="{% url 'login-page' %}">Login</a>
+            {% endif %}
+        </div>
+    
+        {% comment %} <h1>this text is in the base.html</h1> {% endcomment %}
+        <div class="contentContainer verticalFlex">
+            {% block content %}(no content){% endblock %}
+        </div>
+    </div>
 
-    {% block content %}(no content){% endblock %}
+
 </div>
 
 {% endblock %}
