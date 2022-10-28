@@ -56,7 +56,11 @@ def login_user(request):
             if user is not None and user.author.registered:
                 login(request, user)
                 messages.success(request, 'Logged in')
+<<<<<<< HEAD
                 return redirect('author-posts')
+=======
+                return redirect('root-page')
+>>>>>>> 4da4c91750427bf133695bd5355aa99cab5424e3
             else:
                 messages.error(request, "Could not authenticate")
                 return redirect('login-page')
