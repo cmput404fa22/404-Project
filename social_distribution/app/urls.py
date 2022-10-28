@@ -11,6 +11,6 @@ urlpatterns = [
 
     path('authorposts/', posts.list_posts, name='author-posts'),
     path('post/new/', posts.create_public_post, name='new-post-page'),
-    path('post/edit/<str:post_url>/', posts.edit_post, name='edit-post-page'),
+    path('authorposts/edit/<str:id>', posts.edit_post, name='edit-post-page'),
 
 ]
