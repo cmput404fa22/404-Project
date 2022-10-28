@@ -1,3 +1,4 @@
+from distutils.command.upload import upload
 from email.policy import default
 import uuid
 from django.conf import settings
@@ -15,7 +16,7 @@ class Author(models.Model):
     host = models.TextField(default=settings.HOSTNAME)
     url = models.TextField()
     github = models.TextField()
-    profile_image_url = models.TextField(default='default.jpg')
+    profile_image_url = models.TextField(default='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png')
 
 
 class Follower(models.Model):

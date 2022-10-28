@@ -8,6 +8,7 @@ urlpatterns = [
 
     # path('author/', user.author, name='account-page'),
     path('signup/', user.signup, name='signup-page'),
+    path('profile/', user.profile, name='profile-page'),
 
     path('post/new/', posts.create_public_post, name='new-post-page'),
 
