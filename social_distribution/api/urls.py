@@ -13,5 +13,8 @@ urlpatterns = [
 
     path("<uuid:author_id>/posts/<uuid:post_id>", views.get_post),
     path("<uuid:author_id>/posts/", views.get_posts),
-    # path("authors/<str:author_id>/followers", views.get_followers)
+
+    path("<uuid:author_id>/inbox/", views.post_to_inbox),
+
+
 ]

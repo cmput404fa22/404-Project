@@ -52,5 +52,4 @@ def get_posts(request, author_id):
 
 @api_view(["POST"])
 def post_to_inbox(request, author_id):
-
     return Response(response)
