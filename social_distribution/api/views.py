@@ -1,10 +1,14 @@
+from .serializers import get_paginated_response
+from app.models import Author, Post, Follower
+from app.models import Author, Post, Follow
 from urllib import response
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 
-from app.models import Author, Post, Follow
-from .serializers import get_paginated_response
+<< << << < HEAD
+== == == =
+>>>>>> > ba181a3a98b4cc821320695c683bea5dbd6f7d4e
 
 
 @api_view(["GET"])
@@ -26,13 +30,14 @@ def get_authors(request):
 def get_followers(request, author_id):
     page = int(request.GET.get('page', '1'))
     size = int(request.GET.get('size', '10'))
+
     followers = Follow.objects.get(
         author=Author.objects.get(uuid=author_id).user)
     response = get_paginated_response(followers, page, size)
     return Response(response)
 
 
-@api_view(["GET"])
+@ api_view(["GET"])
 def get_post(request, author_id, post_id):
     post = get_object_or_404(Post, uuid=post_id)
     if post.visibility != 'PUBLIC':
@@ -40,7 +45,7 @@ def get_post(request, author_id, post_id):
     return Response(post.get_json_object())
 
 
-@api_view(["GET"])
+@ api_view(["GET"])
 def get_posts(request, author_id):
     page = int(request.GET.get('page', '1'))
     size = int(request.GET.get('size', '10'))
@@ -50,6 +55,6 @@ def get_posts(request, author_id):
     return Response(response)
 
 
-@api_view(["POST"])
+@ api_view(["POST"])
 def post_to_inbox(request, author_id):
     return Response(response)

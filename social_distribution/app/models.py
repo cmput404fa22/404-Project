@@ -16,9 +16,24 @@ class Author(models.Model):
         default=uuid.uuid4, primary_key=True, editable=False)
     host = models.TextField(default="http://" + settings.HOSTNAME)
     url = models.TextField()
+<<<<<<< HEAD
     github = models.TextField(blank=True)
     profile_image_url = models.TextField(
         default='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png')
+=======
+    github = models.TextField()
+
+    profile_image_url = models.TextField(
+        default='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png')
+    registered = models.BooleanField(default=False)
+
+    def get_json_object(self):
+        author_object = {"type": "author", "id": self.url,
+                         "host": self.host, "displayName": self.user.username,
+                         "url": self.url, "github": self.github,
+                         "profileImage": self.profile_image_url}
+        return author_object
+>>>>>>> ba181a3a98b4cc821320695c683bea5dbd6f7d4e
 
     profile_image_url = models.TextField(default='default.jpg')
     registered = models.BooleanField(default=False)
@@ -35,8 +50,13 @@ class Follow(models.Model):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
 
+<<<<<<< HEAD
     target_url = models.TextField()
     approved = models.BooleanField(default=False)
+=======
+    follower_url = models.TextField()
+    # approved = models.BooleanField(default=False)
+>>>>>>> ba181a3a98b4cc821320695c683bea5dbd6f7d4e
 
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)  # author has followers

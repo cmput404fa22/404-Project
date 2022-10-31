@@ -58,7 +58,11 @@ def login_user(request):
             if user is not None and user.author.registered:
                 login(request, user)
                 messages.success(request, 'Logged in')
+<<<<<<< HEAD
                 return redirect('author-posts')
+=======
+                return redirect('root-page')
+>>>>>>> 4da4c91750427bf133695bd5355aa99cab5424e3
             else:
                 messages.error(request, "Could not authenticate")
                 return redirect('login-page')
@@ -72,7 +76,10 @@ def logout_user(request):
     return redirect('root-page')
 
 
+<<<<<<< HEAD
 @login_required
+=======
+>>>>>>> ba181a3a98b4cc821320695c683bea5dbd6f7d4e
 def profile(request):
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
@@ -94,6 +101,7 @@ def profile(request):
     }
 
     return render(request, 'app/profile.html', context)
+<<<<<<< HEAD
 
 
 def public_profile(request):
@@ -116,3 +124,5 @@ def public_profile(request):
 
     context = {"author": author, "following": following}
     return render(request, 'app/public_profile.html', context)
+=======
+>>>>>>> ba181a3a98b4cc821320695c683bea5dbd6f7d4e
