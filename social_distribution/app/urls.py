@@ -1,5 +1,9 @@
-from django.urls import path
+from django.urls import path, register_converter
 from .views import user, home, posts
+from api.converters import UUIDConverter
+
+register_converter(UUIDConverter, 'uuid')
+
 
 urlpatterns = [
     path('', home.root, name='root-page'),
