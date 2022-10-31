@@ -6,10 +6,6 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 
-<< << << < HEAD
-== == == =
->>>>>> > ba181a3a98b4cc821320695c683bea5dbd6f7d4e
-
 
 @api_view(["GET"])
 def get_author(request, author_id):
