@@ -37,9 +37,12 @@ def respond_friend_request(request, author):
             if form.cleaned_data['response'] == 'accept':
                 follower = Follower(author=request.user, follower_url=author.url)  # syntax?
                 # opposite semantics, author is who is being friended
+                follower.save()
+                messages.success(request, 'Friend request accepted!')
                 friend_request.delete()
             elif form.cleaned_data['response'] == 'reject':
                 friend_request.delete()
+                messages.success(request, 'Friend request rejected!')
 
             return redirect('root-page')
 
