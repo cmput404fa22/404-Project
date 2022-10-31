@@ -14,6 +14,7 @@
                 <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Home</a>
                 <a class="btn btn-info mt-2" href="{% url 'author-posts' %}">Your Page</a>
                 <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Inbox (1)</a> {% comment %} TODO: make this page {% endcomment %}
+                <a class="btn btn-info mt-2" href="{% url 'profile-page' %}">Profile</a>
                 <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
             </div>
         {% else %}
