@@ -1,5 +1,4 @@
 from .serializers import get_paginated_response
-from app.models import Author, Post, Follower
 from app.models import Author, Post, Follow
 from urllib import response
 from rest_framework.response import Response

@@ -23,7 +23,7 @@ def follow(request):
         new_follow.save()
 
         target_inbox_item = InboxItem.objects.create(
-            author=request.user.author, type="FOLLOW", from_author_url=request.user.author.url)
+            author=target, type="FOLLOW", from_author_url=request.user.author.url, from_username=request.user.username)
         target_inbox_item.save()
 
         messages.success(request, 'Requested to follow ' +

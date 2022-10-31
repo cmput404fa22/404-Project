@@ -16,20 +16,10 @@ class Author(models.Model):
         default=uuid.uuid4, primary_key=True, editable=False)
     host = models.TextField(default="http://" + settings.HOSTNAME)
     url = models.TextField()
-    github = models.TextField()
+    github = models.TextField(blank=True)
 
     profile_image_url = models.TextField(
         default='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png')
-    registered = models.BooleanField(default=False)
-
-    def get_json_object(self):
-        author_object = {"type": "author", "id": self.url,
-                         "host": self.host, "displayName": self.user.username,
-                         "url": self.url, "github": self.github,
-                         "profileImage": self.profile_image_url}
-        return author_object
-
-    profile_image_url = models.TextField(default='default.jpg')
     registered = models.BooleanField(default=False)
 
     def get_json_object(self):
@@ -45,7 +35,7 @@ class Follow(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False)
 
     target_url = models.TextField()
-    approved = models.BooleanField(default=False)
+    accepted = models.BooleanField(default=False)
 
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)  # author has followers
@@ -62,9 +52,11 @@ class InboxItem(models.Model):
     )
     type = models.CharField(max_length=13, choices=TYPE_CHOICES)
     # url to the object InboxItem is referring to, ie the post, comment, like
-    object_url = models.TextField()
+    object_url = models.TextField(null=True)
     # url to the author that caused this InboxItem
     from_author_url = models.TextField()
+    # username of the author that caused this InboxItem
+    from_username = models.TextField()
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE)  # author has InboxItems
 

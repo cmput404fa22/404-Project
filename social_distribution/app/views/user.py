@@ -96,13 +96,11 @@ def profile(request):
     return render(request, 'app/profile.html', context)
 
 
+@login_required
 def public_profile(request):
     author_url = request.GET.get('author_url', '')
     if (author_url == ""):
         return HttpResponse('400: No author_url query parameter supplied', status=400)
-
-    print(type(author_url))
-    print(settings.HOSTNAME)
 
     if (author_url.startswith("http://" + settings.HOSTNAME)):
         uuid = author_url.split("/")[-1]
@@ -116,3 +114,11 @@ def public_profile(request):
 
     context = {"author": author, "following": following}
     return render(request, 'app/public_profile.html', context)
+
+
+@login_required
+def notifications(request):
+    notifs = InboxItem.objects.filter(author=request.user.author)
+
+    context = {"notifs": notifs}
+    return render(request, 'app/notifications.html', context)

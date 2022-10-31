@@ -13,6 +13,7 @@ urlpatterns = [
     # path('author/', user.author, name='account-page'),
     path('signup/', user.signup, name='signup-page'),
     path('profile/', user.profile, name='profile-page'),
+    path('notifications/', user.notifications, name='notifications-page'),
     path('public_profile/', user.public_profile, name='public-profile-page'),
 
     path('authorposts/', posts.list_posts, name='author-posts'),

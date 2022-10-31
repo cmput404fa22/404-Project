@@ -13,7 +13,7 @@
             <a class="btn btn-success mt-2" href="{% url 'new-post-page' %}">New Post +</a>
             <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Home</a>
             <a class="btn btn-info mt-2" href="{% url 'author-posts' %}">Your Page</a>
-            <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Notifications (1)</a> {% comment %} TODO: make this page {% endcomment %}
+            <a class="btn btn-info mt-2" href="{% url 'notifications-page' %}">Notifications (1)</a> {% comment %} TODO: make this page {% endcomment %}
             <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
         {% else %}
             <a class="btn btn-primary mt-2" href="{% url 'login-page' %}">Login</a>
