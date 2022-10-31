@@ -100,7 +100,7 @@ class Post(models.Model):
     unlisted = models.BooleanField(default=False)
     author_url = models.TextField()
 
-    received = models.BooleanField()
+    received = models.BooleanField(default=False)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)  # posts have authors
 
