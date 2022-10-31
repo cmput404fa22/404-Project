@@ -1,3 +1,4 @@
+from multiprocessing import context
 from re import U
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -6,7 +7,8 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from ..forms import SignupForm, LoginForm, UserUpdateForm, AuthorUpdateForm
 from django.contrib.auth import authenticate, login, logout
-import os
+from django.contrib.auth.decorators import login_required
+from uuid import UUID
 
 
 def signup(request):
@@ -34,7 +36,7 @@ def signup(request):
                                                 password=form.cleaned_data['password'],
                                                 username=form.cleaned_data['username'])
                 new_author = Author(user=user)
-                new_author.url = f'http://{new_author.host}/authors/{new_author.uuid.hex}'
+                new_author.url = f'{new_author.host}/authors/{new_author.uuid.hex}'
                 if form.cleaned_data['github']:
                     new_author.github = form.cleaned_data['github']
                 new_author.save()
@@ -53,10 +55,10 @@ def login_user(request):
         if form.is_valid():
             user = authenticate(request, username=form.cleaned_data['username'],
                                 password=form.cleaned_data['password'])
-            if user is not None:
+            if user is not None and user.author.registered:
                 login(request, user)
                 messages.success(request, 'Logged in')
-                return redirect('author-posts')
+                return redirect('root-page')
             else:
                 messages.error(request, "Could not authenticate")
                 return redirect('login-page')
@@ -67,21 +69,24 @@ def login_user(request):
 def logout_user(request):
     logout(request)
 
-    return redirect('root-page')
+    return redirect('login-page')
 
+
+@login_required
 def profile(request):
     if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance = request.user)
-        author_form = AuthorUpdateForm(request.POST, request.FILES, instance = request.user.author)
-        
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        author_form = AuthorUpdateForm(
+            request.POST, request.FILES, instance=request.user.author)
+
         if user_form.is_valid() and author_form.is_valid():
             user_form.save()
             author_form.save()
             messages.success(request, 'Your profile has been updated.')
             return redirect('profile-page')
     else:
-        user_form = UserUpdateForm(instance = request.user)
-        author_form = AuthorUpdateForm(instance = request.user.author)
+        user_form = UserUpdateForm(instance=request.user)
+        author_form = AuthorUpdateForm(instance=request.user.author)
 
     context = {
         'user_form': user_form,
@@ -89,3 +94,31 @@ def profile(request):
     }
 
     return render(request, 'app/profile.html', context)
+
+
+@login_required
+def public_profile(request):
+    author_url = request.GET.get('author_url', '')
+    if (author_url == ""):
+        return HttpResponse('400: No author_url query parameter supplied', status=400)
+
+    if (author_url.startswith("http://" + settings.HOSTNAME)):
+        uuid = author_url.split("/")[-1]
+        author = Author.objects.get(uuid=UUID(uuid))
+        following = Follow.objects.filter(
+            author=request.user, target_url=author.url).first()
+
+    else:
+        # TODO: GET author obbject from remote node
+        return render(request, 'app/public_profile.html')
+
+    context = {"author": author, "following": following}
+    return render(request, 'app/public_profile.html', context)
+
+
+@login_required
+def notifications(request):
+    notifs = InboxItem.objects.filter(author=request.user.author)
+
+    context = {"notifs": notifs}
+    return render(request, 'app/notifications.html', context)

@@ -24,8 +24,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == 'True'
 
+
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
-HOSTNAME = 'localhost'
+HOSTNAME = os.environ.get("HOSTNAME")
 LOGIN_URL = '/login/'
 
 # Application definition
@@ -36,7 +37,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     'app.apps.AppConfig',
-    # 'api.apps.AppConfig',
+    'api.apps.AppConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
