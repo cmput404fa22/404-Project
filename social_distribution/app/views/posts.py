@@ -34,7 +34,8 @@ def create_public_post(request):
                                            content=form.cleaned_data['content'],
                                            author=request.user,
                                            visibility='PUBLIC',
-                                           author_url=request.user.author.url)
+                                           author_url=request.user.author.url, 
+                                           received=False)
             new_post.url = f'{request.user.author.url}/posts/{new_post.uuid.hex}'
             new_post.comments_url = f'{new_post.url}/comments'
 
@@ -52,7 +53,7 @@ def edit_post(request, uuid):
     form = CreatePostForm()
     post = Post.objects.get(uuid=uuid, received=False)
 
-    if (post.author.user != request.user):
+    if (post.author != request.user):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method != 'POST':
@@ -81,7 +82,7 @@ def edit_post(request, uuid):
 @login_required
 def delete_post(request, uuid):
     post = Post.objects.get(uuid=uuid, received=False)
-    if (post.author.user != request.user):
+    if (post.author != request.user):
         return HttpResponse('Unauthorized', status=401)
 
     post.delete()

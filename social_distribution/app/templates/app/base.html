@@ -5,10 +5,11 @@
 {% block base %}
 {% comment %} <div class="container"> {% endcomment %}
 <div>
+    {% if user.is_authenticated %}
     <div class="horizontalFlex">
         <div class="sidebarContainer verticalFlex">
-            <h1>AppName</h1>
-        {% if user.is_authenticated %}
+            <h1>appname</h1>
+        
             {% comment %} <a class="btn btn-info mt-2" href="{% url '' %}">Home</a> {% endcomment %}
             <a class="btn btn-success mt-2" href="{% url 'new-post-page' %}">New Post +</a>
             <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Home</a>
@@ -17,7 +18,7 @@
             <a class="btn btn-info mt-2" href="{% url 'profile-page' %}">Profile</a>
             <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
         </div>
-        {% else %}
+    {% else %}
             {% if title == 'root' %}
             <div class="joinbox">
                 <h1 class="namebox">appname</h1>
@@ -27,7 +28,7 @@
                 </div>
             </div>
             {% endif %}
-        {% endif %}
+    {% endif %}
             <div class="contentContainer verticalFlex">
                 {% bootstrap_messages %}
                 {% block content %}(no content){% endblock %}
