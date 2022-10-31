@@ -105,13 +105,13 @@ body {
     border: none;
 }
 
-.card-body {
+.card-body.post {
     background-color: rgb(166, 162, 162);
     color: white;
     border-radius: 25px;
 }
 
-.card-header {
+.card-header.post {
     font-size: 20px;
     background-color: rgb(90, 88, 88);
     border-radius: 25px;
@@ -129,7 +129,7 @@ body {
     border-radius: 25px;
 }
 
-.card {
+.card.post {
     width: 600px;
     height: fit-content;
     background-color: rgb(166, 162, 162);
