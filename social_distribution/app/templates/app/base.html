@@ -16,16 +16,23 @@
             <a class="btn btn-info mt-2" href="{% url 'notifications-page' %}">Notifications (1)</a> {% comment %} TODO: make this page {% endcomment %}
             <a class="btn btn-info mt-2" href="{% url 'profile-page' %}">Profile</a>
             <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
-        {% else %}
-            <a class="btn btn-primary mt-2" href="{% url 'login-page' %}">Login</a>
-            <a class="btn btn-info mt-2" href="{% url 'signup-page' %}">Signup</a>
-        {% endif %}
         </div>
+        {% else %}
+            {% if title == 'root' %}
+            <div class="joinbox">
+                <h1 class="namebox">appname</h1>
+                <div class="btnbox">
+                    <a class="btn btn-primary mt-2" id="baseloginbutton" href="{% url 'login-page' %}">Login</a>
+                    <a class="btn btn-info mt-2" id="basesignupbutton" href="{% url 'signup-page' %}">Signup</a>
+                </div>
+            </div>
+            {% endif %}
+        {% endif %}
             <div class="contentContainer verticalFlex">
                 {% bootstrap_messages %}
                 {% block content %}(no content){% endblock %}
             </div>
-        </div>
+    </div>
 
 
 
