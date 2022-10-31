@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.shortcuts import render
-from ..forms import SendFriendRequestForm, RespondFriendRequestForm
 from ..models import Follow, Author, InboxItem
 from django.shortcuts import redirect
 from django.contrib import messages
