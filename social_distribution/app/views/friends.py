@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from ..forms import SendFriendRequestForm
-from ..models import FriendRequest
+from ..forms import SendFriendRequestForm, RespondFriendRequestForm
+from ..models import FriendRequest, Follower
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -21,6 +21,26 @@ def send_friend_request(request):
             friend_request.save()
             messages.success(request, 'Friend request sent')
 
-            return redirect('login-page')
+            return redirect('root-page')
 
     return render(request, "app/send_friend_request.html", context)
+
+
+@login_required
+def respond_friend_request(request, author):
+    context = {"title": "respond to friend request", "form": RespondFriendRequestForm()}
+
+    if request.method == 'POST':
+        form = RespondFriendRequestForm(request.POST)
+        if form.is_valid():
+            friend_request = FriendRequest.objects.get(target=request.user, author=author)
+            if form.cleaned_data['response'] == 'accept':
+                follower = Follower(author=request.user, follower_url=author.url)  # syntax?
+                # opposite semantics, author is who is being friended
+                friend_request.delete()
+            elif form.cleaned_data['response'] == 'reject':
+                friend_request.delete()
+
+            return redirect('root-page')
+
+    return render(request, "app/respond_friend_request.html", context)

@@ -35,3 +35,12 @@ class CreatePostForm(forms.Form):
 
 class SendFriendRequestForm(forms.Form):
     username = forms.CharField(label='Username', max_length=50, required=True)
+
+
+class RespondFriendRequestForm(forms.Form):
+    RESPONSE_CHOICES = (
+        ("accept", "accept"),
+        ("reject", "reject"),
+    )
+
+    response = forms.ChoiceField(choices=RESPONSE_CHOICES, widget=forms.RadioSelect)  # probably change later
