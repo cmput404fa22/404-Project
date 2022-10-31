@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 
-from app.models import Author, Post, Follower
+from app.models import Author, Post, Follow
 from .serializers import get_paginated_response
 
 
@@ -26,7 +26,7 @@ def get_authors(request):
 def get_followers(request, author_id):
     page = int(request.GET.get('page', '1'))
     size = int(request.GET.get('size', '10'))
-    followers = Follower.objects.get(
+    followers = Follow.objects.get(
         author=Author.objects.get(uuid=author_id).user)
     response = get_paginated_response(followers, page, size)
     return Response(response)

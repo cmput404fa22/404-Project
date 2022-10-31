@@ -5,23 +5,23 @@
 {% block base %}
 {% comment %} <div class="container"> {% endcomment %}
 <div>
-    <div class="{% if user.is_authenticated %}horizontalFlex{% endif %}">
+    <div class="horizontalFlex">
+        <div class="sidebarContainer verticalFlex">
+            <h1>AppName</h1>
         {% if user.is_authenticated %}
-            <div class="sidebarContainer verticalFlex">
-                <h1>AppName</h1>
-                {% comment %} <a class="btn btn-info mt-2" href="{% url '' %}">Home</a> {% endcomment %}
-                <a class="btn btn-success mt-2" href="{% url 'new-post-page' %}">New Post +</a>
-                <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Home</a>
-                <a class="btn btn-info mt-2" href="{% url 'author-posts' %}">Your Page</a>
-                <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Inbox (1)</a> {% comment %} TODO: make this page {% endcomment %}
-                <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
-            </div>
+            {% comment %} <a class="btn btn-info mt-2" href="{% url '' %}">Home</a> {% endcomment %}
+            <a class="btn btn-success mt-2" href="{% url 'new-post-page' %}">New Post +</a>
+            <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Home</a>
+            <a class="btn btn-info mt-2" href="{% url 'author-posts' %}">Your Page</a>
+            <a class="btn btn-info mt-2" href="{% url 'root-page' %}">Notifications (1)</a> {% comment %} TODO: make this page {% endcomment %}
+            <a class="btn btn-danger mt-2" href="{% url 'logout-page' %}">Logout</a>
         {% else %}
             <a class="btn btn-primary mt-2" href="{% url 'login-page' %}">Login</a>
+            <a class="btn btn-info mt-2" href="{% url 'signup-page' %}">Signup</a>
         {% endif %}
-            
-            {% comment %} <h1>this text is in the base.html</h1> {% endcomment %}
+        </div>
             <div class="contentContainer verticalFlex">
+                {% bootstrap_messages %}
                 {% block content %}(no content){% endblock %}
             </div>
         </div>

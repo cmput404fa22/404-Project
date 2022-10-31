@@ -1,4 +1,4 @@
-from app.models import Author, Follower, Post
+from app.models import Author, Post
 from rest_framework import serializers
 from django.core.paginator import Paginator
 

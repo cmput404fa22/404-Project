@@ -14,7 +14,9 @@ def send_private_post(request):
 
 @login_required
 def list_posts(request):
-    posts = Post.objects.filter(author=request.user)
+    # posts with received=True mean they were sent by another node to our author
+    posts = Post.objects.filter(
+        author=request.user, received=False)
     context = {'posts': posts}
     return render(request, 'app/author_posts.html', context)
 
@@ -48,7 +50,7 @@ def create_public_post(request):
 def edit_post(request, uuid):
     context = {}
     form = CreatePostForm()
-    post = Post.objects.get(uuid=uuid)
+    post = Post.objects.get(uuid=uuid, received=False)
 
     if (post.author.user != request.user):
         return HttpResponse('Unauthorized', status=401)
@@ -76,9 +78,9 @@ def edit_post(request, uuid):
     return render(request, 'app/edit_post.html', context)
 
 
-@login_required
+@ login_required
 def delete_post(request, uuid):
-    post = Post.objects.get(uuid=uuid)
+    post = Post.objects.get(uuid=uuid, received=False)
     if (post.author.user != request.user):
         return HttpResponse('Unauthorized', status=401)
 

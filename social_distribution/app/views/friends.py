@@ -1,49 +1,47 @@
+from django.conf import settings
 from django.shortcuts import render
 from ..forms import SendFriendRequestForm, RespondFriendRequestForm
-from ..models import FriendRequest, Follower
+from ..models import Follow, Author, InboxItem
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from uuid import UUID
 
 
 @login_required
-def send_friend_request(request):
-    context = {"title": "send friend request", "form": SendFriendRequestForm()}
+def follow(request):
 
-    if request.method == 'POST':
-        form = SendFriendRequestForm(request.POST)
-        if form.is_valid():
-            target = User.objects.filter(username=form.cleaned_data['username']).first()
-            friend_request = FriendRequest.objects.create(target=target,
-                                                          author=request.user)
+    # get target
+    target_url = request.GET.get('target_url', '')
 
-            friend_request.save()
-            messages.success(request, 'Friend request sent')
+    # check user url provided, if on our server save follow
+    if (target_url.startswith("http://" + settings.HOSTNAME)):
+        target_uuid = target_url.split("/")[-1]
+        target = Author.objects.get(uuid=target_uuid)
 
-            return redirect('root-page')
+        new_follow = Follow.objects.create(
+            author=request.user, target_url=target.url)
+        new_follow.save()
 
-    return render(request, "app/send_friend_request.html", context)
+        target_inbox_item = InboxItem.objects.create(
+            author=request.user.author, type="FOLLOW", from_author_url=request.user.author.url)
+        target_inbox_item.save()
+
+        messages.success(request, 'Requested to follow ' +
+                         target.user.username)
+
+    else:
+        # TODO: post follow to remote node's inbox
+        return
+
+    return redirect('root-page')
 
 
 @login_required
-def respond_friend_request(request, author):
-    context = {"title": "respond to friend request", "form": RespondFriendRequestForm()}
+def approve_follow(request, uuid):
 
-    if request.method == 'POST':
-        form = RespondFriendRequestForm(request.POST)
-        if form.is_valid():
-            friend_request = FriendRequest.objects.get(target=request.user, author=author)
-            if form.cleaned_data['response'] == 'accept':
-                follower = Follower(author=request.user, follower_url=author.url)  # syntax?
-                # opposite semantics, author is who is being friended
-                follower.save()
-                messages.success(request, 'Friend request accepted!')
-                friend_request.delete()
-            elif form.cleaned_data['response'] == 'reject':
-                friend_request.delete()
-                messages.success(request, 'Friend request rejected!')
+    # query followers table for unapproved follow request for our author
 
-            return redirect('root-page')
+    # display
 
     return render(request, "app/respond_friend_request.html", context)

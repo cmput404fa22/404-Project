@@ -1,0 +1,42 @@
+{% extends 'app/base.html' %}
+{% load bootstrap5 %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-xl">
+            <div class="card">
+                <div class="card-header">Auhtor's Public posts</div>
+                <div class="card-body">
+                    <div class="card">
+                        {% for post in paginated_posts.posts %}
+                        <h3>{{ post.title }}</h3>
+                        {% endfor %}
+                    </div>
+                    <a class="card-link" href="?page={{ paginated_posts.page|add:'-1' }}">previous</a>
+                    <a class="card-link" href="?page={{ paginated_posts.page|add:'1' }}">next</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl">
+            <div class="card">
+                <div class="card-header">About the author</div>
+                <div class="card-body">
+                    <h2>{{ author.user.username }}</h2>
+                    {% if following %}
+                        {% if following.approved %}
+                        <a class="btn btn-primary" href="/follow/user/?target_url={{ author.url }}">follow</a>
+                        {% else %}
+                        <button class="btn btn-secondary" type="button" disabled>follow pending</a>
+                        {% endif %}
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
