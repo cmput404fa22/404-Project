@@ -14,8 +14,8 @@
             <li><p> {{ post.title }} </p> </li>
             <p> {{ post.content }} </p>
             <p>
-                 <a href="edit/{{ post.uuid }}">Edit</a>
-                 <a href="delete/{{ post.uuid }}">Delete</a>
+                 <a href="edit/{{ post.uuid.hex }}">Edit</a>
+                 <a href="delete/{{ post.uuid.hex }}">Delete</a>
             </p>
         {% empty %}
             <li>No posts yet.</li>
