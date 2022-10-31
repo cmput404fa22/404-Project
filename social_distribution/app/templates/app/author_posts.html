@@ -3,23 +3,27 @@
 
 
 {% block content %}
-<div class="card">
-    <div class="card-header">Your Posts</div>
-    <div class="card-body">
-        <p>
-            <a href="new/">Create New Post</a>
-        </p>
-        <ul>
-        {% for post in posts %}
-            <li><p> {{ post.title }} </p> </li>
-            <p>
-                 <a href="edit/{{ post.uuid }}">Edit</a>
-                 <a href="delete/{{ post.uuid }}">Delete</a>
-            </p>
-        {% empty %}
-            <li>No posts yet.</li>
-        {% endfor %}
-        </ul>
+<div class="posts-list">
+ 
+<h1 class="page-title">Your Posts</h1>
+
+    {% for post in posts %}
+    <ul class="posts-list">
+    <li>
+        <div class="card">
+            <div class="card-header">{{ post.title }}</div>
+            <div class="card-body">
+                <p> {{ post.content }}</p>
+                <a class="editbtn" href="edit/{{ post.uuid }}">Edit</a>
+                <a class="deletebtn" href="delete/{{ post.uuid }}">Delete</a>
+            <div>
+        </div>
+    </li>
+    </ul>
+    {% empty %}
+    <div class="noposts">
+        <p>no posts yet  :(</p>
     </div>
+    {% endfor %}
 </div>
 {% endblock %}
