@@ -78,7 +78,7 @@ def edit_post(request, uuid):
     return render(request, 'app/edit_post.html', context)
 
 
-@ login_required
+@login_required
 def delete_post(request, uuid):
     post = Post.objects.get(uuid=uuid, received=False)
     if (post.author.user != request.user):

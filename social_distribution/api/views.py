@@ -21,18 +21,18 @@ def get_authors(request):
     return Response(response)
 
 
+# @api_view(["GET"])
+# def get_followers(request, author_id):
+#     page = int(request.GET.get('page', '1'))
+#     size = int(request.GET.get('size', '10'))
+
+#     followers = Follow.objects.get(
+#         author=Author.objects.get(uuid=author_id).user)
+#     response = get_paginated_response(followers, page, size)
+#     return Response(response)
+
+
 @api_view(["GET"])
-def get_followers(request, author_id):
-    page = int(request.GET.get('page', '1'))
-    size = int(request.GET.get('size', '10'))
-
-    followers = Follow.objects.get(
-        author=Author.objects.get(uuid=author_id).user)
-    response = get_paginated_response(followers, page, size)
-    return Response(response)
-
-
-@ api_view(["GET"])
 def get_post(request, author_id, post_id):
     post = get_object_or_404(Post, uuid=post_id)
     if post.visibility != 'PUBLIC':
@@ -40,7 +40,7 @@ def get_post(request, author_id, post_id):
     return Response(post.get_json_object())
 
 
-@ api_view(["GET"])
+@api_view(["GET"])
 def get_posts(request, author_id):
     page = int(request.GET.get('page', '1'))
     size = int(request.GET.get('size', '10'))
@@ -50,6 +50,6 @@ def get_posts(request, author_id):
     return Response(response)
 
 
-@ api_view(["POST"])
-def post_to_inbox(request, author_id):
-    return Response(response)
+# @api_view(["POST"])
+# def post_to_inbox(request, author_id):
+#     return Response(response)
