@@ -5,14 +5,13 @@
 
 {% block content %}
 <div class="card">
-    <div class="card-header">Login</div>
+    <div class="card-header">Edit Post</div>
     <div class="card-body">
         <form method="POST">
             {% csrf_token %}
             {{ form|crispy }}
             <div class="form-group">
-                <button type="submit" class="btn btn-primary mt-2">Login</button>
-                <a class="btn btn-secondary mt-2" href="{% url 'signup-page' %}" style="text-decoration: none; color: white;">Signup</a>
+                <button type="submit" class="btn btn-primary mt-2">Submit</button>
             </div>
         </form>
     </div>
