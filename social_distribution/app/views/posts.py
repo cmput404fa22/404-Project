@@ -16,7 +16,7 @@ def send_private_post(request):
 def list_posts(request):
     # posts with received=True mean they were sent by another node to our author
     posts = Post.objects.filter(
-        author=request.user, received=False)
+        author=request.user.author, received=False)
     context = {'posts': posts}
     return render(request, 'app/author_posts.html', context)
 
@@ -32,9 +32,9 @@ def create_public_post(request):
                                            description=form.cleaned_data['description'],
                                            content_type=form.cleaned_data['content_type'],
                                            content=form.cleaned_data['content'],
-                                           author=request.user,
+                                           author=request.user.author,
                                            visibility='PUBLIC',
-                                           author_url=request.user.author.url, 
+                                           author_url=request.user.author.url,
                                            received=False)
             new_post.url = f'{request.user.author.url}/posts/{new_post.uuid.hex}'
             new_post.comments_url = f'{new_post.url}/comments'
@@ -53,7 +53,7 @@ def edit_post(request, uuid):
     form = CreatePostForm()
     post = Post.objects.get(uuid=uuid, received=False)
 
-    if (post.author != request.user):
+    if (post.author != request.user.author):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method != 'POST':
@@ -82,7 +82,7 @@ def edit_post(request, uuid):
 @login_required
 def delete_post(request, uuid):
     post = Post.objects.get(uuid=uuid, received=False)
-    if (post.author != request.user):
+    if (post.author != request.user.author):
         return HttpResponse('Unauthorized', status=401)
 
     post.delete()

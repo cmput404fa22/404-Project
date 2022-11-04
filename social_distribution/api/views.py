@@ -1,5 +1,6 @@
 from .serializers import AuthorSerializer, PostSerializer
 from app.models import Author, Post, Follow
+from app.utils import url_is_local
 from urllib import response
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -9,6 +10,7 @@ from django.http import JsonResponse
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
+from django.conf import settings
 
 
 class AuthorItems(APIView, LimitOffsetPagination):
@@ -22,6 +24,33 @@ class AuthorItems(APIView, LimitOffsetPagination):
 
         results = self.paginate_queryset(authors, request, view=self)
         serializer = AuthorSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
+class FollowItems(APIView, LimitOffsetPagination):
+
+    # authentication_classes = [authentication.TokenAuthentication]
+    # permission_classes = [permissions.IsAdminUser]
+
+    @swagger_auto_schema(responses={'200': AuthorSerializer})
+    def get(self, request, author_id):
+        author = Author.objects.get(uuid=author_id)
+        follows = Follow.objects.filter(author=author)
+
+        print(follows)
+
+        authors = []
+        follow_urls = self.paginate_queryset(follows, request, view=self)
+        for follow in follow_urls:
+            if url_is_local(follow.target_url):
+                author = Author.objects.get(
+                    uuid=follow.target_url.split("/")[-1])
+                authors.append(author)
+            else:
+                continue
+                # TODO get from remote node
+
+        serializer = AuthorSerializer(authors, many=True)
         return self.get_paginated_response(serializer.data)
 
 
@@ -44,7 +73,8 @@ class PostItems(APIView, LimitOffsetPagination):
 
     @swagger_auto_schema(responses={'200': PostSerializer})
     def get(self, request, author_id):
-        posts = Post.objects.filter(uuid=author_id)
+        author = Author.objects.get(uuid=author_id)
+        posts = Post.objects.filter(author=author)
 
         results = self.paginate_queryset(posts, request, view=self)
         serializer = PostSerializer(results, many=True)
@@ -61,61 +91,3 @@ class SinglePost(APIView, LimitOffsetPagination):
         post = Post.objects.get(uuid=post_id)
         serializer = PostSerializer(post, many=False)
         return Response(serializer.data)
-
-
-# def authors_list(request):
-#     """
-
-#     """
-#     if request.method == 'GET':
-#         authors = Author.objects.all()
-#         serializer = AuthorSerializer(authors, many=True)
-#         return JsonResponse(serializer.data, safe=False)
-
-# @api_view(["GET"])
-# def get_author(request, author_id):
-#     author = get_object_or_404(Author, uuid=author_id)
-#     return Response(author.get_json_object())
-
-
-# @api_view(["GET"])
-# def get_authors(request):
-#     page = int(request.GET.get('page', '1'))
-#     size = int(request.GET.get('size', '10'))
-#     authors = Author.objects.all()
-#     response = get_paginated_response(authors, page, size)
-#     return Response(response)
-
-
-# @api_view(["GET"])
-# def get_followers(request, author_id):
-#     page = int(request.GET.get('page', '1'))
-#     size = int(request.GET.get('size', '10'))
-
-#     followers = Follow.objects.get(
-#         author=Author.objects.get(uuid=author_id).user)
-#     response = get_paginated_response(followers, page, size)
-#     return Response(response)
-
-
-# @api_view(["GET"])
-# def get_post(request, author_id, post_id):
-#     post = get_object_or_404(Post, uuid=post_id)
-#     if post.visibility != 'PUBLIC':
-#         return Response({'error': 'Unauthorized'}, status=403)
-#     return Response(post.get_json_object())
-
-
-# @api_view(["GET"])
-# def get_posts(request, author_id):
-#     page = int(request.GET.get('page', '1'))
-#     size = int(request.GET.get('size', '10'))
-#     posts = Post.objects.filter(
-#         visibility='PUBLIC', author=Author.objects.get(uuid=author_id).user)
-#     response = get_paginated_response(posts, page, size)
-#     return Response(response)
-
-
-# @api_view(["POST"])
-# def post_to_inbox(request, author_id):
-#     return Response(response)
