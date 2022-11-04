@@ -4,13 +4,13 @@ from .models import *
 
 
 @admin.action(description='Register selected users')
-def make_published(modeladmin, request, queryset):
+def register_users(modeladmin, request, queryset):
     queryset.update(registered=True)
 
 
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('user', 'UUID', 'registered',)
-    actions = [make_published]
+    actions = [register_users]
 
     def UUID(self, obj):
         return obj.uuid.hex
