@@ -95,6 +95,8 @@ class SinglePost(APIView, LimitOffsetPagination):
 def inbox_item(request, author_id):
     author = Author.objects.get(uuid=author_id)
 
+    new_objects = []
+
     for item in request.data.get("items"):
         if (item.get("type") == 'post'):
             serializer = PostSerializer(data=item)
@@ -105,7 +107,7 @@ def inbox_item(request, author_id):
                     post = serializer.create(
                         serializer.validated_data, author=author)
                     post.received = True
-                    post.save()
+                    new_objects.append(post)
             else:
                 return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
@@ -126,8 +128,9 @@ def inbox_item(request, author_id):
             from_author_url=request.data.get("author"),
             object_url=serializer.validated_data.get('url'),
             from_username="TODO: add username")
-        inbox_item.save()
+        new_objects.append(inbox_item)
 
-        return Response("Inbox item received", status.HTTP_201_CREATED)
+    for obj in new_objects:
+        obj.save()
 
-    return Response({})
+    return Response("Inbox items received", status.HTTP_201_CREATED)
