@@ -30,7 +30,7 @@ urlpatterns = [
     path("<uuid:author_id>/posts/", views.PostItems.as_view()),
     path("<uuid:author_id>/posts/<uuid:post_id>", views.SinglePost.as_view()),
 
-    # path("<uuid:author_id>/inbox/", views.post_to_inbox),
+    path("<uuid:author_id>/inbox/", views.inbox_item),
 
 
 ]

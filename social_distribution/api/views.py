@@ -1,5 +1,5 @@
 from .serializers import AuthorSerializer, PostSerializer
-from app.models import Author, Post, Follow
+from app.models import Author, Post, Follow, InboxItem
 from app.utils import url_is_local
 from urllib import response
 from rest_framework.response import Response
@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from django.http import JsonResponse
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.views import APIView
+from rest_framework.views import APIView, status
 from drf_yasg.utils import swagger_auto_schema
 from django.conf import settings
 
@@ -36,8 +36,6 @@ class FollowItems(APIView, LimitOffsetPagination):
     def get(self, request, author_id):
         author = Author.objects.get(uuid=author_id)
         follows = Follow.objects.filter(author=author)
-
-        print(follows)
 
         authors = []
         follow_urls = self.paginate_queryset(follows, request, view=self)
@@ -91,3 +89,60 @@ class SinglePost(APIView, LimitOffsetPagination):
         post = Post.objects.get(uuid=post_id)
         serializer = PostSerializer(post, many=False)
         return Response(serializer.data)
+
+
+@api_view(['POST'])
+def inbox_item(request, author_id):
+    author = Author.objects.get(uuid=author_id)
+
+    for item in request.data.get("items"):
+        if (item.get("type") == 'post'):
+            serializer = PostSerializer(data=item)
+            if serializer.is_valid():
+                # only save posts with FRIENDS visibility,
+                # public posts can be retrieved from remote nodes
+                if (serializer.validated_data.get('visibility') == 'FRIENDS'):
+                    post = serializer.create(
+                        serializer.validated_data, author=author)
+                    post.received = True
+                    post.save()
+            else:
+                return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+        if (item.get("type") == 'follow'):
+            return Response({})
+            # serializer = PostSerializer(data=request.data)
+            # if serializer.is_valid():
+            #     serializer.received = True
+            #     serializer.author = author
+            #     return Response(serializer.data)
+
+        if (item.get("type") == 'comment'):
+            return Response({})
+            # serializer = PostSerializer(data=request.data)
+            # if serializer.is_valid():
+            #     serializer.received = True
+            #     serializer.author = author
+            #     return Response(serializer.data)
+
+        if (item.get("type") == 'like'):
+            return Response({})
+            # serializer = PostSerializer(data=request.data)
+            # if serializer.is_valid():
+            #     serializer.received = True
+            #     serializer.author = author
+            #     return Response(serializer.data)
+
+            # TODO: Get username for this author request.data.get("author")
+
+        inbox_item = InboxItem.objects.create(
+            author=author,
+            type=item.get("type").upper(),
+            from_author_url=request.data.get("author"),
+            object_url=serializer.validated_data.get('url'),
+            from_username="TODO: add username")
+        inbox_item.save()
+
+        return Response("Inbox item received", status.HTTP_201_CREATED)
+
+    return Response({})

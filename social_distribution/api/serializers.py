@@ -25,18 +25,22 @@ class PostSerializer(serializers.ModelSerializer):
     origin = serializers.CharField()
     description = serializers.CharField()
     contentType = serializers.ChoiceField(
-        choices=['PUBLIC', 'PRIVATE'], source='content_type')
+        choices=['text/plain', 'text/markdown', 'application/base64'], source='content_type')
     content = serializers.CharField()
     comments = serializers.CharField(source='comments_url')
     published = serializers.DateTimeField(source='date_published')
-    visibility = serializers.ChoiceField(choices=['PUBLIC', 'PRIVATE'])
+    visibility = serializers.ChoiceField(choices=['PUBLIC', 'FRIENDS'])
     unlisted = serializers.BooleanField()
     author = AuthorSerializer(many=False, read_only=True)
 
     class Meta:
-        model = Author
+        model = Post
         fields = ('type', 'id', 'source', 'origin', 'description', 'contentType',
                   'content', 'comments', 'published', 'visibility', 'unlisted', 'author')
+        read_only_fields = ('author',)
+
+    def create(self, validated_data, author):
+        return Post(**validated_data, author=author)
 
 
 def get_paginated_response(items, page, size):

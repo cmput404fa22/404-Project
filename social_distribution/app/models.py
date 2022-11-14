@@ -95,7 +95,7 @@ class Post(models.Model):
     comments_url = models.TextField()
     VISIBILITY_CHOICES = (
         ('PUBLIC', 'public'),
-        ('PRIVATE', 'private'),
+        ('FRIENDS', 'friends'),
     )
     visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)
     unlisted = models.BooleanField(default=False)
