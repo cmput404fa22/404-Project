@@ -100,7 +100,7 @@ def inbox_item(request, author_id):
             serializer = PostSerializer(data=item)
             if serializer.is_valid():
                 # only save posts with FRIENDS visibility,
-                # public posts can be retrieved from remote nodes
+                # PUBLIC posts can be retrieved from remote nodes when needed
                 if (serializer.validated_data.get('visibility') == 'FRIENDS'):
                     post = serializer.create(
                         serializer.validated_data, author=author)
@@ -110,28 +110,13 @@ def inbox_item(request, author_id):
                 return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
         if (item.get("type") == 'follow'):
-            return Response({})
-            # serializer = PostSerializer(data=request.data)
-            # if serializer.is_valid():
-            #     serializer.received = True
-            #     serializer.author = author
-            #     return Response(serializer.data)
+            return Response({"posting follows is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
 
         if (item.get("type") == 'comment'):
-            return Response({})
-            # serializer = PostSerializer(data=request.data)
-            # if serializer.is_valid():
-            #     serializer.received = True
-            #     serializer.author = author
-            #     return Response(serializer.data)
+            return Response({"posting comments is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
 
         if (item.get("type") == 'like'):
-            return Response({})
-            # serializer = PostSerializer(data=request.data)
-            # if serializer.is_valid():
-            #     serializer.received = True
-            #     serializer.author = author
-            #     return Response(serializer.data)
+            return Response({"posting likes is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
 
             # TODO: Get username for this author request.data.get("author")
 
