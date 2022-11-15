@@ -94,13 +94,20 @@ def inbox_item(request, author_id):
     author = Author.objects.get(uuid=author_id)
 
     new_objects = []
-    object_url = ""
+    object_url = None
+    from_username = "TODO: get username"
+    from_author_url = None
 
     for item in request.data.get("items"):
         if (item.get("type") == 'post'):
+
             serializer = PostSerializer(data=item)
             if serializer.is_valid():
+                # TODO: Get username for this author: object_url from remote node
+                # from_username = get()
                 object_url = serializer.validated_data.get("url")
+                from_author_url = request.data.get("author")
+
                 # only save posts with FRIENDS visibility,
                 # PUBLIC posts can be retrieved from remote nodes when needed
                 if (serializer.validated_data.get('visibility') == 'FRIENDS'):
@@ -111,8 +118,21 @@ def inbox_item(request, author_id):
             else:
                 return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-        if (item.get("type") == 'follow'):
-            return Response({"posting follows is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
+        if (item.get("type") == 'Follow'):
+
+            serializer = AuthorSerializer(data=item.get('object'))
+            if serializer.is_valid():
+                from_author_url = item['actor']['id']
+                from_username = item['actor']['displayName']
+
+                author_uuid = serializer.validated_data.get(
+                    "url").split("/")[-1]
+                followed = Author.objects.get(uuid=author_uuid)
+                follow = Follow.objects.create(
+                    author=followed, target_url=from_author_url)
+                new_objects.append(follow)
+            else:
+                return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
         if (item.get("type") == 'comment'):
             return Response({"posting comments is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
@@ -120,13 +140,12 @@ def inbox_item(request, author_id):
         if (item.get("type") == 'like'):
             return Response({"posting likes is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
 
-        # TODO: Get username for this author: request.data.get("author") from remote node
         inbox_item = InboxItem.objects.create(
             author=author,
             type=item.get("type").upper(),
-            from_author_url=request.data.get("author"),
+            from_author_url=from_author_url,
             object_url=object_url,
-            from_username="TODO: add username")
+            from_username=from_username)
         new_objects.append(inbox_item)
 
     for obj in new_objects:

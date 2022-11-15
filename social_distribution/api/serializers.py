@@ -9,7 +9,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     host = serializers.CharField()
     displayName = serializers.CharField(source='user.username')
     url = serializers.CharField()
-    github = serializers.CharField()
+    github = serializers.CharField(allow_blank=True)
     profileImage = serializers.CharField(source='profile_image_url')
 
     class Meta:
