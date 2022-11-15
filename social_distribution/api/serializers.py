@@ -25,7 +25,7 @@ class PostSerializer(serializers.ModelSerializer):
     origin = serializers.CharField()
     description = serializers.CharField()
     contentType = serializers.ChoiceField(
-        choices=['text/plain', 'text/markdown', 'application/base64'], source='content_type')
+        choices=['text/plain', 'text/markdown', 'application/base64', 'image/png;base64', 'image/jpeg;base64'], source='content_type')
     content = serializers.CharField()
     comments = serializers.CharField(source='comments_url')
     published = serializers.DateTimeField(source='date_published')
