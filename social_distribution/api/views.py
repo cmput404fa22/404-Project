@@ -3,7 +3,7 @@ from app.models import Author, Post, Follow, InboxItem
 from app.utils import url_is_local
 from urllib import response
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from django.http import JsonResponse
@@ -11,12 +11,13 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView, status
 from drf_yasg.utils import swagger_auto_schema
 from django.conf import settings
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 class AuthorItems(APIView, LimitOffsetPagination):
 
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(responses={'200': AuthorSerializer})
     def get(self, request):
@@ -29,8 +30,7 @@ class AuthorItems(APIView, LimitOffsetPagination):
 
 class FollowItems(APIView, LimitOffsetPagination):
 
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(responses={'200': AuthorSerializer})
     def get(self, request, author_id):
@@ -54,8 +54,7 @@ class FollowItems(APIView, LimitOffsetPagination):
 
 class SingleAuthor(APIView, LimitOffsetPagination):
 
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(responses={'200': AuthorSerializer})
     def get(self, request, uuid):
@@ -66,8 +65,7 @@ class SingleAuthor(APIView, LimitOffsetPagination):
 
 class PostItems(APIView, LimitOffsetPagination):
 
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(responses={'200': PostSerializer})
     def get(self, request, author_id):
@@ -81,8 +79,7 @@ class PostItems(APIView, LimitOffsetPagination):
 
 class SinglePost(APIView, LimitOffsetPagination):
 
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(responses={'200': PostSerializer})
     def get(self, request, author_id, post_id):
@@ -92,15 +89,18 @@ class SinglePost(APIView, LimitOffsetPagination):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def inbox_item(request, author_id):
     author = Author.objects.get(uuid=author_id)
 
     new_objects = []
+    object_url = ""
 
     for item in request.data.get("items"):
         if (item.get("type") == 'post'):
             serializer = PostSerializer(data=item)
             if serializer.is_valid():
+                object_url = serializer.validated_data.get("url")
                 # only save posts with FRIENDS visibility,
                 # PUBLIC posts can be retrieved from remote nodes when needed
                 if (serializer.validated_data.get('visibility') == 'FRIENDS'):
@@ -120,13 +120,12 @@ def inbox_item(request, author_id):
         if (item.get("type") == 'like'):
             return Response({"posting likes is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
 
-            # TODO: Get username for this author request.data.get("author")
-
+        # TODO: Get username for this author: request.data.get("author") from remote node
         inbox_item = InboxItem.objects.create(
             author=author,
             type=item.get("type").upper(),
             from_author_url=request.data.get("author"),
-            object_url=serializer.validated_data.get('url'),
+            object_url=object_url,
             from_username="TODO: add username")
         new_objects.append(inbox_item)
 
