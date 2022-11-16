@@ -22,7 +22,7 @@ class AuthorItems(APIView, LimitOffsetPagination):
 
     @swagger_auto_schema(responses={'200': AuthorSerializer})
     def get(self, request):
-        authors = Author.objects.all()
+        authors = Author.objects.filter(registered=True)
 
         results = self.paginate_queryset(authors, request, view=self)
         serializer = AuthorSerializer(results, many=True)
