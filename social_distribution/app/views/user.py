@@ -56,7 +56,7 @@ def login_user(request):
         if form.is_valid():
             user = authenticate(request, username=form.cleaned_data['username'],
                                 password=form.cleaned_data['password'])
-            if user is not None and user.author.registered:
+            if user and not user.author.is_remote_node and user.author.registered:
                 login(request, user)
                 messages.success(request, 'Logged in')
                 return redirect('root-page')

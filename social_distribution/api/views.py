@@ -13,11 +13,12 @@ from drf_yasg.utils import swagger_auto_schema
 from django.conf import settings
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from .permissions import IsRemoteNode
 
 
 class AuthorItems(APIView, LimitOffsetPagination):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': AuthorSerializer})
     def get(self, request):
@@ -30,7 +31,7 @@ class AuthorItems(APIView, LimitOffsetPagination):
 
 class FollowItems(APIView, LimitOffsetPagination):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': AuthorSerializer})
     def get(self, request, author_id):
@@ -54,7 +55,7 @@ class FollowItems(APIView, LimitOffsetPagination):
 
 class SingleAuthor(APIView, LimitOffsetPagination):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': AuthorSerializer})
     def get(self, request, uuid):
@@ -65,7 +66,7 @@ class SingleAuthor(APIView, LimitOffsetPagination):
 
 class PostItems(APIView, LimitOffsetPagination):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': PostSerializer})
     def get(self, request, author_id):
@@ -79,7 +80,7 @@ class PostItems(APIView, LimitOffsetPagination):
 
 class SinglePost(APIView, LimitOffsetPagination):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': PostSerializer})
     def get(self, request, author_id, post_id):
@@ -89,7 +90,7 @@ class SinglePost(APIView, LimitOffsetPagination):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsRemoteNode])
 def inbox_item(request, author_id):
     author = Author.objects.get(uuid=author_id)
 
