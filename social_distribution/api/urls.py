@@ -27,10 +27,9 @@ urlpatterns = [
     path("<uuid:uuid>/", views.SingleAuthor.as_view()),
     path("<uuid:author_id>/followers", views.FollowItems.as_view()),
 
+    path("all/posts/", views.AllPostItems.as_view()),
     path("<uuid:author_id>/posts/", views.PostItems.as_view()),
     path("<uuid:author_id>/posts/<uuid:post_id>", views.SinglePost.as_view()),
 
     path("<uuid:author_id>/inbox/", views.inbox_item),
-
-
 ]

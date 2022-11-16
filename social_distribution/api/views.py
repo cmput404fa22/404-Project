@@ -71,7 +71,20 @@ class PostItems(APIView, LimitOffsetPagination):
     @swagger_auto_schema(responses={'200': PostSerializer})
     def get(self, request, author_id):
         author = Author.objects.get(uuid=author_id)
-        posts = Post.objects.filter(author=author)
+        posts = Post.objects.filter(author=author, visibility='PUBLIC')
+
+        results = self.paginate_queryset(posts, request, view=self)
+        serializer = PostSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
+class AllPostItems(APIView, LimitOffsetPagination):
+
+    permission_classes = [IsAuthenticated, IsRemoteNode]
+
+    @swagger_auto_schema(responses={'200': PostSerializer})
+    def get(self, request):
+        posts = Post.objects.filter(visibility='PUBLIC')
 
         results = self.paginate_queryset(posts, request, view=self)
         serializer = PostSerializer(results, many=True)
