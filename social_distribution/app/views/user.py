@@ -102,7 +102,7 @@ def public_profile(request):
     if (author_url == ""):
         return HttpResponse('400: No author_url query parameter supplied', status=400)
 
-    if (author_url.startswith("http://" + (settings.HOSTNAME or ""))):  # TODO: FIX LATER TO PROPERLY CHECK!!!
+    if (author_url.startswith("http://" + settings.HOSTNAME)):
         uuid = author_url.split("/")[-1]
         author = Author.objects.get(uuid=UUID(uuid))
         following = Follow.objects.filter(
