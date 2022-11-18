@@ -14,7 +14,7 @@ def follow(request):
     target_url = request.GET.get('target_url', '')
 
     # check user url provided, if on our server save follow
-    if (target_url.startswith("http://" + (settings.HOSTNAME or ""))):  # TODO: FIX LATER TO PROPERLY CHECK!!!
+    if (target_url.startswith("http://" + (settings.HOSTNAME or "")):  # TODO: FIX LATER TO PROPERLY CHECK!!!
         target_uuid = target_url.split("/")[-1]
         target = Author.objects.get(uuid=target_uuid)
 
