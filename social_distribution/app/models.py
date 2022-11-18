@@ -14,7 +14,7 @@ class Author(models.Model):
 
     uuid = models.UUIDField(
         default=uuid.uuid4, primary_key=True, editable=False)
-    host = models.TextField(default="http://" + settings.HOSTNAME)
+    host = models.TextField(default="http://" + (settings.HOSTNAME or ""))
     url = models.TextField()
     github = models.TextField(blank=True)
 
@@ -67,7 +67,7 @@ class InboxItem(models.Model):
 
         post_objects = []
         for item in page:
-            if item.object_url.startswith("http://" + settings.HOSTNAME):
+            if item.object_url.startswith("http://" + (settings.HOSTNAME or "")):
                 post = Post.objects.get(item.object_url.split["/"][-1])
                 post_objects.append(post)
             else:
@@ -84,8 +84,8 @@ class Post(models.Model):
     url = models.TextField()
     title = models.TextField()
     date_published = models.DateTimeField(default=timezone.now)
-    source = models.TextField(default="http://" + settings.HOSTNAME)
-    origin = models.TextField(default="http://" + settings.HOSTNAME)
+    source = models.TextField(default="http://" + (settings.HOSTNAME or ""))
+    origin = models.TextField(default="http://" + (settings.HOSTNAME or ""))
     description = models.TextField()
     content_type = models.TextField()
     content = models.TextField()
