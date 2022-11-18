@@ -4,9 +4,9 @@
 
 
 {% block content %}
-<div class="card post">
-    <div class="card-header post">Create Post</div>
-    <div class="card-body post">
+<div class="card">
+    <div class="card-header">Respond to Friend Request</div>
+    <div class="card-body">
         <form method="POST">
             {% csrf_token %}
             {{ form|crispy }}
@@ -17,3 +17,5 @@
     </div>
 </div>
 {% endblock %}
+
+<!--Copied from create_post.html with minimal changes-->

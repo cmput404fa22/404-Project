@@ -25,8 +25,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == 'True'
 
+
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
-HOSTNAME = 'localhost'
+HOSTNAME = os.environ.get("HOSTNAME")
 LOGIN_URL = '/login/'
 
 # Application definition
@@ -35,16 +36,18 @@ INSTALLED_APPS = [
     "bootstrap5",
     "rest_framework",
     "crispy_forms",
+    'django.contrib.staticfiles',
+    'drf_yasg',
     "crispy_bootstrap5",
     'app.apps.AppConfig',
-    # 'api.apps.AppConfig',
+    'api.apps.AppConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
 ]
+
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
@@ -131,5 +134,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
+}
 
 django_on_heroku.settings(locals())

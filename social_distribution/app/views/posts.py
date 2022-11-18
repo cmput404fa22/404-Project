@@ -5,16 +5,21 @@ from ..models import Post
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 
 
 def send_private_post(request):
     pass
 
+
 @login_required
 def list_posts(request):
-    posts = Post.objects.filter(author=request.user)
+    # posts with received=True mean they were sent by another node to our author
+    posts = Post.objects.filter(
+        author=request.user, received=False)
     context = {'posts': posts}
     return render(request, 'app/author_posts.html', context)
+
 
 @login_required
 def create_public_post(request):
@@ -24,14 +29,13 @@ def create_public_post(request):
         form = CreatePostForm(request.POST)
         if form.is_valid():
             new_post = Post.objects.create(title=form.cleaned_data['title'],
-                            description=form.cleaned_data['description'],
-                            content_type=form.cleaned_data['content_type'],
-                            content=form.cleaned_data['content'],
-                            author=request.user,
-                            visibility='PUBLIC',
-                            source=request.user.author.host,
-                            origin=request.user.author.host,
-                            author_url=request.user.author.url)
+                                           description=form.cleaned_data['description'],
+                                           content_type=form.cleaned_data['content_type'],
+                                           content=form.cleaned_data['content'],
+                                           author=request.user,
+                                           visibility='PUBLIC',
+                                           author_url=request.user.author.url, 
+                                           received=False)
             new_post.url = f'{request.user.author.url}/posts/{new_post.uuid.hex}'
             new_post.comments_url = f'{new_post.url}/comments'
 
@@ -42,22 +46,27 @@ def create_public_post(request):
 
     return render(request, "app/create_post.html", context)
 
+
+@login_required
 def edit_post(request, uuid):
     context = {}
     form = CreatePostForm()
-    post = Post.objects.get(uuid=uuid)
+    post = Post.objects.get(uuid=uuid, received=False)
+
+    if (post.author != request.user):
+        return HttpResponse('Unauthorized', status=401)
 
     if request.method != 'POST':
-        form = CreatePostForm(initial={"title":post.title,
-                                "description":post.description, 
-                                "content_type":post.content_type,
-                                "content":post.content})    
-    
+        form = CreatePostForm(initial={"title": post.title,
+                                       "description": post.description,
+                                       "content_type": post.content_type,
+                                       "content": post.content})
+
     else:
-        form = CreatePostForm(request.POST, initial={"title":post.title,
-                                "description":post.description, 
-                                "content_type":post.content_type,
-                                "content":post.content})
+        form = CreatePostForm(request.POST, initial={"title": post.title,
+                                                     "description": post.description,
+                                                     "content_type": post.content_type,
+                                                     "content": post.content})
         if form.is_valid():
             post.title = form.cleaned_data['title']
             post.description = form.cleaned_data['description']
@@ -66,10 +75,15 @@ def edit_post(request, uuid):
             post.save()
             return redirect('author-posts')
 
-    context = {"post":post, "form":form}
+    context = {"post": post, "form": form}
     return render(request, 'app/edit_post.html', context)
 
+
+@login_required
 def delete_post(request, uuid):
-    post = Post.objects.get(uuid=uuid)
+    post = Post.objects.get(uuid=uuid, received=False)
+    if (post.author != request.user):
+        return HttpResponse('Unauthorized', status=401)
+
     post.delete()
     return redirect('author-posts')

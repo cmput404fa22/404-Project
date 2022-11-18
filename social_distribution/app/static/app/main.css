@@ -36,3 +36,145 @@ body {
     overflow-y: scroll;
     padding: 10px;
 }
+
+.namebox {
+    position: absolute;
+    top: 50px;
+    left: 460px;
+    width: 600px;
+    height: 100px;
+    border-radius: 25px;
+    background-color: rgb(90, 88, 88);
+
+}
+
+.btnbox {
+    position: absolute;
+    width: 600px;
+    height: 70px;
+    top: 100px;
+    left: 460px;
+    border-radius: 25px;
+    background-color: rgb(166, 162, 162);
+    color: white;
+}
+
+#baseloginbutton {
+    position: absolute;
+    width: 110px;
+    top: 10px;
+    left: 175px;
+    background-color: gray;
+    border: none;
+    color: white;
+
+}
+
+#basesignupbutton {
+    position: absolute;
+    width: 110px;
+    top: 10px;
+    right: 175px;
+    background-color: gray;
+    border: none;
+    color: white;
+}
+
+.namebox {
+    padding-top: 6px;
+    padding-left: 20px;
+    font-size: 30px;
+    color: white;
+}
+
+.loginloginbtn {
+    position: absolute;
+    width: 110px;
+    top: 250px;
+    left: 175px;
+    background-color: gray;
+    border: none;
+}
+
+.loginsignupbtn {
+    position: absolute;
+    width: 110px;
+    top: 250px;
+    right: 175px;
+    background-color: gray;
+    border: none;
+}
+
+.card-body.post {
+    background-color: rgb(166, 162, 162);
+    color: white;
+    border-radius: 25px;
+}
+
+.card-header.post {
+    font-size: 20px;
+    background-color: rgb(90, 88, 88);
+    border-radius: 25px;
+
+}
+.card.login {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 600px;
+    height: 350px;
+    background-color: rgb(166, 162, 162);
+    border-radius: 25px;
+}
+
+.card.post {
+    width: 600px;
+    height: fit-content;
+    background-color: rgb(166, 162, 162);
+    border-radius: 25px;
+    top: 20px;
+}
+
+ul.posts-list {
+    list-style: none;
+}
+
+.editbtn {
+    position: relative;
+    padding: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    left: 500px;
+    background-color: gray;
+    border: black;
+    color: white;
+    font-size: 15px;
+    text-decoration: none;
+}
+
+.deletebtn {
+    position: relative;
+    padding: 5px;
+    padding-left: 12px;
+    padding-right: 12px;
+    left: 430px;
+    bottom: 45px;
+    background-color: gray;
+    border: black;
+    color: white;
+    font-size: 15px;
+    text-decoration: none;
+}
+
+.page-title {
+    padding-left: 20px;
+    padding-top: 10px;
+}
+
+.noposts {
+    padding: 20px;
+    padding-top: 30px;
+    font-size: 20px;
+}
