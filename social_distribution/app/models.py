@@ -6,6 +6,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from .utils import url_is_local
 
 
 class Author(models.Model):
@@ -21,6 +22,7 @@ class Author(models.Model):
     profile_image_url = models.TextField(
         default='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png')
     registered = models.BooleanField(default=False)
+    is_remote_node = models.BooleanField(default=False)
 
     def get_json_object(self):
         author_object = {"type": "author", "id": self.url,
@@ -38,7 +40,7 @@ class Follow(models.Model):
     accepted = models.BooleanField(default=False)
 
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE)  # author has followers
+        Author, on_delete=models.CASCADE)  # author has followers
 
 
 class InboxItem(models.Model):
@@ -67,7 +69,7 @@ class InboxItem(models.Model):
 
         post_objects = []
         for item in page:
-            if item.object_url.startswith("http://" + settings.HOSTNAME):
+            if url_is_local(item.object_url):
                 post = Post.objects.get(item.object_url.split["/"][-1])
                 post_objects.append(post)
             else:
@@ -94,7 +96,7 @@ class Post(models.Model):
     comments_url = models.TextField()
     VISIBILITY_CHOICES = (
         ('PUBLIC', 'public'),
-        ('PRIVATE', 'private'),
+        ('FRIENDS', 'friends'),
     )
     visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)
     unlisted = models.BooleanField(default=False)
@@ -102,7 +104,7 @@ class Post(models.Model):
 
     received = models.BooleanField(default=False)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE)  # posts have authors
+        Author, on_delete=models.CASCADE)  # posts have authors
 
     def get_json_object(self):
         post_object = {"type": "post", "id": self.url, "source": self.source,

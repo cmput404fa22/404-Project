@@ -22,6 +22,10 @@ urlpatterns = [
     path('authorposts/delete/<uuid:uuid>', posts.delete_post, name='delete'),
 
     path('follow/user/', friends.follow, name='follow_user'),
+    path('follow/approve/<uuid:inbox_item_id>',
+         friends.approve_follow, name='approve_follow'),
+    path('follow/reject/<uuid:inbox_item_id>',
+         friends.reject_follow, name='reject_follow'),
     path('stream/', home.stream, name='stream'),
 
 ]
