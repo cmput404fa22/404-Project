@@ -1,7 +1,7 @@
 from datetime import timezone
 from django.shortcuts import render
 from ..forms import CreatePostForm
-from ..models import Post
+from ..models import Post, Like, Follow, Author, InboxItem
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -41,7 +41,17 @@ def create_public_post(request):
 
             new_post.save()
             messages.success(request, 'Post created')
-
+            
+            #send posts to inbox of followers
+            if new_post.visibility == 'PUBLIC':
+                followers = Follow.objects.filter(author=request.user.author)
+                for follower in followers:
+                    follower_url = follower.target_url
+                    follower_uuid = follower_url.split("/")[-1]
+                    target = Author.objects.get(uuid=follower_uuid)
+                    target_inbox_item = InboxItem.objects.create(
+                        author=target, type="POST", from_author_url=request.user.author.url, from_username=request.user.username, object_url=new_post.url)
+                    target_inbox_item.save()
             return redirect('author-posts')
 
     return render(request, "app/create_post.html", context)
@@ -87,3 +97,21 @@ def delete_post(request, uuid):
 
     post.delete()
     return redirect('author-posts')
+
+@login_required
+def like_post(request):
+    user_url = request.user.author.url
+    post_id = request.GET.get('post_id')
+    post = Post.objects.get(uuid=post_id)
+
+    like_filter = Like.objects.filter(post=post, liker_url=user_url)
+    if not like_filter:
+        new_like = Like.objects.create(liker_url=user_url, post=post)
+        new_like.save()
+        post.likes_count += 1
+        post.save()
+        messages.success(request, 'Liked post')
+    else:
+        return redirect('/')
+    
+    return redirect('/')

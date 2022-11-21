@@ -70,13 +70,13 @@ class InboxItem(models.Model):
         post_objects = []
         for item in page:
             if url_is_local(item.object_url):
-                post = Post.objects.get(item.object_url.split["/"][-1])
+                post = Post.objects.get(uuid=item.object_url.split("/")[-1])
                 post_objects.append(post)
             else:
                 # TODO: query remote node for post
                 continue
 
-        return paginator
+        return post_objects
 
 
 class Post(models.Model):
@@ -93,6 +93,7 @@ class Post(models.Model):
     content = models.TextField()
     categories = models.TextField()
     comments_count = models.IntegerField(default=0)
+    likes_count = models.IntegerField(default=0)
     comments_url = models.TextField()
     VISIBILITY_CHOICES = (
         ('PUBLIC', 'public'),
@@ -134,6 +135,6 @@ class Like(models.Model):
     liker_url = models.TextField()
 
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE)  # posts have likes
+        Post, on_delete=models.CASCADE, null=True)  # posts have likes
     comment = models.ForeignKey(
-        Comment, on_delete=models.CASCADE)  # comments have likes
+        Comment, on_delete=models.CASCADE, null=True)  # comments have likes

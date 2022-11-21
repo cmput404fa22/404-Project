@@ -20,6 +20,7 @@ urlpatterns = [
     path('authorposts/new/', posts.create_public_post, name='new-post-page'),
     path('authorposts/edit/<uuid:uuid>', posts.edit_post, name='edit-post-page'),
     path('authorposts/delete/<uuid:uuid>', posts.delete_post, name='delete'),
+    path('authorposts/like/', posts.like_post, name='like'),
 
     path('follow/user/', friends.follow, name='follow_user'),
     path('follow/approve/<uuid:inbox_item_id>',

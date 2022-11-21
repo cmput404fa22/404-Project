@@ -178,3 +178,12 @@ ul.posts-list {
     padding-top: 30px;
     font-size: 20px;
 }
+
+.likebtn {
+    white-space: nowrap;
+    color: black;
+}
+
+.likectn {
+    display: inline-block;
+}
