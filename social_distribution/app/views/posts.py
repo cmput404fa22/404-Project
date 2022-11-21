@@ -110,6 +110,11 @@ def like_post(request):
         new_like.save()
         post.likes_count += 1
         post.save()
+
+        target_inbox_item = InboxItem.objects.create(
+            author=post.author, type="LIKE", from_author_url=request.user.author.url, from_username=request.user.username)
+        target_inbox_item.save()
+
         messages.success(request, 'Liked post')
     else:
         return redirect('/')

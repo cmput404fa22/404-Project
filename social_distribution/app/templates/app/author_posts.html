@@ -14,7 +14,7 @@
                 <div class="card-header">{{ post.title }}</div>
                 <div class="card-body">
                     <p> {{ post.content }}</p>
-                    <a class="likebtn" href="/authorposts/like/?post_id={{ post.uuid.hex }}"><i class="fa fa-heart"></i></a>
+                    <a class="likebtn"><i class="fa fa-heart"></i></a>
                     <p class="likectn">{{ post.likes_count }}</p>
                     <a class="editbtn" href="edit/{{ post.uuid.hex }}">Edit</a>
                     <a class="deletebtn" href="delete/{{ post.uuid.hex }}">Delete</a>

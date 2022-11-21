@@ -19,6 +19,20 @@
         </div>
     </div>
     {% endif %}
+    {% if notif.type == "LIKE" %}
+    <div class="card">
+        <div class="card-body">
+            <div class="row" >
+                <div class="col-10" >
+                    <h5 class="card-title">
+                        <i class="fa fa-heart pe-4"></i>
+                        <a href="/public_profile/?author_url={{ notif.from_author_url }}">{{ notif.from_username }}</a> liked your post
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 {% endfor %}
 
 
