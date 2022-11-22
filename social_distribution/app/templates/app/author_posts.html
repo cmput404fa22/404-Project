@@ -3,20 +3,25 @@
 
 
 {% block content %}
-<div class="posts-list">
+<div>
 
-    <h1 class="page-title">Your Posts</h1>
+    <h1>Your Posts</h1>
     
         {% for post in posts %}
+        
         <ul class="posts-list">
         <li>
-            <div class="card">
-                <div class="card-header">{{ post.title }}</div>
-                <div class="card-body">
+            <div class="row d-flex align-items-center" >
+            <div class="col-lg-6 col-md-12 col-sm-12">
+            <div class="card rounded">
+                <div class="card-header text-white bg-dark">{{ post.title }}</div>
+                <div class="card-body text-white bg-secondary">
                     <p> {{ post.content }}</p>
-                    <a class="editbtn" href="edit/{{ post.uuid.hex }}">Edit</a>
-                    <a class="deletebtn" href="delete/{{ post.uuid.hex }}">Delete</a>
-                <div>
+                    <a class="btn btn-light mt-2 float-end" href="edit/{{ post.uuid.hex }}">Edit</a>
+                    <a class="btn btn-danger mt-2 float-start" href="delete/{{ post.uuid.hex }}">Delete</a>
+                </div>
+            </div>
+            </div>
             </div>
         </li>
         </ul>
@@ -25,5 +30,5 @@
             <p>no posts yet  :(</p>
         </div>
         {% endfor %}
-    </div>
+</div>
 {% endblock %}
