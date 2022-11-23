@@ -1,2 +1,2 @@
 web: gunicorn social_distribution.wsgi
-release: ./manage.py migrate app
+release: ./manage.py migrate
