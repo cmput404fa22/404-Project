@@ -6,6 +6,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from .utils import url_is_local
 
 
 class Author(models.Model):
@@ -14,13 +15,14 @@ class Author(models.Model):
 
     uuid = models.UUIDField(
         default=uuid.uuid4, primary_key=True, editable=False)
-    host = models.TextField(default="http://" + settings.HOSTNAME)
+    host = models.TextField(default=settings.HOSTNAME)
     url = models.TextField()
     github = models.TextField(blank=True)
 
     profile_image_url = models.TextField(
         default='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png')
     registered = models.BooleanField(default=False)
+    is_remote_node = models.BooleanField(default=False)
 
     def get_json_object(self):
         author_object = {"type": "author", "id": self.url,
@@ -38,7 +40,7 @@ class Follow(models.Model):
     accepted = models.BooleanField(default=False)
 
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE)  # author has followers
+        Author, on_delete=models.CASCADE)  # author has followers
 
 
 class InboxItem(models.Model):
@@ -67,14 +69,14 @@ class InboxItem(models.Model):
 
         post_objects = []
         for item in page:
-            if item.object_url.startswith("http://" + settings.HOSTNAME):
-                post = Post.objects.get(item.object_url.split["/"][-1])
+            if url_is_local(item.object_url):
+                post = Post.objects.get(uuid=item.object_url.split("/")[-1])
                 post_objects.append(post)
             else:
                 # TODO: query remote node for post
                 continue
 
-        return paginator
+        return post_objects
 
 
 class Post(models.Model):
@@ -84,17 +86,18 @@ class Post(models.Model):
     url = models.TextField()
     title = models.TextField()
     date_published = models.DateTimeField(default=timezone.now)
-    source = models.TextField(default="http://" + settings.HOSTNAME)
-    origin = models.TextField(default="http://" + settings.HOSTNAME)
+    source = models.TextField(default=settings.HOSTNAME)
+    origin = models.TextField(default=settings.HOSTNAME)
     description = models.TextField()
     content_type = models.TextField()
     content = models.TextField()
     categories = models.TextField()
     comments_count = models.IntegerField(default=0)
+    likes_count = models.IntegerField(default=0)
     comments_url = models.TextField()
     VISIBILITY_CHOICES = (
         ('PUBLIC', 'public'),
-        ('PRIVATE', 'private'),
+        ('FRIENDS', 'friends'),
     )
     visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)
     unlisted = models.BooleanField(default=False)
@@ -102,7 +105,7 @@ class Post(models.Model):
 
     received = models.BooleanField(default=False)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE)  # posts have authors
+        Author, on_delete=models.CASCADE)  # posts have authors
 
     def get_json_object(self):
         post_object = {"type": "post", "id": self.url, "source": self.source,
@@ -132,6 +135,6 @@ class Like(models.Model):
     liker_url = models.TextField()
 
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE)  # posts have likes
+        Post, on_delete=models.CASCADE, null=True)  # posts have likes
     comment = models.ForeignKey(
-        Comment, on_delete=models.CASCADE)  # comments have likes
+        Comment, on_delete=models.CASCADE, null=True)  # comments have likes

@@ -1,34 +1,61 @@
 from .serializers import AuthorSerializer, PostSerializer
-from app.models import Author, Post, Follow
+from app.models import Author, Post, Follow, InboxItem
+from app.utils import url_is_local
 from urllib import response
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from django.http import JsonResponse
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.views import APIView
+from rest_framework.views import APIView, status
 from drf_yasg.utils import swagger_auto_schema
+from django.conf import settings
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsRemoteNode
 
 
 class AuthorItems(APIView, LimitOffsetPagination):
 
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': AuthorSerializer})
     def get(self, request):
-        authors = Author.objects.all()
+        authors = Author.objects.filter(registered=True)
 
         results = self.paginate_queryset(authors, request, view=self)
         serializer = AuthorSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
 
 
+class FollowItems(APIView, LimitOffsetPagination):
+
+    permission_classes = [IsAuthenticated, IsRemoteNode]
+
+    @swagger_auto_schema(responses={'200': AuthorSerializer})
+    def get(self, request, author_id):
+        author = Author.objects.get(uuid=author_id)
+        follows = Follow.objects.filter(author=author)
+
+        authors = []
+        follow_urls = self.paginate_queryset(follows, request, view=self)
+        for follow in follow_urls:
+            if url_is_local(follow.target_url):
+                author = Author.objects.get(
+                    uuid=follow.target_url.split("/")[-1])
+                authors.append(author)
+            else:
+                continue
+                # TODO get from remote node
+
+        serializer = AuthorSerializer(authors, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
 class SingleAuthor(APIView, LimitOffsetPagination):
 
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': AuthorSerializer})
     def get(self, request, uuid):
@@ -39,12 +66,25 @@ class SingleAuthor(APIView, LimitOffsetPagination):
 
 class PostItems(APIView, LimitOffsetPagination):
 
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': PostSerializer})
     def get(self, request, author_id):
-        posts = Post.objects.filter(uuid=author_id)
+        author = Author.objects.get(uuid=author_id)
+        posts = Post.objects.filter(author=author, visibility='PUBLIC')
+
+        results = self.paginate_queryset(posts, request, view=self)
+        serializer = PostSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
+class AllPostItems(APIView, LimitOffsetPagination):
+
+    permission_classes = [IsAuthenticated, IsRemoteNode]
+
+    @swagger_auto_schema(responses={'200': PostSerializer})
+    def get(self, request):
+        posts = Post.objects.filter(visibility='PUBLIC')
 
         results = self.paginate_queryset(posts, request, view=self)
         serializer = PostSerializer(results, many=True)
@@ -53,8 +93,7 @@ class PostItems(APIView, LimitOffsetPagination):
 
 class SinglePost(APIView, LimitOffsetPagination):
 
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': PostSerializer})
     def get(self, request, author_id, post_id):
@@ -63,59 +102,67 @@ class SinglePost(APIView, LimitOffsetPagination):
         return Response(serializer.data)
 
 
-# def authors_list(request):
-#     """
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsRemoteNode])
+def inbox_item(request, author_id):
+    author = Author.objects.get(uuid=author_id)
 
-#     """
-#     if request.method == 'GET':
-#         authors = Author.objects.all()
-#         serializer = AuthorSerializer(authors, many=True)
-#         return JsonResponse(serializer.data, safe=False)
+    new_objects = []
+    object_url = None
+    from_username = "TODO: get username"
+    from_author_url = None
 
-# @api_view(["GET"])
-# def get_author(request, author_id):
-#     author = get_object_or_404(Author, uuid=author_id)
-#     return Response(author.get_json_object())
+    for item in request.data.get("items"):
+        if (item.get("type") == 'post'):
 
+            serializer = PostSerializer(data=item)
+            if serializer.is_valid():
+                # TODO: Get username for this author: object_url from remote node
+                # from_username = get()
+                object_url = serializer.validated_data.get("url")
+                from_author_url = request.data.get("author")
 
-# @api_view(["GET"])
-# def get_authors(request):
-#     page = int(request.GET.get('page', '1'))
-#     size = int(request.GET.get('size', '10'))
-#     authors = Author.objects.all()
-#     response = get_paginated_response(authors, page, size)
-#     return Response(response)
+                # only save posts with FRIENDS visibility,
+                # PUBLIC posts can be retrieved from remote nodes when needed
+                if (serializer.validated_data.get('visibility') == 'FRIENDS'):
+                    post = serializer.create(
+                        serializer.validated_data, author=author)
+                    post.received = True
+                    new_objects.append(post)
+            else:
+                return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
+        if (item.get("type") == 'Follow'):
 
-# @api_view(["GET"])
-# def get_followers(request, author_id):
-#     page = int(request.GET.get('page', '1'))
-#     size = int(request.GET.get('size', '10'))
+            serializer = AuthorSerializer(data=item.get('object'))
+            if serializer.is_valid():
+                from_author_url = item['actor']['id']
+                from_username = item['actor']['displayName']
 
-#     followers = Follow.objects.get(
-#         author=Author.objects.get(uuid=author_id).user)
-#     response = get_paginated_response(followers, page, size)
-#     return Response(response)
+                author_uuid = serializer.validated_data.get(
+                    "url").split("/")[-1]
+                followed = Author.objects.get(uuid=author_uuid)
+                follow = Follow.objects.create(
+                    author=followed, target_url=from_author_url)
+                new_objects.append(follow)
+            else:
+                return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
+        if (item.get("type") == 'comment'):
+            return Response({"posting comments is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
 
-# @api_view(["GET"])
-# def get_post(request, author_id, post_id):
-#     post = get_object_or_404(Post, uuid=post_id)
-#     if post.visibility != 'PUBLIC':
-#         return Response({'error': 'Unauthorized'}, status=403)
-#     return Response(post.get_json_object())
+        if (item.get("type") == 'like'):
+            return Response({"posting likes is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
 
+        inbox_item = InboxItem.objects.create(
+            author=author,
+            type=item.get("type").upper(),
+            from_author_url=from_author_url,
+            object_url=object_url,
+            from_username=from_username)
+        new_objects.append(inbox_item)
 
-# @api_view(["GET"])
-# def get_posts(request, author_id):
-#     page = int(request.GET.get('page', '1'))
-#     size = int(request.GET.get('size', '10'))
-#     posts = Post.objects.filter(
-#         visibility='PUBLIC', author=Author.objects.get(uuid=author_id).user)
-#     response = get_paginated_response(posts, page, size)
-#     return Response(response)
+    for obj in new_objects:
+        obj.save()
 
-
-# @api_view(["POST"])
-# def post_to_inbox(request, author_id):
-#     return Response(response)
+    return Response("Inbox items received", status.HTTP_201_CREATED)

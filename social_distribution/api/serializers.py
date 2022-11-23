@@ -9,7 +9,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     host = serializers.CharField()
     displayName = serializers.CharField(source='user.username')
     url = serializers.CharField()
-    github = serializers.CharField()
+    github = serializers.CharField(allow_blank=True)
     profileImage = serializers.CharField(source='profile_image_url')
 
     class Meta:
@@ -25,28 +25,19 @@ class PostSerializer(serializers.ModelSerializer):
     origin = serializers.CharField()
     description = serializers.CharField()
     contentType = serializers.ChoiceField(
-        choices=['PUBLIC', 'PRIVATE'], source='content_type')
+        choices=['text/plain', 'text/markdown', 'application/base64', 'image/png;base64', 'image/jpeg;base64'], source='content_type')
     content = serializers.CharField()
     comments = serializers.CharField(source='comments_url')
     published = serializers.DateTimeField(source='date_published')
-    visibility = serializers.ChoiceField(choices=['PUBLIC', 'PRIVATE'])
+    visibility = serializers.ChoiceField(choices=['PUBLIC', 'FRIENDS'])
     unlisted = serializers.BooleanField()
     author = AuthorSerializer(many=False, read_only=True)
 
     class Meta:
-        model = Author
+        model = Post
         fields = ('type', 'id', 'source', 'origin', 'description', 'contentType',
                   'content', 'comments', 'published', 'visibility', 'unlisted', 'author')
+        read_only_fields = ('author',)
 
-
-def get_paginated_response(items, page, size):
-    paginator = Paginator(items, size)
-    page_obj = paginator.get_page(page)
-
-    objects = []
-    for object in page_obj.object_list:
-        objects.append(object.get_json_object())
-
-    res = {"type": objects[0]['type'] + 's', "page": page,
-           "size": size, "items": objects}
-    return res
+    def create(self, validated_data, author):
+        return Post(**validated_data, author=author)
