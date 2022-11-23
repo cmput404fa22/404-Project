@@ -4,22 +4,22 @@
 
 
 {% block content %}
-<div class="card login">
-    <div class="card-header post">Login</div>
-    <div class="card-body post">
+<div class="row d-flex align-items-center" >
+    <div class="col-lg-6 col-md-12 col-sm-12">
+<div class="card rounded">
+    <div class="card-header text-white bg-dark">Login</div>
+    <div class="card-body text-white bg-secondary">
         <form method="POST">
             {% csrf_token %}
             <div class="form-row">
-                <div class="form-group col-md-6 mb-0" id="loginusername">
-                    {{ form.username|as_crispy_field }}
-                </div>
-                <div class="form-group col-md-6 mb-0" id="loginpassword">
-                    {{ form.password|as_crispy_field }}
-                </div>
-                <button type="submit" class="btn btn-primary mt-2 loginloginbtn">Login</button>
-                <a class="btn btn-secondary mt-2 loginsignupbtn" href="{% url 'signup-page' %}">Signup</a>
+                {{ form.username|as_crispy_field }}
+                {{ form.password|as_crispy_field }}
+                <button type="submit" class="btn btn-light mt-2 float-end">Login</button>
+                <a class="btn btn-light mt-2 float-start" href="{% url 'signup-page' %}">Signup</a>
             </div>
         </form>
     </div>
+</div>
+</div>
 </div>
 {% endblock %}

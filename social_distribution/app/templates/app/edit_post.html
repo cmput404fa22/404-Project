@@ -4,16 +4,20 @@
 
 
 {% block content %}
-<div class="card post">
-    <div class="card-header post">Edit Post</div>
-    <div class="card-body post">
+<div class="row d-flex align-items-center" >
+<div class="col-lg-6 col-md-12 col-sm-12">
+<div class="card rounded">
+    <div class="card-header text-white bg-dark">Edit Post</div>
+    <div class="card-body text-white bg-secondary">
         <form method="POST">
             {% csrf_token %}
             {{ form|crispy }}
             <div class="form-group">
-                <button type="submit" class="btn btn-primary mt-2">Submit</button>
+                <button type="submit" class="btn btn-light mt-2">Submit</button>
             </div>
         </form>
     </div>
+</div>
+</div>
 </div>
 {% endblock %}

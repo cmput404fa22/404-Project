@@ -3,11 +3,11 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="row d-flex justify-content-center align-items-center" >
+<div class="row d-flex align-items-center" >
     <div class="col-lg-6 col-md-12 col-sm-12">
-        <div class="card">
-            <div class="card-header">Edit Profile</div>
-            <div class="card-body">
+        <div class="card rounded">
+            <div class="card-header text-white bg-dark">Edit Profile</div>
+            <div class="card-body text-white bg-secondary">
                 <div class="text-center">
                     {% if not user.author.profile_image_url %}
                         <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="img-thumbnail" width="100">
@@ -20,7 +20,7 @@
                     {{ user_form|crispy }}
                     {{ author_form|crispy }}
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary mt-2">Save</button>
+                        <button type="submit" class="btn btn-light mt-2 float-end">Save</button>
                     </div>
                 </form>
             </div>
