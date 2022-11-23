@@ -21,9 +21,16 @@ class AuthorAdmin(admin.ModelAdmin):
         return obj.uuid.hex
 
 
+class InboxItemAdmin(admin.ModelAdmin):
+    list_display = ('title',)
+
+    def title(self, obj):
+        return f"{obj.type} from {obj.from_author_url} to {obj.author.username}"
+
+
 admin.site.register(Author, AuthorAdmin)
 admin.site.register(Post)
 admin.site.register(Like)
-admin.site.register(InboxItem)
+admin.site.register(InboxItem, InboxItemAdmin)
 admin.site.register(Follow)
 admin.site.register(Comment)
