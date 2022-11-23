@@ -15,7 +15,7 @@ class Author(models.Model):
 
     uuid = models.UUIDField(
         default=uuid.uuid4, primary_key=True, editable=False)
-    host = models.TextField(default="http://" + settings.HOSTNAME)
+    host = models.TextField(settings.HOSTNAME)
     url = models.TextField()
     github = models.TextField(blank=True)
 
@@ -86,8 +86,8 @@ class Post(models.Model):
     url = models.TextField()
     title = models.TextField()
     date_published = models.DateTimeField(default=timezone.now)
-    source = models.TextField(default="http://" + settings.HOSTNAME)
-    origin = models.TextField(default="http://" + settings.HOSTNAME)
+    source = models.TextField(settings.HOSTNAME)
+    origin = models.TextField(settings.HOSTNAME)
     description = models.TextField()
     content_type = models.TextField()
     content = models.TextField()
