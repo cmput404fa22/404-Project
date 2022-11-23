@@ -23,10 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG") == 'True'
+DEBUG = os.environ.get("DEBUG") == (os.environ.get("DEBUG") == 'True')
 
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = ['*']
 HOSTNAME = os.environ.get("HOSTNAME")
 LOGIN_URL = '/login/'
 
@@ -83,17 +82,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'social_distribution.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -144,3 +132,18 @@ REST_FRAMEWORK = {
 }
 
 django_on_heroku.settings(locals())
+
+
+# Database
+# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+if (os.environ.get('PROD') == 'True'):
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600, ssl_require=True)
