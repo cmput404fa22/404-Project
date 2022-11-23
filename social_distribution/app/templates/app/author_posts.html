@@ -1,5 +1,6 @@
 {% extends 'app/base.html' %}
 {% load bootstrap5 %}
+{% load markdown_extras %}
 
 
 {% block content %}
@@ -16,12 +17,18 @@
             <div class="card rounded">
                 <div class="card-header text-white bg-dark">{{ post.title }}</div>
                 <div class="card-body text-white bg-secondary">
-                    <p> {{ post.content }}</p>
+                    {% if post.content_type == "text/markdown" %}
+                        <p> {{post.content | markdown| safe }}</p>
+                    {% else %}
+                        <p> {{ post.content }}</p>
+                    {% endif %}
                     <a class="likebtn"><i class="fa fa-heart"></i></a>
                     <p class="likectn">{{ post.likes_count }}</p>
-                    <a class="editbtn" href="edit/{{ post.uuid.hex }}">Edit</a>
-                    <a class="deletebtn" href="delete/{{ post.uuid.hex }}">Delete</a>
-                <div>
+                    <a class="editbtn btn btn-light mt-2 float-end" href="edit/{{ post.uuid.hex }}">Edit</a>
+                    <a class="deletebtn btn btn-danger mt-2 float-start" href="delete/{{ post.uuid.hex }}">Delete</a>
+                </div>
+            </div>
+            </div>
             </div>
         </li>
         </ul>
