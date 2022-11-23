@@ -49,5 +49,5 @@ class CreatePostForm(forms.Form):
     )
     content_type = forms.ChoiceField(
         choices=CONTENT_TYPE_CHOICES, label="Content type", initial='', widget=forms.Select(), required=True)
-    content = forms.CharField(
-        label='Content', widget=forms.TextInput(attrs={'': ''}))
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows":"5"}),
+        label='Content')

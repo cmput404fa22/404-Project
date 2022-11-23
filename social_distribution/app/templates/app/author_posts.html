@@ -1,5 +1,6 @@
 {% extends 'app/base.html' %}
 {% load bootstrap5 %}
+{% load markdown_extras %}
 
 
 {% block content %}
@@ -16,7 +17,11 @@
             <div class="card rounded">
                 <div class="card-header text-white bg-dark">{{ post.title }}</div>
                 <div class="card-body text-white bg-secondary">
-                    <p> {{ post.content }}</p>
+                    {% if post.content_type == "text/markdown" %}
+                        <p> {{post.content | markdown| safe }}</p>
+                    {% else %}
+                        <p> {{ post.content }}</p>
+                    {% endif %}
                     <a class="btn btn-light mt-2 float-end" href="edit/{{ post.uuid.hex }}">Edit</a>
                     <a class="btn btn-danger mt-2 float-start" href="delete/{{ post.uuid.hex }}">Delete</a>
                 </div>
