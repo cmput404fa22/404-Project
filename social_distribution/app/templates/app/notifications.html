@@ -12,8 +12,22 @@
                     <h5 class="card-title"><a href="/public_profile/?author_url={{ notif.from_author_url }}">{{ notif.from_username }}</a> requested to follow you...</h5>
                 </div>
                 <div class="col-2">
-                    <a href="#" class="btn btn-success">accept</a>
-                    <a href="#" class="btn btn-danger">delete</a>
+                    <a href="{% url 'approve_follow' notif.uuid %}" class="btn btn-success">accept</a>
+                    <a href="{% url 'reject_follow' notif.uuid %}" class="btn btn-danger">delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if notif.type == "LIKE" %}
+    <div class="card">
+        <div class="card-body">
+            <div class="row" >
+                <div class="col-10" >
+                    <h5 class="card-title">
+                        <i class="fa fa-heart pe-4"></i>
+                        <a href="/public_profile/?author_url={{ notif.from_author_url }}">{{ notif.from_username }}</a> liked your post
+                    </h5>
                 </div>
             </div>
         </div>
