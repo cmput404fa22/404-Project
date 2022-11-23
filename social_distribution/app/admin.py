@@ -24,3 +24,6 @@ class AuthorAdmin(admin.ModelAdmin):
 admin.site.register(Author, AuthorAdmin)
 admin.site.register(Post)
 admin.site.register(Like)
+admin.site.register(InboxItem)
+admin.site.register(Follow)
+admin.site.register(Comment)
