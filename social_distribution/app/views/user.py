@@ -9,6 +9,7 @@ from ..forms import SignupForm, LoginForm, UserUpdateForm, AuthorUpdateForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from uuid import UUID
+from ..utils import url_is_local
 
 
 def signup(request):
@@ -55,7 +56,7 @@ def login_user(request):
         if form.is_valid():
             user = authenticate(request, username=form.cleaned_data['username'],
                                 password=form.cleaned_data['password'])
-            if user is not None and user.author.registered:
+            if user and not user.author.is_remote_node and user.author.registered:
                 login(request, user)
                 messages.success(request, 'Logged in')
                 return redirect('root-page')
@@ -102,17 +103,17 @@ def public_profile(request):
     if (author_url == ""):
         return HttpResponse('400: No author_url query parameter supplied', status=400)
 
-    if (author_url.startswith("http://" + settings.HOSTNAME)):
+    if url_is_local(author_url):
         uuid = author_url.split("/")[-1]
-        author = Author.objects.get(uuid=UUID(uuid))
-        following = Follow.objects.filter(
-            author=request.user, target_url=author.url).first()
+        author = Author.objects.get(uuid=uuid)
+        follows_you = Follow.objects.filter(
+            author=request.user.author, target_url=author.url).first()
 
     else:
         # TODO: GET author obbject from remote node
         return render(request, 'app/public_profile.html')
 
-    context = {"author": author, "following": following}
+    context = {"author": author, "follows_you": follows_you}
     return render(request, 'app/public_profile.html', context)
 
 
