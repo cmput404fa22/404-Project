@@ -11,7 +11,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Social Distribution API Doc",
         default_version='v1',
-        description="Our API sepc :D",
+        description="Follow steps here: https://github.com/cmput404fa22/404-Project#remote-connections to register your node.",
     ),
     public=True,
     permission_classes=[permissions.AllowAny],
