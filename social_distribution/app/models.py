@@ -22,7 +22,6 @@ class Author(models.Model):
     profile_image_url = models.TextField(
         default='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png')
     registered = models.BooleanField(default=False)
-    is_remote_node = models.BooleanField(default=False)
 
     def get_json_object(self):
         author_object = {"type": "author", "id": self.url,
@@ -30,6 +29,16 @@ class Author(models.Model):
                          "url": self.url, "github": self.github,
                          "profileImage": self.profile_image_url}
         return author_object
+
+
+class RemoteNode(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE)  # extend user model
+    uuid = models.UUIDField(
+        default=uuid.uuid4, primary_key=True, editable=False)
+    base_url = models.TextField(unique=True)
+    team = models.IntegerField(unique=True)
+    registered = models.BooleanField(default=False)
 
 
 class Follow(models.Model):

@@ -1,5 +1,5 @@
 from django.urls import path, register_converter
-from .views import user, home, posts, friends
+from .views import user, home, posts, friends, connections
 from api.converters import UUIDConverter
 
 register_converter(UUIDConverter, 'uuid')
@@ -28,5 +28,7 @@ urlpatterns = [
     path('follow/reject/<uuid:inbox_item_id>',
          friends.reject_follow, name='reject_follow'),
     path('stream/', home.stream, name='stream'),
+
+    path('signup-node/', connections.signup_remote_node, name='signup-node'),
 
 ]
