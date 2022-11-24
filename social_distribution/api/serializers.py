@@ -3,6 +3,10 @@ from rest_framework import serializers
 from django.core.paginator import Paginator
 
 
+class StringListField(serializers.ListField):
+    child = serializers.CharField()
+
+
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.ReadOnlyField(default='author')
     id = serializers.CharField(source='url')
@@ -30,13 +34,14 @@ class PostSerializer(serializers.ModelSerializer):
     comments = serializers.CharField(source='comments_url')
     published = serializers.DateTimeField(source='date_published')
     visibility = serializers.ChoiceField(choices=['PUBLIC', 'FRIENDS'])
+    categories = StringListField()
     unlisted = serializers.BooleanField()
     author = AuthorSerializer(many=False, read_only=True)
 
     class Meta:
         model = Post
         fields = ('type', 'id', 'source', 'origin', 'description', 'contentType',
-                  'content', 'comments', 'published', 'visibility', 'unlisted', 'author')
+                  'content', 'comments', 'published', 'visibility', 'unlisted', 'author', 'categories')
         read_only_fields = ('author',)
 
     def create(self, validated_data, author):

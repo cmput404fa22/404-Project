@@ -102,6 +102,7 @@ class SinglePost(APIView, LimitOffsetPagination):
         return Response(serializer.data)
 
 
+@swagger_auto_schema(methods=['post'], operation_description="**NOTE** This endpoint expects JSON in the request body to be in the same format as: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#inbox ")
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsRemoteNode])
 def inbox_item(request, author_id):
