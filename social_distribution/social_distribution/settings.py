@@ -132,6 +132,10 @@ REST_FRAMEWORK = {
     ],
 }
 
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'api.swagger.CustomSwaggerAutoSchema',
+}
+
 django_on_heroku.settings(locals())
 
 
