@@ -11,7 +11,7 @@ class RemoteNodeConnection():
     def __init__(self, url: str):
         base_url = url.split("authors")[0]
         username = os.environ.get(
-            "TEAM_" + str(self.teams["num"]) + "_USERNAME")
+            "TEAM_" + str(self.teams[base_url]["num"]) + "_USERNAME")
         password = os.environ.get(
-            "TEAM_" + str(self.teams["num"]) + "_PASSWORD")
+            "TEAM_" + str(self.teams[base_url]["num"]) + "_PASSWORD")
         self.conn = self.teams[base_url]["conn"](username, password, base_url)
