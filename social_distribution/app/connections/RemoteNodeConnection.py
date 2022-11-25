@@ -5,7 +5,7 @@ import os
 class RemoteNodeConnection():
     teams = {
         "https://c404-team8.herokuapp.com/api/": {"num": 8, "conn": Team8Connection},
-        "https://social-distribution-14degrees2.herokuapp.com/api/": {"num": 15, "conn": Team15Connection}
+        "https://social-distribution-14degrees2.herokuapp.com/api/": {"num": 15, "conn": Team14Connection}
     }
 
     def __init__(self, url: str):

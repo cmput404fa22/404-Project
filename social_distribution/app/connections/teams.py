@@ -2,7 +2,7 @@ from ..models import *
 from . import ConnectionInterface
 
 
-class Team15Connection(ConnectionInterface):
+class Team14Connection(ConnectionInterface):
     pass
 
 
