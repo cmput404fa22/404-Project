@@ -8,7 +8,7 @@
     
     <div class="horizontalFlex">
         <div class="sidebarContainer verticalFlex">
-            <h1>appname</h1>
+            <a href="/" class=" text-decoration-none text-white"><h1>appname</h1></a>
     {% if user.is_authenticated %}
             {% comment %} <a class="btn btn-info mt-2" href="{% url '' %}">Home</a> {% endcomment %}
             <a class="btn btn-success mt-2" href="{% url 'new-post-page' %}">New Post +</a>

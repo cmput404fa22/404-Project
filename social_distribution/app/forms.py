@@ -31,6 +31,15 @@ class SignupForm(forms.Form):
     github = forms.CharField(label='Github url', required=False)
 
 
+class RemoteNodeSignupForm(forms.Form):
+    team = forms.IntegerField(label='Team #', required=True)
+    base_url = forms.CharField(label='Base URL', required=True)
+    home_page = forms.CharField(label='Home page', required=True)
+    username = forms.CharField(label='Username', required=True)
+    password = forms.CharField(
+        label='Password', widget=forms.PasswordInput, required=True)
+
+
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username', max_length=50, required=True)
     password = forms.CharField(
@@ -49,5 +58,5 @@ class CreatePostForm(forms.Form):
     )
     content_type = forms.ChoiceField(
         choices=CONTENT_TYPE_CHOICES, label="Content type", initial='', widget=forms.Select(), required=True)
-    content = forms.CharField(widget=forms.Textarea(attrs={"rows":"5"}),
-        label='Content')
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows": "5"}),
+                              label='Content')

@@ -10,12 +10,20 @@ def register_users(modeladmin, request, queryset):
 
 @admin.action(description='Register selected nodes')
 def register_nodes(modeladmin, request, queryset):
-    queryset.update(is_remote_node=True)
+    queryset.update(registered=True)
 
 
 class AuthorAdmin(admin.ModelAdmin):
-    list_display = ('user', 'UUID', 'registered', 'is_remote_node',)
-    actions = [register_users, register_nodes]
+    list_display = ('user', 'UUID', 'registered',)
+    actions = [register_users]
+
+    def UUID(self, obj):
+        return obj.uuid.hex
+
+
+class RemoteNodeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'UUID', 'base_url', 'registered',)
+    actions = [register_nodes]
 
     def UUID(self, obj):
         return obj.uuid.hex
@@ -46,6 +54,7 @@ class FollowAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Author, AuthorAdmin)
+admin.site.register(RemoteNode, RemoteNodeAdmin)
 admin.site.register(Post)
 admin.site.register(Like)
 admin.site.register(InboxItem, InboxItemAdmin)

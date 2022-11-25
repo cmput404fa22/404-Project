@@ -15,9 +15,13 @@ def send_private_post(request):
 @login_required
 def list_posts(request):
     # posts with received=True mean they were sent by another node to our author
+    json_posts = []
     posts = Post.objects.filter(
         author=request.user.author, received=False)
-    context = {'posts': posts}
+    for post in posts:
+        json_posts.append(post.get_json_object())
+
+    context = {'posts': json_posts}
     return render(request, 'app/author_posts.html', context)
 
 
@@ -41,8 +45,8 @@ def create_public_post(request):
 
             new_post.save()
             messages.success(request, 'Post created')
-            
-            #send posts to inbox of followers
+
+            # send posts to inbox of followers
             if new_post.visibility == 'PUBLIC':
                 followers = Follow.objects.filter(author=request.user.author)
                 for follower in followers:
@@ -98,6 +102,7 @@ def delete_post(request, uuid):
     post.delete()
     return redirect('author-posts')
 
+
 @login_required
 def like_post(request):
     user_url = request.user.author.url
@@ -118,5 +123,5 @@ def like_post(request):
         messages.success(request, 'Liked post')
     else:
         return redirect('/')
-    
+
     return redirect('/')
