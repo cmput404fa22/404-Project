@@ -5,6 +5,8 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from uuid import UUID
+from ..utils import url_is_local
+from django.http import HttpResponse
 
 
 @login_required
@@ -14,12 +16,12 @@ def follow(request):
     target_url = request.GET.get('target_url', '')
 
     # check user url provided, if on our server save follow
-    if (target_url.startswith("http://" + settings.HOSTNAME)):
+    if url_is_local(target_url):
         target_uuid = target_url.split("/")[-1]
         target = Author.objects.get(uuid=target_uuid)
 
         new_follow = Follow.objects.create(
-            author=request.user, target_url=target.url)
+            author=target, target_url=request.user.author.url)
         new_follow.save()
 
         target_inbox_item = InboxItem.objects.create(
@@ -37,10 +39,37 @@ def follow(request):
 
 
 @login_required
-def approve_follow(request, uuid):
+def approve_follow(request, inbox_item_id):
 
-    # query followers table for unapproved follow request for our author
+    inbox_item = InboxItem.objects.get(uuid=inbox_item_id)
+    follow = Follow.objects.filter(
+        target_url=inbox_item.from_author_url).first()
+    if follow and follow.author != request.user.author:
+        return HttpResponse('Unauthorized', status=401)
 
-    # display
+    follow.accepted = True
+    follow.save()
+    inbox_item.delete()
 
-    return render(request, "app/respond_friend_request.html", context)
+    messages.success(
+        request, f"Accepted {inbox_item.from_username}'s follow request")
+
+    return redirect('notifications-page')
+
+
+@login_required
+def reject_follow(request, inbox_item_id):
+
+    inbox_item = InboxItem.objects.get(uuid=inbox_item_id)
+    follow = Follow.objects.filter(
+        target_url=inbox_item.from_author_url).first()
+    if follow and follow.author != request.user.author:
+        return HttpResponse('Unauthorized', status=401)
+
+    follow.delete()
+    inbox_item.delete()
+
+    messages.success(
+        request, f"Deleted {inbox_item.from_username}'s follow request")
+
+    return redirect('notifications-page')
