@@ -14,12 +14,12 @@ def root(request):
     remote_nodes = RemoteNode.objects.filter(registered=True)
     for node in remote_nodes:
         # TODO: get public posts for this node
-        # nodes["posts"] =
-        nodes.append({"home_page": node.home_page, "posts": []})
+        posts = []
+        nodes.append({"home_page": node.home_page, "posts": posts})
 
     local_posts = []
     posts = Post.objects.filter(
-        visibility="PUBLIC", received=False)
+        visibility="PUBLIC", received=False)[:5]
     for post in posts:
         local_posts.append(post.get_json_object())
 

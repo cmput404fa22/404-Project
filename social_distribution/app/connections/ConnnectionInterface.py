@@ -26,17 +26,17 @@ class ConnectionInterface():
     def get_all_authors_posts(author_uuid: str):
         raise NotImplementedError
 
-    def send_post(post: Post):
+    def send_post(post: Post, author_uuid: str, post_uuid: str):
         raise NotImplementedError
 
     def get_comments(author_uuid: str, post_uuid: str):
         raise NotImplementedError
 
-    def send_comment(comment: Comment):
+    def send_comment(comment: Comment, author_uuid: str, post_uuid: str):
         raise NotImplementedError
 
     def get_likes(author_uuid: str, post_uuid: str):
         raise NotImplementedError
 
-    def send_like(like: Like):
+    def send_like(like: Like, author_uuid: str, post_uuid: str):
         raise NotImplementedError
