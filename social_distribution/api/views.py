@@ -14,13 +14,18 @@ from django.conf import settings
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsRemoteNode
+from .swagger import CustomSwaggerAutoSchema
 
 
 class AuthorItems(APIView, LimitOffsetPagination):
 
     permission_classes = [IsAuthenticated, IsRemoteNode]
 
-    @swagger_auto_schema(responses={'200': AuthorSerializer})
+    @swagger_auto_schema(
+        auto_schema=CustomSwaggerAutoSchema,
+        responses={200: AuthorSerializer(many=True)},
+        paginator=LimitOffsetPagination()
+    )
     def get(self, request):
         authors = Author.objects.filter(registered=True)
 
@@ -33,7 +38,11 @@ class FollowItems(APIView, LimitOffsetPagination):
 
     permission_classes = [IsAuthenticated, IsRemoteNode]
 
-    @swagger_auto_schema(responses={'200': AuthorSerializer})
+    @swagger_auto_schema(
+        auto_schema=CustomSwaggerAutoSchema,
+        responses={200: AuthorSerializer(many=True)},
+        paginator=LimitOffsetPagination()
+    )
     def get(self, request, author_id):
         author = Author.objects.get(uuid=author_id)
         follows = Follow.objects.filter(author=author)
@@ -68,7 +77,11 @@ class PostItems(APIView, LimitOffsetPagination):
 
     permission_classes = [IsAuthenticated, IsRemoteNode]
 
-    @swagger_auto_schema(responses={'200': PostSerializer})
+    @swagger_auto_schema(
+        auto_schema=CustomSwaggerAutoSchema,
+        responses={200: PostSerializer(many=True)},
+        paginator=LimitOffsetPagination()
+    )
     def get(self, request, author_id):
         author = Author.objects.get(uuid=author_id)
         posts = Post.objects.filter(author=author, visibility='PUBLIC')
@@ -82,7 +95,11 @@ class AllPostItems(APIView, LimitOffsetPagination):
 
     permission_classes = [IsAuthenticated, IsRemoteNode]
 
-    @swagger_auto_schema(responses={'200': PostSerializer})
+    @swagger_auto_schema(
+        auto_schema=CustomSwaggerAutoSchema,
+        responses={200: PostSerializer(many=True)},
+        paginator=LimitOffsetPagination()
+    )
     def get(self, request):
         posts = Post.objects.filter(visibility='PUBLIC')
 
@@ -102,6 +119,7 @@ class SinglePost(APIView, LimitOffsetPagination):
         return Response(serializer.data)
 
 
+@swagger_auto_schema(methods=['post'], operation_description="**NOTE** This endpoint expects JSON in the request body to be in the same format as: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#inbox ")
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsRemoteNode])
 def inbox_item(request, author_id):

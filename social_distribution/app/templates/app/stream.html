@@ -8,22 +8,15 @@
         <div class="col-xl">
             <h3>Stream</h3>
             {% for post in paginated_posts.posts %}
-            <div class="card mt-2">
-                <div class="card-header">{{ post.title }}</div>
-                <div class="card-body">
-                        <p> {{ post.content }}</p>
-                        <a class="likebtn" href="/authorposts/like/?post_id={{ post.uuid.hex }}"><i class="fa fa-heart"></i></a>
-                        <p class="likectn">{{ post.likes_count }}</p>
-                </div>
-            </div>
+                {% include './post_card.html' %}
             {% endfor %}
-            <a class="card-link" href="?page={{ paginated_posts.page|add:'-1' }}">previous</a>
-            <a class="card-link" href="?page={{ paginated_posts.page|add:'1' }}">next</a>
+            <a class="btn btn-light mt-2 float-start" href="?page={{ paginated_posts.page|add:'-1' }}">previous</a>
+            <a class="btn btn-light mt-2 float-end" href="?page={{ paginated_posts.page|add:'1' }}">next</a>
         </div>
         <div class="col-xl">
-            <div class="card">
-                <div class="card-header">Other authors (this is here just to have somewhere in the ui to see other authors in order to follow them)</div>
-                <div class="card-body">
+            <div class="card rounded">
+                <div class="card-header text-white bg-dark">Other authors (this is here just to have somewhere in the ui to see other authors in order to follow them)</div>
+                <div class="card-body text-white bg-secondary">
                     <div class="card">
                         <a href="/public_profile/?author_url={{ other_author.url }}">{{ other_author.user.username }}</a>
                     </div>

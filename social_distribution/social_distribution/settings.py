@@ -14,20 +14,20 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import django_on_heroku
+import dj_database_url
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = " "  # os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG") == 'True'
+DEBUG = (os.environ.get("DEBUG") == 'True')
 
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
-HOSTNAME = os.environ.get("HOSTNAME")
+ALLOWED_HOSTS = ['*']
+HOSTNAME = 'https://cmsjmnet.herokuapp.com'
 LOGIN_URL = '/login/'
 
 # Application definition
@@ -83,17 +83,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'social_distribution.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -143,4 +132,23 @@ REST_FRAMEWORK = {
     ],
 }
 
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'api.swagger.CustomSwaggerAutoSchema',
+}
+
 django_on_heroku.settings(locals())
+
+
+# Database
+# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+if (os.environ.get('PROD') == 'True'):
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600, ssl_require=True)

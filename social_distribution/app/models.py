@@ -15,14 +15,13 @@ class Author(models.Model):
 
     uuid = models.UUIDField(
         default=uuid.uuid4, primary_key=True, editable=False)
-    host = models.TextField(default="http://" + settings.HOSTNAME)
+    host = models.TextField(default=settings.HOSTNAME)
     url = models.TextField()
     github = models.TextField(blank=True)
 
     profile_image_url = models.TextField(
         default='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png')
     registered = models.BooleanField(default=False)
-    is_remote_node = models.BooleanField(default=False)
 
     def get_json_object(self):
         author_object = {"type": "author", "id": self.url,
@@ -30,6 +29,17 @@ class Author(models.Model):
                          "url": self.url, "github": self.github,
                          "profileImage": self.profile_image_url}
         return author_object
+
+
+class RemoteNode(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE)  # extend user model
+    uuid = models.UUIDField(
+        default=uuid.uuid4, primary_key=True, editable=False)
+    base_url = models.TextField(unique=True)
+    home_page = models.TextField(unique=True, default="#")
+    team = models.IntegerField(unique=True)
+    registered = models.BooleanField(default=False)
 
 
 class Follow(models.Model):
@@ -71,7 +81,7 @@ class InboxItem(models.Model):
         for item in page:
             if url_is_local(item.object_url):
                 post = Post.objects.get(uuid=item.object_url.split("/")[-1])
-                post_objects.append(post)
+                post_objects.append(post.get_json_object())
             else:
                 # TODO: query remote node for post
                 continue
@@ -86,8 +96,8 @@ class Post(models.Model):
     url = models.TextField()
     title = models.TextField()
     date_published = models.DateTimeField(default=timezone.now)
-    source = models.TextField(default="http://" + settings.HOSTNAME)
-    origin = models.TextField(default="http://" + settings.HOSTNAME)
+    source = models.TextField(default=settings.HOSTNAME)
+    origin = models.TextField(default=settings.HOSTNAME)
     description = models.TextField()
     content_type = models.TextField()
     content = models.TextField()
@@ -108,9 +118,9 @@ class Post(models.Model):
         Author, on_delete=models.CASCADE)  # posts have authors
 
     def get_json_object(self):
-        post_object = {"type": "post", "id": self.url, "source": self.source,
+        post_object = {"type": "post", "title": self.title, "id": self.url, "source": self.source,
                        "origin": self.origin, "description": self.description, "contentType": self.content_type, "content": self.content,
-                       "author": self.author.author.get_json_object(), "count": self.comments_count, "comments": self.comments_url,
+                       "author": self.author.get_json_object(), "count": self.comments_count, "comments": self.comments_url, "likes": self.likes_count,
                        "published": self.date_published.isoformat(), "visibility": self.visibility, "unlisted": self.unlisted}
         return post_object
 
