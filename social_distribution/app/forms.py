@@ -34,6 +34,7 @@ class SignupForm(forms.Form):
 class RemoteNodeSignupForm(forms.Form):
     team = forms.IntegerField(label='Team #', required=True)
     base_url = forms.CharField(label='Base URL', required=True)
+    home_page = forms.CharField(label='Home page', required=True)
     username = forms.CharField(label='Username', required=True)
     password = forms.CharField(
         label='Password', widget=forms.PasswordInput, required=True)

@@ -2,6 +2,33 @@
 {% load bootstrap5 %}
 
 {% block content %}
-
-
+<div class="container px-4 py-5">
+    <h2 class="pb-2 border-bottom">What's Happening</h2>
+    <div class="row row-cols-1 row-cols-lg-3">
+        <div class="col-lg-12 pt-5">
+            <h2 class="fs-2">
+                <i class="fa fa-home"></i>
+                <a href="{{ local_url }}" class="icon-link d-inline-flex align-items-center">
+                    {{ local_url }}
+                </a>
+            </h2>
+            {% for post in local_posts %}
+                {% include './post_card.html' %}
+            {% endfor %}
+        </div>
+        {% for node in nodes %}
+            <div class="col-lg-12 pt-5">
+                <h2 class="fs-2">
+                    <i class="fa fa-globe"></i>
+                    <a href="{{ node.home_page }}" class="icon-link d-inline-flex align-items-center">
+                        {{ node.home_page }}
+                    </a>
+                </h2>
+                {% for post in node.posts %}
+                    {% include './post_card.html' %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

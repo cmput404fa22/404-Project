@@ -33,6 +33,7 @@ def signup_remote_node(request):
                 node = RemoteNode.objects.create(
                     user=user,
                     base_url=form.cleaned_data['base_url'],
+                    home_page=form.cleaned_data['home_page'],
                     team=form.cleaned_data['team'])
                 node.save()
 

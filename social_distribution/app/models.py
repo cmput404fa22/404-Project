@@ -37,6 +37,7 @@ class RemoteNode(models.Model):
     uuid = models.UUIDField(
         default=uuid.uuid4, primary_key=True, editable=False)
     base_url = models.TextField(unique=True)
+    home_page = models.TextField(unique=True, default="#")
     team = models.IntegerField(unique=True)
     registered = models.BooleanField(default=False)
 
@@ -80,7 +81,7 @@ class InboxItem(models.Model):
         for item in page:
             if url_is_local(item.object_url):
                 post = Post.objects.get(uuid=item.object_url.split("/")[-1])
-                post_objects.append(post)
+                post_objects.append(post.get_json_object())
             else:
                 # TODO: query remote node for post
                 continue
@@ -117,9 +118,9 @@ class Post(models.Model):
         Author, on_delete=models.CASCADE)  # posts have authors
 
     def get_json_object(self):
-        post_object = {"type": "post", "id": self.url, "source": self.source,
+        post_object = {"type": "post", "title": self.title, "id": self.url, "source": self.source,
                        "origin": self.origin, "description": self.description, "contentType": self.content_type, "content": self.content,
-                       "author": self.author.author.get_json_object(), "count": self.comments_count, "comments": self.comments_url,
+                       "author": self.author.get_json_object(), "count": self.comments_count, "comments": self.comments_url, "likes": self.likes_count,
                        "published": self.date_published.isoformat(), "visibility": self.visibility, "unlisted": self.unlisted}
         return post_object
 
