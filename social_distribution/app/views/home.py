@@ -17,8 +17,10 @@ def root(request):
         posts = []
         # get all the node's authors
         authors = remote_node_conn.conn.get_all_authors()[:5]
-        other_nodes.append({"home_page": node.home_page,
-                            "posts": posts, "authors": authors})
+        other_node = {"home_page": node.home_page,
+                      "posts": posts, "authors": authors}
+        print(len(authors))
+        other_nodes.append(other_node)
 
     local_posts = []
     posts = Post.objects.filter(

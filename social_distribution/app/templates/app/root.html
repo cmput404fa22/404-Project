@@ -31,21 +31,18 @@
                 {% for post in node.posts %}
                     {% include './post_card.html' %}
                 {% endfor %}
-            {% for node in nodes %}
             <ol class="list-group list-group-flush ">
-            {% for author in node.authors %}
-            
-            <li class="list-group-item d-flex justify-content-between align-items-start">
-            <div class="ms-2 me-auto">
-                <a class="fw-bold text-decoration-none" href="/public_profile/?author_url={{ author.id }}">
-                    {{ author.displayName }}
-                </a>
-                <a href="{{ author.github }}">{{ author.github }}</a>
-            </div>
-            </li>
+            {% for author in node.authors %}     
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <a class="fw-bold text-decoration-none" href="/public_profile/?author_url={{ author.id }}">
+                        {{ author.displayName }}
+                    </a>
+                    <a href="{{ author.github }}">{{ author.github }}</a>
+                </div>
+                </li>
             {% endfor %}
             </ol>
-            {% endfor %}
             </div>
         {% endfor %}
     </div>
