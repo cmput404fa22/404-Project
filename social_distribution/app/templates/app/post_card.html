@@ -29,8 +29,8 @@
 
         {% if user.is_authenticated and user.author.url == post.author.id %}
             <div class="float-end">
-                <a class="editbtn btn btn-light m-2" href="edit/{{ post.uuid.hex }}">Edit</a>
-                <a class="deletebtn btn btn-danger m-2" href="delete/{{ post.uuid.hex }}">Delete</a>
+                <a class="editbtn btn btn-light m-2" href="{% url 'edit-post-page' uuid=post.uuid  %}">Edit</a>
+                <a class="deletebtn btn btn-danger m-2" href="{% url 'delete' uuid=post.uuid  %}">Delete</a>
             </div>
         {% endif %}
     </div>
