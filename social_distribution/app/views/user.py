@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from uuid import UUID
 from ..utils import url_is_local
+from ..connections.teams import RemoteNodeConnection
 
 
 def signup(request):
@@ -59,7 +60,7 @@ def login_user(request):
             if user and hasattr(user, 'author') and user.author.registered:
                 login(request, user)
                 messages.success(request, 'Logged in')
-                return redirect('root-page')
+                return redirect('stream')
             else:
                 messages.error(request, "Could not authenticate")
                 return redirect('login-page')
@@ -105,15 +106,33 @@ def public_profile(request):
 
     if url_is_local(author_url):
         uuid = author_url.split("/")[-1]
+        print(uuid)
         author = Author.objects.get(uuid=uuid)
+
         follows_you = Follow.objects.filter(
             author=request.user.author, target_url=author.url).first()
+        posts = Post.objects.filter(
+            author=author, visibility='PUBLIC', received=False)
+
+        authors_posts = []
+        for post in posts:
+            authors_posts.append(post)
+
+        author = author.get_json_object()
 
     else:
-        # TODO: GET author obbject from remote node
-        return render(request, 'app/public_profile.html')
+        uuid = author_url.split("/")[-1]
+        remote_node_conn = RemoteNodeConnection(author_url)
+        author = remote_node_conn.conn.get_author(uuid)
 
-    context = {"author": author, "follows_you": follows_you}
+        follows_you = Follow.objects.filter(
+            author=request.user.author, target_url=author['url']).first()
+
+        authors_posts = remote_node_conn.conn.get_all_authors_posts(
+            author_url.split("/")[-1])
+
+    context = {"author": author,
+               "follows_you": follows_you, "posts": authors_posts}
     return render(request, 'app/public_profile.html', context)
 
 

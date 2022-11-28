@@ -1,30 +1,28 @@
 {% extends 'app/base.html' %}
 {% load bootstrap5 %}
 
+        <!-- author_object = {"type": "author", "id": self.url,
+        "host": self.host, "displayName": self.user.username,
+        "url": self.url, "github": self.github,
+        "profileImage": self.profile_image_url} -->
 
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="col-xl">
-            <div class="card">
-                <div class="card-header">{{ author.user.username }}'s Public posts</div>
-                <div class="card-body">
-                    <div class="card">
-                        {% for post in paginated_posts.posts %}
-                        <h3>{{ post.title }}</h3>
+            <h3>{{ author.displayName }}'s posts</h3>
+                        {% for post in posts %}
+                            {% include './post_card.html' %}
                         {% endfor %}
-                    </div>
-                    <a class="card-link" href="?page={{ paginated_posts.page|add:'-1' }}">previous</a>
-                    <a class="card-link" href="?page={{ paginated_posts.page|add:'1' }}">next</a>
-                </div>
-            </div>
+                    <a class="btn btn-light mt-2 float-start" href="?page={{ paginated_posts.page|add:'-1' }}">previous</a>
+                    <a class="btn btn-light mt-2 float-end" href="?page={{ paginated_posts.page|add:'1' }}">next</a>
         </div>
         <div class="col-xl">
             <div class="card">
-                <img class="card-img-top" src="{{ author.profile_image_url}}" alt="{{ author.user.username }}'s profile picture">
-                <div class="card-header">About the author</div>
                 <div class="card-body">
-                    <h2 class="">{{ author.user.username }}</h2>
+                    <img class="rounded me-2 img-fluid w-25" src="{{ author.profileImage}}" alt="{{ author.displayName }}'s profile picture">
+                    <h2 class="">{{ author.displayName }}</h2>
+                    <p class="">({{ author.url }})</p>
                     {% if follows_you %}
                         {% if follows_you.accepted %}
                             <p class="">follows you</p>
