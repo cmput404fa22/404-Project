@@ -5,7 +5,74 @@ import os
 
 
 class Team14Connection(ConnectionInterface):
-    pass
+    def get_author(self, author_uuid: str):
+        url = self.base_url + f"authors/{author_uuid}/"
+        response = requests.request("GET", url, auth=(self.username, self.password))
+
+        if (response.status_code != 200):
+            return None
+
+        author_json = response.json()
+        author_json["url"] = author_json["url"][:-1]
+        author_object = {"id": author_json["url"],
+                         "displayName": author_json["display_name"],
+                         "url": author_json["url"], "github": author_json["github_handle"],
+                         "profileImage": author_json["profile_image"]}
+
+        return author_object
+
+    def get_all_authors(self):
+        url = self.base_url + "authors"
+        response = requests.request("GET", url, auth=(self.username, self.password))
+
+        if (response.status_code != 200):
+            print(response.text)
+            return []
+
+        response_json = response.json()
+        if (response_json is None or len(response_json) == 0):
+            print(response.text)
+            return []
+
+        author_objects = []
+        for author_json in response_json:
+            author_json["url"] = author_json["url"][:-1]
+            obj = {"id": author_json["url"],
+                   "displayName": author_json["display_name"],
+                   "url": author_json["url"], "github": author_json["github_handle"],
+                   "profileImage": author_json["profile_image"]}
+            author_objects.append(obj)
+
+        return author_objects
+
+    def get_all_authors_posts(self, author_uuid: str):
+        url = self.base_url + f"authors/{author_uuid}/posts"
+        response = requests.request("GET", url, auth=(self.username, self.password))
+
+        if (response.status_code != 200):
+            print(response.text)
+            return []
+
+        response_json = response.json()
+        if (response_json is None or len(response_json) == 0):
+            print(response.text)
+            return []
+
+        posts_objects = []
+        for posts_json in response_json:
+            author_json = posts_json["author"]
+            author_json["url"] = author_json["url"][:-1]
+            author_object = {"id": author_json["url"],
+                             "displayName": author_json["display_name"],
+                             "url": author_json["url"], "github": author_json["github_handle"],
+                             "profileImage": author_json["profile_image"]}
+            post_object = {"title": posts_json["title"], "id": posts_json["id"], "source": posts_json["source"],
+                           "origin": posts_json["origin"], "description": "", "contentType": posts_json["content_type"], "content": posts_json["content"],
+                           "author": author_object, "likesCount": posts_json["likes_count"],
+                           "createdAt": posts_json["created_at"], "visibility": posts_json["visibility"], "unlisted": posts_json["unlisted"], "editedAt": posts_json["edited_at"]}
+            posts_objects.append(post_object)
+
+        return posts_objects
 
 
 class Team8Connection(ConnectionInterface):
@@ -83,13 +150,13 @@ class Team8Connection(ConnectionInterface):
 class RemoteNodeConnection():
     teams = {
         "https://c404-team8.herokuapp.com/api/": {"num": 8, "conn": Team8Connection},
-        "https://social-distribution-14degrees2.herokuapp.com/api/": {"num": 15, "conn": Team14Connection}
+        "https://social-distribution-14degrees.herokuapp.com/api/": {"num": 14, "conn": Team14Connection}
     }
 
     def __init__(self, url: str):
         base_url = url.split("authors")[0]
-        username = os.environ.get(
+        self.username = os.environ.get(
             "TEAM_" + str(self.teams[base_url]["num"]) + "_USERNAME")
-        password = os.environ.get(
+        self.password = os.environ.get(
             "TEAM_" + str(self.teams[base_url]["num"]) + "_PASSWORD")
-        self.conn = self.teams[base_url]["conn"](username, password, base_url)
+        self.conn = self.teams[base_url]["conn"](self.username, self.password, base_url)
