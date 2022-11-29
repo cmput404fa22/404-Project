@@ -118,7 +118,7 @@ class Post(models.Model):
         Author, on_delete=models.CASCADE)  # posts have authors
 
     def get_json_object(self):
-        post_object = {"type": "post", "title": self.title, "id": self.url, "source": self.source,
+        post_object = {"type": "post", "title": self.title, "id": self.url, "uuid": self.uuid, "source": self.source,
                        "origin": self.origin, "description": self.description, "contentType": self.content_type, "content": self.content,
                        "author": self.author.get_json_object(), "count": self.comments_count, "comments": self.comments_url, "likes": self.likes_count,
                        "published": self.date_published.isoformat(), "visibility": self.visibility, "unlisted": self.unlisted}
