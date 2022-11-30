@@ -26,6 +26,7 @@ class PostSerializer(serializers.ModelSerializer):
     type = serializers.ReadOnlyField(default='post')
     id = serializers.CharField(source='url')
     source = serializers.CharField()
+    title = serializers.CharField()
     origin = serializers.CharField()
     description = serializers.CharField()
     contentType = serializers.ChoiceField(
@@ -40,7 +41,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('type', 'id', 'source', 'origin', 'description', 'contentType',
+        fields = ('type', 'id', 'source', 'title', 'origin', 'description', 'contentType',
                   'content', 'comments', 'published', 'visibility', 'unlisted', 'author', 'categories')
         read_only_fields = ('author',)
 
