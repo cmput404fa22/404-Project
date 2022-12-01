@@ -146,6 +146,7 @@ def inbox_item(request, author_id):
                     post = serializer.create(
                         serializer.validated_data, author=author)
                     post.received = True
+                    object_url = post.url
                     new_objects.append(post)
             else:
                 return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
