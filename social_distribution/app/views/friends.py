@@ -31,10 +31,13 @@ def follow(request):
 
     else:
         remote_node_conn = RemoteNodeConnection(target_url)
-        if (remote_node_conn.conn.send_follow_request(
-                request.user.author, target_uuid)):
-            messages.success(request, 'Follow request sent')
-        else:
+        try:
+            if (remote_node_conn.conn.send_follow_request(
+                    request.user.author, target_uuid)):
+                messages.success(request, 'Follow request sent')
+            else:
+                messages.error(request, 'Error sending follow request')
+        except Exception:
             messages.error(request, 'Error sending follow request')
 
     return redirect('/public_profile/?author_url=' + target_url)

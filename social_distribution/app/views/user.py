@@ -122,13 +122,15 @@ def public_profile(request):
     else:
         uuid = author_url.split("/")[-1]
         remote_node_conn = RemoteNodeConnection(author_url)
-        author = remote_node_conn.conn.get_author(uuid)
-
-        follows_you = Follow.objects.filter(
-            author=request.user.author, target_url=author['url']).first()
-
-        authors_posts = remote_node_conn.conn.get_all_authors_posts(
-            author_url.split("/")[-1])
+        try:
+            author = remote_node_conn.conn.get_author(uuid)
+            follows_you = Follow.objects.filter(
+                author=request.user.author, target_url=author['url']).first()
+            authors_posts = remote_node_conn.conn.get_all_authors_posts(
+                author_url.split("/")[-1])
+        except Exception:
+            follows_you = False
+            authors_posts = []
 
     context = {"author": author,
                "follows_you": follows_you, "posts": authors_posts}
