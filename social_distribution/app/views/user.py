@@ -106,7 +106,6 @@ def public_profile(request):
 
     if url_is_local(author_url):
         uuid = author_url.split("/")[-1]
-        print(uuid)
         author = Author.objects.get(uuid=uuid)
 
         follows_you = Follow.objects.filter(

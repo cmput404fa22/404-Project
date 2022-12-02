@@ -6,6 +6,8 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from ..utils import url_is_local
+from ..connections.teams import RemoteNodeConnection
 
 
 def send_private_post(request):
@@ -52,10 +54,16 @@ def create_public_post(request):
                 for follower in followers:
                     follower_url = follower.target_url
                     follower_uuid = follower_url.split("/")[-1]
-                    target = Author.objects.get(uuid=follower_uuid)
-                    target_inbox_item = InboxItem.objects.create(
-                        author=target, type="POST", from_author_url=request.user.author.url, from_username=request.user.username, object_url=new_post.url)
-                    target_inbox_item.save()
+                    if url_is_local(follower_url):
+                        target = Author.objects.get(uuid=follower_uuid)
+                        target_inbox_item = InboxItem.objects.create(
+                            author=target, type="POST", from_author_url=request.user.author.url, from_username=request.user.username, object_url=new_post.url)
+                        target_inbox_item.save()
+                    else:
+                        remote_node_conn = RemoteNodeConnection(follower_url)
+                        remote_node_conn.conn.send_post(
+                            new_post, follower_uuid)
+
             return redirect('author-posts')
 
     return render(request, "app/create_post.html", context)
