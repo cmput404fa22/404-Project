@@ -18,7 +18,8 @@ def root(request):
         # get all the node's authors
         try:
             authors = remote_node_conn.conn.get_all_authors()[:5]
-        except Exception:
+        except Exception as e:
+            print(e)
             authors = []
         other_node = {"home_page": node.home_page,
                       "posts": posts, "authors": authors}

@@ -128,7 +128,8 @@ def public_profile(request):
                 author=request.user.author, target_url=author['url']).first()
             authors_posts = remote_node_conn.conn.get_all_authors_posts(
                 author_url.split("/")[-1])
-        except Exception:
+        except Exception as e:
+            print(e)
             follows_you = False
             authors_posts = []
 
