@@ -3,6 +3,9 @@ import requests
 from .base import ConnectionInterface
 import os
 
+class Team15Connection(ConnectionInterface):
+    pass
+
 
 class Team14Connection(ConnectionInterface):
     def get_author(self, author_uuid: str):
@@ -150,7 +153,8 @@ class Team8Connection(ConnectionInterface):
 class RemoteNodeConnection():
     teams = {
         "https://c404-team8.herokuapp.com/api/": {"num": 8, "conn": Team8Connection},
-        "https://social-distribution-14degrees.herokuapp.com/api/": {"num": 14, "conn": Team14Connection}
+        "https://social-distribution-14degrees.herokuapp.com/api/": {"num": 14, "conn": Team14Connection},
+        "https://fallsocialuahank.herokuapp.com/service/": {"num": 15, "conn": Team15Connection}
     }
 
     def __init__(self, url: str):
