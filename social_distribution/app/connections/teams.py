@@ -2,15 +2,18 @@ from ..models import *
 import requests
 from .base import ConnectionInterface
 import os
+import json
 
 class Team15Connection(ConnectionInterface):
     pass
 
 
 class Team14Connection(ConnectionInterface):
+
     def get_author(self, author_uuid: str):
         url = self.base_url + f"authors/{author_uuid}/"
-        response = requests.request("GET", url, auth=(self.username, self.password))
+        response = requests.request(
+            "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
             return None
@@ -26,7 +29,8 @@ class Team14Connection(ConnectionInterface):
 
     def get_all_authors(self):
         url = self.base_url + "authors"
-        response = requests.request("GET", url, auth=(self.username, self.password))
+        response = requests.request(
+            "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
             print(response.text)
@@ -50,7 +54,8 @@ class Team14Connection(ConnectionInterface):
 
     def get_all_authors_posts(self, author_uuid: str):
         url = self.base_url + f"authors/{author_uuid}/posts"
-        response = requests.request("GET", url, auth=(self.username, self.password))
+        response = requests.request(
+            "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
             print(response.text)
@@ -79,6 +84,54 @@ class Team14Connection(ConnectionInterface):
 
 
 class Team8Connection(ConnectionInterface):
+
+    def send_post(self, post: Post, author_uuid: str):
+        url = self.base_url + f"authors/{author_uuid}/inbox/"
+        body = post.get_json_object()
+        response = requests.request("POST", url, json=body)
+        if (response.status_code != 201):
+            print(response.status_code)
+            print(response.text)
+            return None
+        return body
+
+    def send_follow_request(self, sender: Author, author_uuid):
+        url = self.base_url + f"authors/{author_uuid}/inbox/"
+
+        followed = self.get_author(author_uuid)
+        sender = sender.get_json_object()
+        body = {
+            "type": "follow",
+            "summary": f"{sender['displayName']} wants to follow {followed['displayName']}",
+            "actor": {
+                "type": "author",
+                "id": sender['id'],
+                "url": sender['url'],
+                "host": sender['host'],
+                "displayName": sender['displayName'],
+                "github": sender['github'],
+                "profileImage": sender['profileImage']
+            },
+            "object": {
+                "type": "author",
+                "id": followed["id"],
+                "host": followed["host"],
+                "displayName": followed["displayName"],
+                "url":  followed["url"],
+                "github": followed["github"],
+                "profileImage": followed["profileImage"]
+            }
+        }
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        response = requests.request("POST", url, headers=headers, json=body)
+        if (response.status_code != 201 or response.status_code != 200):
+            print(response.status_code)
+            print(response.text)
+            return None
+
+        return followed
 
     def get_author(self, author_uuid: str):
         url = self.base_url + f"authors/{author_uuid}/"
@@ -163,4 +216,5 @@ class RemoteNodeConnection():
             "TEAM_" + str(self.teams[base_url]["num"]) + "_USERNAME")
         self.password = os.environ.get(
             "TEAM_" + str(self.teams[base_url]["num"]) + "_PASSWORD")
-        self.conn = self.teams[base_url]["conn"](self.username, self.password, base_url)
+        self.conn = self.teams[base_url]["conn"](
+            self.username, self.password, base_url)
