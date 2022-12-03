@@ -19,7 +19,7 @@ def list_posts(request):
     # posts with received=True mean they were sent by another node to our author
     json_posts = []
     posts = Post.objects.filter(
-        author=request.user.author, received=False)
+        author=request.user.author, received=False).order_by("-date_published")
     for post in posts:
         json_posts.append(post.get_json_object())
 
@@ -29,17 +29,23 @@ def list_posts(request):
 
 @login_required
 def create_public_post(request):
-    context = {"title": "create post", "form": CreatePostForm()}
+    context = {"title": "create post",
+               "form": CreatePostForm(request.user.author)}
 
     if request.method == 'POST':
-        form = CreatePostForm(request.POST)
+        form = CreatePostForm(request.user.author, request.POST)
         if form.is_valid():
+            if list(form.cleaned_data['followers']) == []:
+                visibility = 'PUBLIC'
+            else:
+                visibility = 'FRIENDS'
+
             new_post = Post.objects.create(title=form.cleaned_data['title'],
                                            description=form.cleaned_data['description'],
                                            content_type=form.cleaned_data['content_type'],
                                            content=form.cleaned_data['content'],
                                            author=request.user.author,
-                                           visibility='PUBLIC',
+                                           visibility=visibility,
                                            author_url=request.user.author.url,
                                            received=False)
             new_post.url = f'{request.user.author.url}/posts/{new_post.uuid.hex}'
@@ -50,19 +56,28 @@ def create_public_post(request):
 
             # send posts to inbox of followers
             if new_post.visibility == 'PUBLIC':
-                followers = Follow.objects.filter(author=request.user.author)
-                for follower in followers:
-                    follower_url = follower.target_url
-                    follower_uuid = follower_url.split("/")[-1]
-                    if url_is_local(follower_url):
-                        target = Author.objects.get(uuid=follower_uuid)
-                        target_inbox_item = InboxItem.objects.create(
-                            author=target, type="POST", from_author_url=request.user.author.url, from_username=request.user.username, object_url=new_post.url)
-                        target_inbox_item.save()
-                    else:
+                followers_to_send_to = Follow.objects.filter(
+                    author=request.user.author, accepted=True)
+            else:
+                followers_to_send_to = form.cleaned_data['followers']
+
+            for follower in followers_to_send_to:
+                follower_url = follower.target_url
+                follower_uuid = follower_url.split("/")[-1]
+                if url_is_local(follower_url):
+                    author_to_send_to = Author.objects.get(uuid=follower_uuid)
+                    inbox_item = InboxItem.objects.create(
+                        author=author_to_send_to, type="POST", from_author_url=request.user.author.url, from_username=request.user.username, object_url=new_post.url)
+                    inbox_item.save()
+                else:
+                    try:
                         remote_node_conn = RemoteNodeConnection(follower_url)
                         remote_node_conn.conn.send_post(
                             new_post, follower_uuid)
+                    except Exception as e:
+                        messages.error(
+                            request, 'Could not send post to all selected followers :(')
+                        print(e)
 
             return redirect('author-posts')
 

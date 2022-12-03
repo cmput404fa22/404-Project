@@ -27,7 +27,7 @@ def root(request):
 
     local_posts = []
     posts = Post.objects.filter(
-        visibility="PUBLIC", received=False)[:5]
+        visibility="PUBLIC", received=False).order_by("-date_published")[:5]
     for post in posts:
         local_posts.append(post.get_json_object())
 

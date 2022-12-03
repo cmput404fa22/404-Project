@@ -69,11 +69,13 @@ class InboxItem(models.Model):
     from_author_url = models.TextField()
     # username of the author that caused this InboxItem
     from_username = models.TextField()
+    date_published = models.DateTimeField(default=timezone.now, null=True)
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE)  # author has InboxItems
 
     def get_posts(author, num_of_posts, page):
-        posts = InboxItem.objects.filter(author=author, type="POST")
+        posts = InboxItem.objects.filter(
+            author=author, type="POST").order_by('-date_published')
         paginator = Paginator(posts, num_of_posts)
         page = paginator.page(page)
 
