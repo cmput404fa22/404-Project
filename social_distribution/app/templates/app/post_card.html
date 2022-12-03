@@ -3,7 +3,11 @@
 <div class="card mt-2 rounded">
     <div class="card-header text-white bg-dark">
         <h3 class="m-0">{{ post.title }}</h3>
-        <a href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a>
+        {% if not post.received %}
+            <a href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a>
+        {% else %}
+            sent from: <a href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a>
+        {% endif %}
     </div>
     <div class="card-body text-white bg-secondary">
         {% if post.contentType == "text/markdown" %}

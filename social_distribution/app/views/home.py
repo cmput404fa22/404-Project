@@ -16,10 +16,12 @@ def root(request):
         # TODO: get public posts for this node
         posts = []
         # get all the node's authors
-        authors = remote_node_conn.conn.get_all_authors()[:5]
+        try:
+            authors = remote_node_conn.conn.get_all_authors()[:5]
+        except Exception:
+            authors = []
         other_node = {"home_page": node.home_page,
                       "posts": posts, "authors": authors}
-        print(len(authors))
         other_nodes.append(other_node)
 
     local_posts = []
