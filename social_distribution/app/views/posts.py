@@ -19,7 +19,7 @@ def list_posts(request):
     # posts with received=True mean they were sent by another node to our author
     json_posts = []
     posts = Post.objects.filter(
-        author=request.user.author, received=False)
+        author=request.user.author, received=False).order_by("-date_published")
     for post in posts:
         json_posts.append(post.get_json_object())
 

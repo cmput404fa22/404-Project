@@ -140,7 +140,8 @@ def public_profile(request):
 
 @login_required
 def notifications(request):
-    notifs = InboxItem.objects.filter(author=request.user.author)
+    notifs = InboxItem.objects.filter(
+        author=request.user.author).order_by("-date_published")
 
     context = {"notifs": notifs}
     return render(request, 'app/notifications.html', context)
