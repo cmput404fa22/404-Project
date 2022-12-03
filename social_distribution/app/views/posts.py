@@ -1,7 +1,7 @@
 from datetime import timezone
 from django.shortcuts import render
-from ..forms import CreatePostForm
-from ..models import Post, Like, Follow, Author, InboxItem
+from ..forms import CreatePostForm, CreateCommentForm
+from ..models import Post, Like, Follow, Author, InboxItem, Comment
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -57,7 +57,8 @@ def create_public_post(request):
                     if url_is_local(follower_url):
                         target = Author.objects.get(uuid=follower_uuid)
                         target_inbox_item = InboxItem.objects.create(
-                            author=target, type="POST", from_author_url=request.user.author.url, from_username=request.user.username, object_url=new_post.url)
+                            author=target, type="POST", from_author_url=request.user.author.url,
+                            from_username=request.user.username, object_url=new_post.url)
                         target_inbox_item.save()
                     else:
                         remote_node_conn = RemoteNodeConnection(follower_url)
@@ -125,11 +126,37 @@ def like_post(request):
         post.save()
 
         target_inbox_item = InboxItem.objects.create(
-            author=post.author, type="LIKE", from_author_url=request.user.author.url, from_username=request.user.username)
+            author=post.author, type="LIKE", from_author_url=request.user.author.url,
+            from_username=request.user.username)
         target_inbox_item.save()
 
         messages.success(request, 'Liked post')
     else:
         return redirect('/')
+
+    return redirect('/')
+
+
+@login_required
+def comment_post(request):  # copied from like_post
+    form = CreateCommentForm()
+
+    user_url = request.user.author.url
+    post_id = request.GET.get('post_id')
+    post = Post.objects.get(uuid=post_id)
+
+    # no filter since user can comment multiple times per post
+    new_comment = Comment.objects.create(content_type=form.cleaned_data['content_type'],
+                                         content=form.cleaned_data['content'], commenter_url=user_url, post=post)
+    new_comment.save()
+    post.comments_count += 1
+    post.save()
+
+    target_inbox_item = InboxItem.objects.create(
+        author=post.author, type="COMMENT", from_author_url=request.user.author.url,
+        from_username=request.user.username)
+    target_inbox_item.save()
+
+    messages.success(request, 'Commented post')
 
     return redirect('/')
