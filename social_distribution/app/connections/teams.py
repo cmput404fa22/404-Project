@@ -4,8 +4,44 @@ from .base import ConnectionInterface
 import os
 import json
 
+
 class Team15Connection(ConnectionInterface):
-    pass
+    def get_author(self, author_uuid: str):
+        url = self.base_url + f"authors/{author_uuid}/"
+        response = requests.request(
+            "GET", url, auth=(self.username, self.password))
+
+        if (response.status_code != 200):
+            return None
+
+        author_json = response.json()["items"]
+        author_object = {"id": author_json["id"],
+                         "displayName": author_json["displayName"],
+                         "url": author_json["url"], "github": author_json["github"],
+                         "profileImage": author_json["profileImage"]}
+
+        return author_object
+
+    def get_all_authors(self):
+        url = self.base_url + "authors"
+        response = requests.request(
+            "GET", url, auth=(self.username, self.password))
+        if (response.status_code != 200):
+            print(response.text)
+            return []
+        response_json = response.json()
+        if (response_json is None or len(response_json) == 0):
+            print(response.text)
+            return []
+        author_objects = []
+        for author_json in response_json['items']:
+            obj = {"id": author_json["id"],
+                   "displayName": author_json["displayName"],
+                   "url": author_json["url"], "github": author_json["github"],
+                   "profileImage": author_json["profileImage"]}
+            author_objects.append(obj)
+
+        return author_objects
 
 
 class Team14Connection(ConnectionInterface):

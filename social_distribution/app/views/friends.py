@@ -37,7 +37,8 @@ def follow(request):
                 messages.success(request, 'Follow request sent')
             else:
                 messages.error(request, 'Error sending follow request')
-        except Exception:
+        except Exception as e:
+            print(e)
             messages.error(request, 'Error sending follow request')
 
     return redirect('/public_profile/?author_url=' + target_url)
