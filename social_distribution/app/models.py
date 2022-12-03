@@ -6,6 +6,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from .utils import url_is_local
 
 
 class Author(models.Model):
@@ -14,7 +15,7 @@ class Author(models.Model):
 
     uuid = models.UUIDField(
         default=uuid.uuid4, primary_key=True, editable=False)
-    host = models.TextField(default="http://" + settings.HOSTNAME)
+    host = models.TextField(default=settings.HOSTNAME)
     url = models.TextField()
     github = models.TextField(blank=True)
 
@@ -30,6 +31,17 @@ class Author(models.Model):
         return author_object
 
 
+class RemoteNode(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE)  # extend user model
+    uuid = models.UUIDField(
+        default=uuid.uuid4, primary_key=True, editable=False)
+    base_url = models.TextField(unique=True)
+    home_page = models.TextField(unique=True, default="#")
+    team = models.IntegerField(unique=True)
+    registered = models.BooleanField(default=False)
+
+
 class Follow(models.Model):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
@@ -38,7 +50,7 @@ class Follow(models.Model):
     accepted = models.BooleanField(default=False)
 
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE)  # author has followers
+        Author, on_delete=models.CASCADE)  # author has followers
 
 
 class InboxItem(models.Model):
@@ -67,14 +79,14 @@ class InboxItem(models.Model):
 
         post_objects = []
         for item in page:
-            if item.object_url.startswith("http://" + settings.HOSTNAME):
-                post = Post.objects.get(item.object_url.split["/"][-1])
-                post_objects.append(post)
+            if url_is_local(item.object_url):
+                post = Post.objects.get(uuid=item.object_url.split("/")[-1])
+                post_objects.append(post.get_json_object())
             else:
                 # TODO: query remote node for post
                 continue
 
-        return paginator
+        return post_objects
 
 
 class Post(models.Model):
@@ -84,30 +96,31 @@ class Post(models.Model):
     url = models.TextField()
     title = models.TextField()
     date_published = models.DateTimeField(default=timezone.now)
-    source = models.TextField(default="http://" + settings.HOSTNAME)
-    origin = models.TextField(default="http://" + settings.HOSTNAME)
+    source = models.TextField(default=settings.HOSTNAME)
+    origin = models.TextField(default=settings.HOSTNAME)
     description = models.TextField()
     content_type = models.TextField()
     content = models.TextField()
     categories = models.TextField()
     comments_count = models.IntegerField(default=0)
+    likes_count = models.IntegerField(default=0)
     comments_url = models.TextField()
     VISIBILITY_CHOICES = (
         ('PUBLIC', 'public'),
-        ('PRIVATE', 'private'),
+        ('FRIENDS', 'friends'),
     )
     visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)
     unlisted = models.BooleanField(default=False)
     author_url = models.TextField()
 
-    received = models.BooleanField()
+    received = models.BooleanField(default=False)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE)  # posts have authors
+        Author, on_delete=models.CASCADE)  # posts have authors
 
     def get_json_object(self):
-        post_object = {"type": "post", "id": self.url, "source": self.source,
+        post_object = {"type": "post", "title": self.title, "id": self.url, "uuid": self.uuid, "source": self.source,
                        "origin": self.origin, "description": self.description, "contentType": self.content_type, "content": self.content,
-                       "author": self.author.author.get_json_object(), "count": self.comments_count, "comments": self.comments_url,
+                       "author": self.author.get_json_object(), "count": self.comments_count, "comments": self.comments_url, "likes": self.likes_count,
                        "published": self.date_published.isoformat(), "visibility": self.visibility, "unlisted": self.unlisted}
         return post_object
 
@@ -132,6 +145,6 @@ class Like(models.Model):
     liker_url = models.TextField()
 
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE)  # posts have likes
+        Post, on_delete=models.CASCADE, null=True)  # posts have likes
     comment = models.ForeignKey(
-        Comment, on_delete=models.CASCADE)  # comments have likes
+        Comment, on_delete=models.CASCADE, null=True)  # comments have likes

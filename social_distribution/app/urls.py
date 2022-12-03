@@ -1,5 +1,5 @@
 from django.urls import path, register_converter
-from .views import user, home, posts, friends
+from .views import user, home, posts, friends, connections
 from api.converters import UUIDConverter
 
 register_converter(UUIDConverter, 'uuid')
@@ -20,8 +20,15 @@ urlpatterns = [
     path('authorposts/new/', posts.create_public_post, name='new-post-page'),
     path('authorposts/edit/<uuid:uuid>', posts.edit_post, name='edit-post-page'),
     path('authorposts/delete/<uuid:uuid>', posts.delete_post, name='delete'),
+    path('authorposts/like/', posts.like_post, name='like'),
 
     path('follow/user/', friends.follow, name='follow_user'),
+    path('follow/approve/<uuid:inbox_item_id>',
+         friends.approve_follow, name='approve_follow'),
+    path('follow/reject/<uuid:inbox_item_id>',
+         friends.reject_follow, name='reject_follow'),
     path('stream/', home.stream, name='stream'),
+
+    path('signup-node/', connections.signup_remote_node, name='signup-node'),
 
 ]

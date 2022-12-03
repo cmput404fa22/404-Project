@@ -1,0 +1,7 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+/social_distribution/social_distribution/settings.py
+/social_distribution/.env
+/social_distribution/app/migrations/
+/misc.xml

@@ -3,20 +3,22 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="row d-flex justify-content-center align-items-center" >
-    <div class="col-lg-3 col-md-3 col-sm-12" style="width:35rem">
-        <div class="card">
-            <div class="card-header">Sign up</div>
-            <div class="card-body">
+<div class="row d-flex align-items-center" >
+<div class="col-lg-6 col-md-12 col-sm-12">
+<div class="row d-flex align-items-center" >
+        <div class="card rounded">
+            <div class="card-header text-white bg-dark">Sign up</div>
+            <div class="card-body text-white bg-secondary">
                 <form method="POST">
                     {% csrf_token %}
                     {{ form|crispy }}
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary mt-2">Submit</button>
+                        <button type="submit" class="btn btn-light mt-2 float-end">Submit</button>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
+</div>
+</div>
 </div>
 {% endblock %}

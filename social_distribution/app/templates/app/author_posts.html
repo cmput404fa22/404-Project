@@ -1,25 +1,19 @@
 {% extends 'app/base.html' %}
 {% load bootstrap5 %}
+{% load markdown_extras %}
 
 
 {% block content %}
-<div class="card">
-    <div class="card-header">Your Posts</div>
-    <div class="card-body">
-        <p>
-            <a href="new/">Create New Post</a>
-        </p>
-        <ul>
+<div>
+
+    <h1>Your Posts</h1>
+    
         {% for post in posts %}
-            <li><p> {{ post.title }} </p> </li>
-            <p>
-                 <a href="edit/{{ post.uuid.hex }}">Edit</a>
-                 <a href="delete/{{ post.uuid.hex }}">Delete</a>
-            </p>
+            {% include './post_card.html' %}
         {% empty %}
-            <li>No posts yet.</li>
+        <div class="noposts">
+            <p>no posts yet  :(</p>
+        </div>
         {% endfor %}
-        </ul>
-    </div>
 </div>
 {% endblock %}

@@ -1,14 +1,37 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from app.models import InboxItem, Author
+from app.models import InboxItem, Author, RemoteNode, Post
 from django.db.models import Q
+from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage
+from ..connections.teams import RemoteNodeConnection
 
 
 def root(request):
-    if (request.user.is_authenticated):
-        return redirect("stream")
-    context = {"title": "root"}
+
+    other_nodes = []
+    remote_nodes = RemoteNode.objects.filter(registered=True)
+    for node in remote_nodes:
+        remote_node_conn = RemoteNodeConnection(node.base_url)
+        # TODO: get public posts for this node
+        posts = []
+        # get all the node's authors
+        try:
+            authors = remote_node_conn.conn.get_all_authors()[:5]
+        except Exception:
+            authors = []
+        other_node = {"home_page": node.home_page,
+                      "posts": posts, "authors": authors}
+        other_nodes.append(other_node)
+
+    local_posts = []
+    posts = Post.objects.filter(
+        visibility="PUBLIC", received=False)[:5]
+    for post in posts:
+        local_posts.append(post.get_json_object())
+
+    context = {"title": "root", "nodes": other_nodes,
+               "local_url": settings.HOSTNAME, "local_posts": local_posts}
     return render(request, "app/root.html", context)
 
 

@@ -13,20 +13,21 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import django_on_heroku
+import dj_database_url
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = " "  # os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG") == 'True'
+DEBUG = (os.environ.get("DEBUG") == 'True')
 
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
-HOSTNAME = os.environ.get("HOSTNAME")
+ALLOWED_HOSTS = ['*']
+HOSTNAME = 'https://cmsjmnet.herokuapp.com'
 LOGIN_URL = '/login/'
 
 # Application definition
@@ -35,6 +36,8 @@ INSTALLED_APPS = [
     "bootstrap5",
     "rest_framework",
     "crispy_forms",
+    'django.contrib.staticfiles',
+    'drf_yasg',
     "crispy_bootstrap5",
     'app.apps.AppConfig',
     'api.apps.AppConfig',
@@ -43,8 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
 ]
+
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
@@ -78,17 +81,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'social_distribution.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -131,3 +123,38 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+}
+
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'api.swagger.CustomSwaggerAutoSchema',
+}
+
+
+# https://help.heroku.com/J2R1S4T8/can-heroku-force-an-application-to-use-ssl-tls
+if (os.environ.get('PROD') == 'True'):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+
+django_on_heroku.settings(locals())
+
+
+# Database
+# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+if (os.environ.get('PROD') == 'True'):
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600, ssl_require=True)
