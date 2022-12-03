@@ -59,7 +59,7 @@ ul.posts-list {
     display: inline-block;
 }
 
-/* Copied from above, might be unneeded depending on how we plan to style */
+/* Copied from above
 .commentbtn {
     white-space: nowrap;
     color: black;
@@ -68,3 +68,4 @@ ul.posts-list {
 .commentctn {
     display: inline-block;
 }
+ */
