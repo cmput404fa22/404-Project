@@ -26,9 +26,15 @@
             {% endif %}
             <p class="likectn">{{post.likes}}</p>
         </span>
-        <span class="m-2">
-            <i class="fa fa-comment "></i>
-            <p class="likectn">{{post.count}}</p>
+        <span class="m-2"> <!-- Copied from above  -->
+            {% if user.is_authenticated %}
+                <a class="commentbtn" href="/authorposts/comment/?post_id={{ post.uuid.hex }}">
+                    <i class="fa fa-comment"></i>
+                </a>
+            {% else %}
+                <i class="fa fa-comment"></i>
+            {% endif %}
+            <p class="commentctn">{{post.count}}</p>
         </span>
 
         {% if user.is_authenticated and user.author.url == post.author.id %}

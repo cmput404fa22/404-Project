@@ -60,3 +60,15 @@ class CreatePostForm(forms.Form):
         choices=CONTENT_TYPE_CHOICES, label="Content type", initial='', widget=forms.Select(), required=True)
     content = forms.CharField(widget=forms.Textarea(attrs={"rows": "5"}),
                               label='Content')
+
+
+class CreateCommentForm(forms.Form):  # copied from CreatePostForm
+    CONTENT_TYPE_CHOICES = (
+        ("text/markdown", "text/markdown"),
+        ("text/plain", "text/plain"),
+        ("image", "image"),
+    )
+    content_type = forms.ChoiceField(
+        choices=CONTENT_TYPE_CHOICES, label="Content type", initial='', widget=forms.Select(), required=True)
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows": "5"}),
+                              label='Content')

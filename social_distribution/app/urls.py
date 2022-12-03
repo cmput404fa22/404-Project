@@ -21,6 +21,7 @@ urlpatterns = [
     path('authorposts/edit/<uuid:uuid>', posts.edit_post, name='edit-post-page'),
     path('authorposts/delete/<uuid:uuid>', posts.delete_post, name='delete'),
     path('authorposts/like/', posts.like_post, name='like'),
+    path('authorposts/comment/', posts.comment_post, name='comment'),  # copied from above
 
     path('follow/user/', friends.follow, name='follow_user'),
     path('follow/approve/<uuid:inbox_item_id>',

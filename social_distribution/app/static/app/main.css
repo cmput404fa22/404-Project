@@ -58,3 +58,13 @@ ul.posts-list {
 .likectn {
     display: inline-block;
 }
+
+/* Copied from above, might be unneeded depending on how we plan to style */
+.commentbtn {
+    white-space: nowrap;
+    color: black;
+}
+
+.commentctn {
+    display: inline-block;
+}
