@@ -5,9 +5,6 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.core.paginator import Paginator
-from .utils import url_is_local
-from .connections.teams import RemoteNodeConnection
 
 
 class Author(models.Model):
@@ -73,31 +70,6 @@ class InboxItem(models.Model):
     date_published = models.DateTimeField(default=timezone.now, null=True)
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE)  # author has InboxItems
-
-    def get_posts(author, num_of_posts, page):
-        posts = InboxItem.objects.filter(
-            author=author, type="POST").order_by('-date_published')
-        paginator = Paginator(posts, num_of_posts)
-        page = paginator.page(page)
-
-        post_objects = []
-        for item in page:
-            url = item.object_url
-            uuid = url.split("/")[-1]
-            if url_is_local(url):
-                post = Post.objects.get(uuid=uuid)
-                post_objects.append(post.get_json_object())
-            else:
-                try:
-                    author_uuid = item.from_author_url
-                    remote_node_conn = RemoteNodeConnection(item.object_url)
-                    post = remote_node_conn.get_post(
-                        author_uuid=author_uuid, post_uuid=uuid)
-                    post_objects.append(post)
-                except Exception as e:
-                    print(e)
-
-        return post_objects
 
 
 class Post(models.Model):

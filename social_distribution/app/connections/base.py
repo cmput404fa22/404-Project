@@ -11,7 +11,7 @@ class ConnectionInterface():
     def get_author(self, author_uuid: str):
         raise NotImplementedError
 
-    def get_all_authors(self, ):
+    def get_all_authors(self):
         raise NotImplementedError
 
     def get_followers(self, author_uuid: str):

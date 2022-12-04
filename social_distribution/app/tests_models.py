@@ -17,14 +17,16 @@ class UserModelTest(TestCase):  # base Django User
     def test_create_user(self):
         username = "name"
         password = "1234"
-        user = get_user_model().objects.create_user(username=username, password=password)
+        user = get_user_model().objects.create_user(
+            username=username, password=password)
         self.assertEqual(user.username, username)
         self.assertTrue(user.check_password(password))  # hashed
 
     def test_create_super_user(self):
         username_admin = "admin_user"
         password_admin = "admin_pwd"
-        admin = get_user_model().objects.create_superuser(username=username_admin, password=password_admin)
+        admin = get_user_model().objects.create_superuser(
+            username=username_admin, password=password_admin)
         self.assertEqual(admin.username, username_admin)
         self.assertTrue(admin.check_password(password_admin))  # hashed
 
@@ -40,7 +42,8 @@ class AuthorModelTest(TestCase):  # our Author
         self.url = "zombo.com"
         self.github = "github.com"
         self.profile_image_url = "9gag.com"
-        user = get_user_model().objects.create_user(username=username, password=password)
+        user = get_user_model().objects.create_user(
+            username=username, password=password)
         Author.objects.create(user=user,
                               host=self.host,
                               url=self.url,
@@ -52,7 +55,8 @@ class AuthorModelTest(TestCase):  # our Author
         self.assertTrue(self.author)  # author created
 
     def test_author_not_registered(self):
-        self.assertFalse(self.author.registered)  # admin has not registered author
+        # admin has not registered author
+        self.assertFalse(self.author.registered)
 
     def test_links(self):
         self.assertEqual(self.author.host, self.host)
@@ -67,7 +71,8 @@ class AuthorModelTest(TestCase):  # our Author
         self.assertEqual(self.url, json_author["id"])
         self.assertEqual(self.host, json_author["host"])
         self.assertEqual(self.author.user.username, json_author["displayName"])
-        self.assertEqual(self.url, json_author["url"])  # TODO: REDUNDANCY/ERROR IN MODEL? (URL/ID)
+        # TODO: REDUNDANCY/ERROR IN MODEL? (URL/ID)
+        self.assertEqual(self.url, json_author["url"])
         self.assertEqual(self.github, json_author["github"])
         self.assertEqual(self.profile_image_url, json_author["profileImage"])
 
@@ -82,7 +87,8 @@ class RemoteNodeTest(TestCase):  # remote nodes
         self.team = 11
         self.remote_base = "remote.com"
         self.remote_home = "remote.com/home"
-        remote = get_user_model().objects.create_user(username=username, password=password)
+        remote = get_user_model().objects.create_user(
+            username=username, password=password)
         RemoteNode.objects.create(user=remote,
                                   team=self.team,
                                   base_url=self.remote_base,
@@ -93,7 +99,8 @@ class RemoteNodeTest(TestCase):  # remote nodes
         self.assertTrue(self.remote_node)  # remote node created
 
     def test_remote_not_registered(self):
-        self.assertFalse(self.remote_node.registered)  # admin has not registered remote node
+        # admin has not registered remote node
+        self.assertFalse(self.remote_node.registered)
 
     def test_links(self):
         self.assertEqual(self.remote_node.base_url, self.remote_base)
@@ -107,7 +114,8 @@ class FollowTest(TestCase):  # following/friending
     def setUp(self):
         username = "name"
         password = "1234"
-        user = get_user_model().objects.create_user(username=username, password=password)
+        user = get_user_model().objects.create_user(
+            username=username, password=password)
         Author.objects.create(user=user)
         self.author = Author.objects.get(user=user)
 
@@ -132,7 +140,8 @@ class InboxItemTest(TestCase):
     def setUp(self):
         username = "name"
         password = "1234"
-        user = get_user_model().objects.create_user(username=username, password=password)
+        user = get_user_model().objects.create_user(
+            username=username, password=password)
         Author.objects.create(user=user)
         self.author = Author.objects.get(user=user)
 
@@ -150,12 +159,6 @@ class InboxItemTest(TestCase):
 
     def test_author_relationship(self):  # author having inbox items etc.
         self.assertEqual(self.inbox_item.author, self.author)
-        """
-        self.assertEqual(InboxItem.get_posts(author=self.author,
-                                             num_of_posts=9001,
-                                             page=1),
-                         self.inbox_item)
-                         """
     # TODO: TEST FOR ON DELETE CASCADE, UUID GENERATION, PROPERLY TESTING THE RELATIONSHIP, TYPE CHOICE INPUT VALIDATION
 
 
@@ -163,7 +166,8 @@ class PostTest(TestCase):
     def setUp(self):
         username = "name"
         password = "1234"
-        user = get_user_model().objects.create_user(username=username, password=password)
+        user = get_user_model().objects.create_user(
+            username=username, password=password)
         Author.objects.create(user=user)
         self.author = Author.objects.get(user=user)
 
@@ -180,7 +184,8 @@ class PostTest(TestCase):
                             content_type=self.content_type,
                             content=self.content,
                             visibility=self.visibility)
-        self.post = Post.objects.get(author=self.author)  # maybe test getting by other fields too
+        # maybe test getting by other fields too
+        self.post = Post.objects.get(author=self.author)
 
     def test_create_post(self):
         self.assertTrue(self.post)
@@ -193,7 +198,8 @@ class PostTest(TestCase):
         self.assertEqual(self.content, self.post.content)
         self.assertEqual(self.visibility, self.post.visibility)
 
-        self.assertAlmostEqual(timezone.now().timestamp(), self.post.date_published.timestamp(), delta=1)
+        self.assertAlmostEqual(timezone.now().timestamp(
+        ), self.post.date_published.timestamp(), delta=1)
         # within a second, this will surely never come up as an issue
         self.assertEqual(settings.HOSTNAME, self.post.source)
         self.assertEqual(settings.HOSTNAME, self.post.origin)
