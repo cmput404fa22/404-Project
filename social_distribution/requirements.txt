@@ -3,14 +3,17 @@ autopep8==1.7.0
 backports.zoneinfo==0.2.1
 beautifulsoup4==4.11.1
 certifi==2022.9.24
+cffi==1.15.1
 charset-normalizer==2.1.1
+cmarkgfm==2022.10.27
 coreapi==2.3.3
 coreschema==0.0.4
 crispy-bootstrap5==0.7
-Django==4.1.2
 dj-database-url==1.0.0
+Django==4.1.2
 django-bootstrap-v5==1.0.11
 django-crispy-forms==1.14.0
+django-extensions==3.2.1
 django-on-heroku==1.1.2
 djangorestframework==3.14.0
 drf-yasg==1.21.4
@@ -24,6 +27,7 @@ MarkupSafe==2.1.1
 packaging==21.3
 psycopg2-binary==2.9.4
 pycodestyle==2.9.1
+pycparser==2.21
 pyparsing==3.0.9
 python-dotenv==0.21.0
 pytz==2022.5
@@ -37,4 +41,3 @@ toml==0.10.2
 uritemplate==4.1.1
 urllib3==1.26.12
 whitenoise==6.2.0
-cmarkgfm
