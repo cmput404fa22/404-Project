@@ -57,6 +57,7 @@ class Team14Connection(ConnectionInterface):
 
         posts_json = response.json()
         author_json = posts_json["author"]
+        author_json["url"] = author_json["url"][:-1]
         author_object = {"id": author_json["url"],
                          "displayName": author_json["display_name"],
                          "url": author_json["url"], "github": author_json["github_handle"],
@@ -314,7 +315,28 @@ class Team8Connection(ConnectionInterface):
                            "published": posts_json["published"], "visibility": posts_json["visibility"], "unlisted": posts_json["unlisted"]}
             posts_objects.append(post_object)
 
-        return posts_objects
+    def get_post(self, author_uuid: str, post_uuid: str):
+        url = self.base_url + f"authors/{author_uuid}/posts/{post_uuid}"
+
+        response = requests.request(
+            "GET", url, auth=(self.username, self.password))
+
+        if (response.status_code != 200):
+            return None
+
+        posts_json = response.json()
+        author_json = posts_json["author"]
+        author_json["url"] = author_json["url"][:-1]
+        author_object = {"type": "author", "id": author_json["url"],
+                         "host": author_json["host"], "displayName": author_json["displayName"],
+                         "url": author_json["url"], "github": author_json["github"],
+                         "profileImage": ""}
+        post_object = {"type": "post", "title": posts_json["title"], "id": posts_json["id"], "source": posts_json["source"],
+                       "origin": posts_json["origin"], "description": "", "contentType": posts_json["contentType"], "content": posts_json["content"],
+                       "author": author_object, "count": posts_json["count"], "comments": posts_json["comments"], "likes": 0,
+                       "published": posts_json["published"], "visibility": posts_json["visibility"], "unlisted": posts_json["unlisted"]}
+
+        return post_object
 
 
 class RemoteNodeConnection():
