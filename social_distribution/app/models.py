@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from .utils import url_is_local
-from .connections import RemoteNodeConnection
+from .connections.teams import RemoteNodeConnection
 
 
 class Author(models.Model):
