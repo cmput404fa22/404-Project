@@ -1,7 +1,10 @@
+from django.forms import ModelMultipleChoiceField
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column
 from .models import *
+from .connections.teams import RemoteNodeConnection
+from .utils import url_is_local
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -46,11 +49,36 @@ class LoginForm(forms.Form):
         label='Password', widget=forms.PasswordInput, required=True)
 
 
+class FollowModelChoiceField(ModelMultipleChoiceField):
+    def label_from_instance(self, follow):
+        follower_url = follow.target_url
+        follower_uuid = follow.target_url.split("/")[-1]
+        if url_is_local(follower_url):
+            follower_author = Author.objects.get(uuid=follower_uuid)
+            return f"{follower_author.user.username} ({follower_author.host})"
+        else:
+            remote_node_conn = RemoteNodeConnection(follower_url)
+        try:
+            author = remote_node_conn.conn.get_author(follower_uuid)
+            return f"{author['displayName']} ({author['host']})"
+
+        except Exception as e:
+            print(e)
+
+
 class CreatePostForm(forms.Form):
+    def __init__(self, author, *args, **kwargs):
+        super(CreatePostForm, self).__init__(*args, **kwargs)
+        self.fields['followers'] = FollowModelChoiceField(
+            queryset=Follow.objects.filter(author=author, accepted=True),
+            to_field_name="target_url",
+            required=False,
+            label='Send to Followers: (public if none selected)'
+        )
+
     title = forms.CharField(label='Title', max_length=50, required=True)
     description = forms.CharField(
         label='Description', max_length=50, required=False)
-
     CONTENT_TYPE_CHOICES = (
         ("text/markdown", "text/markdown"),
         ("text/plain", "text/plain"),
