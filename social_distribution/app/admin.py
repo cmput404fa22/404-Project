@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import *
+from .utils import url_is_local
 # Register your models here.
 
 
