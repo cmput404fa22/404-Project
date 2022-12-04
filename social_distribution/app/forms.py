@@ -88,3 +88,5 @@ class CreatePostForm(forms.Form):
         choices=CONTENT_TYPE_CHOICES, label="Content type", initial='', widget=forms.Select(), required=True)
     content = forms.CharField(widget=forms.Textarea(attrs={"rows": "5"}),
                               label='Content')
+    
+    unlisted = forms.BooleanField(widget=forms.CheckboxInput(), label='Unlisted', initial=False, required=False)

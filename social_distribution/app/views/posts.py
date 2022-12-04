@@ -44,6 +44,7 @@ def create_public_post(request):
                                            description=form.cleaned_data['description'],
                                            content_type=form.cleaned_data['content_type'],
                                            content=form.cleaned_data['content'],
+                                           unlisted=form.cleaned_data['unlisted'],
                                            author=request.user.author,
                                            visibility=visibility,
                                            author_url=request.user.author.url,
@@ -86,29 +87,32 @@ def create_public_post(request):
 
 @login_required
 def edit_post(request, uuid):
-    context = {}
-    form = CreatePostForm()
+    context = {} 
     post = Post.objects.get(uuid=uuid, received=False)
-
+    form = CreatePostForm(post.author)
+    
     if (post.author != request.user.author):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method != 'POST':
-        form = CreatePostForm(initial={"title": post.title,
+        form = CreatePostForm(post.author, initial={"title": post.title,
                                        "description": post.description,
                                        "content_type": post.content_type,
-                                       "content": post.content})
+                                       "content": post.content,
+                                       "unlisted": post.unlisted})
 
     else:
-        form = CreatePostForm(request.POST, initial={"title": post.title,
+        form = CreatePostForm(post.author, request.POST, initial={"title": post.title,
                                                      "description": post.description,
                                                      "content_type": post.content_type,
-                                                     "content": post.content})
+                                                     "content": post.content,
+                                                     "unlisted": post.unlisted})
         if form.is_valid():
             post.title = form.cleaned_data['title']
             post.description = form.cleaned_data['description']
             post.content_type = form.cleaned_data['content_type']
             post.content = form.cleaned_data['content']
+            post.unlisted = form.cleaned_data['unlisted']
             post.save()
             return redirect('author-posts')
 
