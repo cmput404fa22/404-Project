@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from .utils import url_is_local
+from .connections import RemoteNodeConnection
 
 
 class Author(models.Model):
@@ -81,12 +82,20 @@ class InboxItem(models.Model):
 
         post_objects = []
         for item in page:
-            if url_is_local(item.object_url):
-                post = Post.objects.get(uuid=item.object_url.split("/")[-1])
+            url = item.object_url
+            uuid = url.split("/")[-1]
+            if url_is_local(url):
+                post = Post.objects.get(uuid=uuid)
                 post_objects.append(post.get_json_object())
             else:
-                # TODO: query remote node for post
-                continue
+                try:
+                    author_uuid = item.from_author_url
+                    remote_node_conn = RemoteNodeConnection(item.object_url)
+                    post = remote_node_conn.get_post(
+                        author_uuid=author_uuid, post_uuid=uuid)
+                    post_objects.append(post)
+                except Exception as e:
+                    print(e)
 
         return post_objects
 

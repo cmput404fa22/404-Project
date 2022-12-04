@@ -46,6 +46,84 @@ class Team15Connection(ConnectionInterface):
 
 class Team14Connection(ConnectionInterface):
 
+    def get_post(self, author_uuid: str, post_uuid: str):
+        url = self.base_url + f"authors/{author_uuid}/posts/{post_uuid}"
+
+        response = requests.request(
+            "GET", url, auth=(self.username, self.password))
+
+        if (response.status_code != 200):
+            return None
+
+        posts_json = response.json()
+        author_json = posts_json["author"]
+        author_object = {"id": author_json["url"],
+                         "displayName": author_json["display_name"],
+                         "url": author_json["url"], "github": author_json["github_handle"],
+                         "profileImage": author_json["profile_image"]}
+        post_object = {"title": posts_json["title"], "id": posts_json["id"], "source": posts_json["source"],
+                       "origin": posts_json["origin"], "description": "", "contentType": posts_json["content_type"], "content": posts_json["content"],
+                       "author": author_object, "likesCount": posts_json["likes_count"],
+                       "createdAt": posts_json["created_at"], "visibility": posts_json["visibility"], "unlisted": posts_json["unlisted"], "editedAt": posts_json["edited_at"]}
+
+        return post_object
+
+    #     def send_post(self, post: Post, author_uuid: str):
+    #         url = self.base_url + f"authors/{author_uuid}/inbox/"
+    #         post_uuid = post.uuid
+    #         posts_author_uuid = post.author.uuid
+
+    #         body = {
+    #             "type": "post",
+    #             "post": {
+    #                 "id": post_uuid,
+    #                 "author": {
+    #                     "id": posts_author_uuid,
+    #                     "url": post.url,
+    #                 }
+    #             }
+    #         }
+    #         print(url)
+    #         print(json.dumps(body))
+    #         raise Exception("stop here")
+    #         # response = requests.request("POST", url, json=body)
+    #         # if (response.status_code != 201):
+    #         #     print(response.status_code)
+    #         #     print(response.text)
+    #         #     return None
+    #         # return body
+
+    def send_follow_request(self, sender: Author, author_uuid):
+        url = self.base_url + f"authors/{author_uuid}/inbox/"
+
+        followed = self.get_author(author_uuid)
+        sender = sender.get_json_object()
+
+        body = {
+            "type": "follow",
+            "sender": {
+                "url": sender['id'],
+                "id": sender['id'].split("/")[-1]
+            },
+            "receiver": {
+                "url": followed["id"],
+                "id": followed['id'].split("/")[-1]
+            }
+        }
+        headers = {
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request(
+            "POST", url, headers=headers, json=body, auth=(self.username, self.password))
+
+        if (response.status_code != 201):
+            print(response.status_code)
+            print(response.text)
+            return None
+
+        return followed
+
     def get_author(self, author_uuid: str):
         url = self.base_url + f"authors/{author_uuid}/"
         response = requests.request(
