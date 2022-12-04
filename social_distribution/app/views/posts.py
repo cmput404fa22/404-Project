@@ -139,27 +139,30 @@ def like_post(request):
 
 @login_required
 def comment_post(request):  # copied from like_post
-    form = CreateCommentForm()
+    context = {}
+    if request.method == 'POST':
+        form = CreateCommentForm(request.POST)
+        if form.is_valid():
+            user_url = request.user.author.url
+            post_id = request.GET.get('post_id')
+            post = Post.objects.get(uuid=post_id)
 
-    if form.is_valid():
-        user_url = request.user.author.url
-        post_id = request.GET.get('post_id')
-        post = Post.objects.get(uuid=post_id)
+            # no filter since user can comment multiple times per post
+            new_comment = Comment.objects.create(content_type=form.cleaned_data['content_type'],
+                                                 content=form.cleaned_data['content'], commenter_url=user_url, post=post)
+            new_comment.save()
+            post.comments_count += 1
+            post.save()
 
-        # no filter since user can comment multiple times per post
-        new_comment = Comment.objects.create(content_type=form.cleaned_data['content_type'],
-                                             content=form.cleaned_data['content'], commenter_url=user_url, post=post)
-        new_comment.save()
-        post.comments_count += 1
-        post.save()
+            target_inbox_item = InboxItem.objects.create(
+                author=post.author, type="COMMENT", from_author_url=request.user.author.url,
+                from_username=request.user.username)
+            target_inbox_item.save()
 
-        target_inbox_item = InboxItem.objects.create(
-            author=post.author, type="COMMENT", from_author_url=request.user.author.url,
-            from_username=request.user.username)
-        target_inbox_item.save()
+            context = {"post": post, "form": form}
 
-        messages.success(request, 'Commented post')
+            messages.success(request, 'Commented post')
     else:
         return redirect('/')
 
-    return redirect('/')
+    return render(request, 'app/create_comment.html', context)

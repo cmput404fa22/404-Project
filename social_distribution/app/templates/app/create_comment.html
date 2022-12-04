@@ -1,0 +1,23 @@
+{% extends 'app/base.html' %}
+{% load bootstrap5 %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+<div class="row d-flex align-items-center" >
+<div class="col-lg-6 col-md-12 col-sm-12">
+<div class="card rounded">
+    <div class="card-header text-white bg-dark">Create Comment</div>
+    <div class="card-body text-white bg-secondary">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="form-group">
+                <button type="submit" class="btn btn-light mt-2 float-end">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}
