@@ -1,0 +1,14 @@
+{% extends 'app/base.html' %}
+{% load markdown_extras %}
+{% load bootstrap5 %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div>
+    {% if post.content_type == "image/png;base64" %}
+        <img style="width:300px" src="data:image/jpeg;base64,{{ post.image }}">
+    {% elif post.content_type == "image/jpeg;base64" %} 
+        <img style="width:300px" src="data:image/jpeg;base64,{{ post.image }}">
+    {% endif %} 
+</div>
+{% endblock %}

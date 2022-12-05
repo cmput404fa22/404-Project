@@ -61,7 +61,13 @@ class Post(models.Model):
     source = models.TextField(default=settings.HOSTNAME)
     origin = models.TextField(default=settings.HOSTNAME)
     description = models.TextField()
-    content_type = models.TextField()
+    CONTENT_TYPE_CHOICES = (
+        ("text/markdown", "text/markdown"),
+        ("text/plain", "text/plain"),
+        ("image/png;base64", "image/png"),
+        ("image/jpeg;base64", "image/jpeg"),
+    )
+    content_type = models.CharField(max_length=18, choices=CONTENT_TYPE_CHOICES)
     content = models.TextField()
     categories = models.TextField()
     comments_count = models.IntegerField(default=0)
@@ -74,6 +80,7 @@ class Post(models.Model):
     visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)
     unlisted = models.BooleanField(default=False)
     author_url = models.TextField()
+    image = models.TextField(null=True, blank=True)
 
     received = models.BooleanField(default=False)
     author = models.ForeignKey(

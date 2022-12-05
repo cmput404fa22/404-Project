@@ -9,7 +9,7 @@
 <div class="card rounded">
     <div class="card-header text-white bg-dark">Create Post</div>
     <div class="card-body text-white bg-secondary">
-        <form method="POST">
+        <form enctype="multipart/form-data" method="POST">
             {% csrf_token %}
             {{ form|crispy }}
             <div class="form-group">
