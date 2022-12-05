@@ -68,9 +68,15 @@ def get_posts_from_inbox(author, num_of_posts, page):
         url = item.object_url
         uuid = url.split("/")[-1]
         received_post = Post.objects.filter(url=url).first()
-        if url_is_local(url) or received_post:
+        if url_is_local(url) and received_post == None:
             post = Post.objects.get(url=url)
             post_objects.append(post.get_json_object())
+        elif received_post:
+            post = Post.objects.get(url=url).get_json_object()
+            post["author"]["id"] = item.from_author_url
+            post["author"]["displayName"] = item.from_username
+            post["received"] = True
+            post_objects.append(post)
         else:
             try:
                 author_uuid = item.from_author_url
