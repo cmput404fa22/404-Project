@@ -69,30 +69,29 @@ class Team14Connection(ConnectionInterface):
 
         return post_object
 
-    #     def send_post(self, post: Post, author_uuid: str):
-    #         url = self.base_url + f"authors/{author_uuid}/inbox/"
-    #         post_uuid = post.uuid
-    #         posts_author_uuid = post.author.uuid
+    def send_post(self, post: Post, author_uuid: str):
+        url = self.base_url + f"authors/{author_uuid}/inbox/"
+        post_uuid = str(post.uuid.hex)
+        posts_author_uuid = str(post.author.uuid.hex)
 
-    #         body = {
-    #             "type": "post",
-    #             "post": {
-    #                 "id": post_uuid,
-    #                 "author": {
-    #                     "id": posts_author_uuid,
-    #                     "url": post.url,
-    #                 }
-    #             }
-    #         }
-    #         print(url)
-    #         print(json.dumps(body))
-    #         raise Exception("stop here")
-    #         # response = requests.request("POST", url, json=body)
-    #         # if (response.status_code != 201):
-    #         #     print(response.status_code)
-    #         #     print(response.text)
-    #         #     return None
-    #         # return body
+        body = {
+            "type": "post",
+            "post": {
+                "id": post_uuid,
+                "author": {
+                    "id": posts_author_uuid,
+                    "url": post.author.url,
+                }
+            }
+        }
+
+        response = requests.request(
+            "POST", url, json=body, auth=(self.username, self.password))
+        if (response.status_code != 201):
+            print(response.status_code)
+            print(response.text)
+            return None
+        return body
 
     def send_follow_request(self, sender: Author, author_uuid):
         url = self.base_url + f"authors/{author_uuid}/inbox/"
