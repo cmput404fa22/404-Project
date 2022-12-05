@@ -52,9 +52,13 @@ ul.posts-list {
 
 .likebtn {
     white-space: nowrap;
-    color: black;
 }
 
 .likectn {
     display: inline-block;
+}
+
+i {
+    color: white;
+    cursor: pointer;
 }

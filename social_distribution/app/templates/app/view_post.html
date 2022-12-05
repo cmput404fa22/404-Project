@@ -1,0 +1,13 @@
+{% extends 'app/base.html' %}
+{% load markdown_extras %}
+{% load bootstrap5 %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+<div>
+    {% for post in posts %}
+        {% include './post_card.html' %}
+    {% endfor %}
+</div>
+{% endblock %}

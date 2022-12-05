@@ -1,4 +1,39 @@
 {% load markdown_extras %}
+{% load bootstrap5 %}
+{% load crispy_forms_tags %}
+{% load static %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'app/main.css' %}"></link>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+    
+            let my_modal = $("#sharePostModal");
+            const url_form = "/authorposts/share_post";
+    
+            $("#sharepost a").click(function () {
+            my_modal.load(url_form, function () {
+                my_modal.modal("show");
+                $("#sharePostForm").submit(function (e) {
+                    e.preventDefault();
+                    $.ajax({
+                        method: "POST",
+                        data: $(this).serialize(),
+                        dataType: "json",
+                        url: "/authorposts/share/?post_id={{ post.uuid.hex }}",
+                        success: function (response) {
+                            my_modal.modal('hide');
+                        },
+                        error: function (response) {
+                            alert('Could not share post')
+                        },});      
+                    });
+                });
+            });
+        });
+    </script>
+</head>
 
 <div class="card mt-2 rounded">
     <div class="card-header text-white bg-dark">
@@ -30,6 +65,16 @@
             <i class="fa fa-comment "></i>
             <p class="likectn">{{post.count}}</p>
         </span>
+        {% if user.is_authenticated and post.visibility == 'PUBLIC' %}
+            <span id="sharepost">
+                <a class="sharebtn m-2">
+                    <i class="fa fa-share"></i>
+                </a>
+            </span>
+            <div id="sharePostModal" class="modal fade" role="dialog"></div> 
+        {% else %}
+            <i class="fa fa-share "></i>
+        {% endif %}
 
         {% if user.is_authenticated and user.author.url == post.author.id %}
             <div class="float-end">
