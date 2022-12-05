@@ -4,10 +4,15 @@
     <div class="card-header text-white bg-dark">
         <h3 class="m-0">{{ post.title }}</h3>
         {% if not post.received %}
-            <a href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a>
+            <a style="text-decoration: none; color: grey;" href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a>
         {% else %}
-            sent from: <a href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a>
+            <p style="color: grey;"> sent from: <a style="text-decoration: none;" href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a></p>
         {% endif %}
+        {% if post.unlisted %} 
+            <p class="float-end" style="color: grey;">unlisted</p>
+        {% endif %} 
+
+
     </div>
     <div class="card-body text-white bg-secondary">
         {% if post.contentType == "text/markdown" %}
