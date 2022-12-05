@@ -10,6 +10,7 @@ from ..utils import url_is_local
 from ..connections.teams import RemoteNodeConnection
 from django.http import JsonResponse
 
+
 def send_private_post(request):
     pass
 
@@ -77,7 +78,7 @@ def create_public_post(request):
                             new_post, follower_uuid)
                     except Exception as e:
                         messages.error(
-                            request, 'Could not send post to all selected followers :(')
+                            request, f"Could not send post to {follower_url}. Error: {e}")
                         print(e)
 
             return redirect('author-posts')
@@ -87,26 +88,26 @@ def create_public_post(request):
 
 @login_required
 def edit_post(request, uuid):
-    context = {} 
+    context = {}
     post = Post.objects.get(uuid=uuid, received=False)
     form = CreatePostForm(post.author)
-    
+
     if (post.author != request.user.author):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method != 'POST':
         form = CreatePostForm(post.author, initial={"title": post.title,
-                                       "description": post.description,
-                                       "content_type": post.content_type,
-                                       "content": post.content,
-                                       "unlisted": post.unlisted})
+                                                    "description": post.description,
+                                                    "content_type": post.content_type,
+                                                    "content": post.content,
+                                                    "unlisted": post.unlisted})
 
     else:
         form = CreatePostForm(post.author, request.POST, initial={"title": post.title,
-                                                     "description": post.description,
-                                                     "content_type": post.content_type,
-                                                     "content": post.content,
-                                                     "unlisted": post.unlisted})
+                                                                  "description": post.description,
+                                                                  "content_type": post.content_type,
+                                                                  "content": post.content,
+                                                                  "unlisted": post.unlisted})
         if form.is_valid():
             post.title = form.cleaned_data['title']
             post.description = form.cleaned_data['description']
@@ -153,10 +154,12 @@ def like_post(request):
 
     return redirect('/')
 
+
 @login_required
 def share_post(request):
     form = SharePostForm(request.user.author)
     return render(request, 'app/share_post.html', {"share_form": form})
+
 
 @login_required
 def submit_share_post_form(request):
@@ -167,10 +170,10 @@ def submit_share_post_form(request):
     if request.method == 'POST':
         form = SharePostForm(request.user.author, request.POST)
         if form.is_valid():
-            response = JsonResponse ({"message": 'success'})
+            response = JsonResponse({"message": 'success'})
             response.status_code = 201
             # send post to inbox of followers
-            
+
             followers_to_send_to = form.cleaned_data['followers']
 
             for follower in followers_to_send_to:
@@ -191,9 +194,10 @@ def submit_share_post_form(request):
                             request, 'Could not send post to all selected followers :(')
                         print(e)
         else:
-            response = JsonResponse ({"errors": form.errors.as_json ()})
+            response = JsonResponse({"errors": form.errors.as_json()})
             response.status_code = 403
     return response
+
 
 @login_required
 def view_post(request):
