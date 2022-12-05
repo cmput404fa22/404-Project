@@ -3,6 +3,7 @@ import requests
 from .base import ConnectionInterface
 import os
 import json
+from ..utils import clean_url
 
 
 class Team15Connection(ConnectionInterface):
@@ -15,9 +16,9 @@ class Team15Connection(ConnectionInterface):
             return None
 
         author_json = response.json()["items"]
-        author_object = {"id": author_json["id"],
+        author_object = {"id": clean_url(author_json["id"]),
                          "displayName": author_json["displayName"],
-                         "url": author_json["url"], "github": author_json["github"],
+                         "url": clean_url(author_json["url"]), "github": author_json["github"],
                          "profileImage": author_json["profileImage"]}
 
         return author_object
@@ -35,9 +36,9 @@ class Team15Connection(ConnectionInterface):
             return []
         author_objects = []
         for author_json in response_json['items']:
-            obj = {"id": author_json["id"],
+            obj = {"id": clean_url(author_json["id"]),
                    "displayName": author_json["displayName"],
-                   "url": author_json["url"], "github": author_json["github"],
+                   "url": clean_url(author_json["url"]), "github": author_json["github"],
                    "profileImage": author_json["profileImage"]}
             author_objects.append(obj)
 
@@ -57,10 +58,9 @@ class Team14Connection(ConnectionInterface):
 
         posts_json = response.json()
         author_json = posts_json["author"]
-        author_json["url"] = author_json["url"][:-1]
-        author_object = {"id": author_json["url"],
+        author_object = {"id": clean_url(author_json["url"]),
                          "displayName": author_json["display_name"],
-                         "url": author_json["url"], "github": author_json["github_handle"],
+                         "url": clean_url(author_json["url"]), "github": author_json["github_handle"],
                          "profileImage": author_json["profile_image"]}
         post_object = {"title": posts_json["title"], "id": posts_json["id"], "source": posts_json["source"],
                        "origin": posts_json["origin"], "description": "", "contentType": posts_json["content_type"], "content": posts_json["content"],
@@ -134,10 +134,9 @@ class Team14Connection(ConnectionInterface):
             return None
 
         author_json = response.json()
-        author_json["url"] = author_json["url"][:-1]
-        author_object = {"id": author_json["url"],
+        author_object = {"id": clean_url(author_json["url"]),
                          "displayName": author_json["display_name"],
-                         "url": author_json["url"], "github": author_json["github_handle"],
+                         "url": clean_url(author_json["url"]), "github": author_json["github_handle"],
                          "profileImage": author_json["profile_image"]}
 
         return author_object
@@ -158,10 +157,9 @@ class Team14Connection(ConnectionInterface):
 
         author_objects = []
         for author_json in response_json:
-            author_json["url"] = author_json["url"][:-1]
-            obj = {"id": author_json["url"],
+            obj = {"id": clean_url(author_json["url"]),
                    "displayName": author_json["display_name"],
-                   "url": author_json["url"], "github": author_json["github_handle"],
+                   "url": clean_url(author_json["url"]), "github": author_json["github_handle"],
                    "profileImage": author_json["profile_image"]}
             author_objects.append(obj)
 
@@ -184,10 +182,9 @@ class Team14Connection(ConnectionInterface):
         posts_objects = []
         for posts_json in response_json:
             author_json = posts_json["author"]
-            author_json["url"] = author_json["url"][:-1]
-            author_object = {"id": author_json["url"],
+            author_object = {"id": clean_url(author_json["url"]),
                              "displayName": author_json["display_name"],
-                             "url": author_json["url"], "github": author_json["github_handle"],
+                             "url": clean_url(author_json["url"]), "github": author_json["github_handle"],
                              "profileImage": author_json["profile_image"]}
             post_object = {"title": posts_json["title"], "id": posts_json["id"], "source": posts_json["source"],
                            "origin": posts_json["origin"], "description": "", "contentType": posts_json["content_type"], "content": posts_json["content"],
@@ -257,9 +254,9 @@ class Team8Connection(ConnectionInterface):
 
         author_json = response.json()
         author_json["url"] = author_json["url"][:-1]
-        author_object = {"type": "author", "id": author_json["url"],
+        author_object = {"type": "author", "id": clean_url(author_json["url"]),
                          "host": author_json["host"], "displayName": author_json["displayName"],
-                         "url": author_json["url"], "github": author_json["github"],
+                         "url": clean_url(author_json["url"]), "github": author_json["github"],
                          "profileImage": "?"}
 
         return author_object
@@ -279,10 +276,9 @@ class Team8Connection(ConnectionInterface):
 
         author_objects = []
         for author_json in response_json['items']:
-            author_json["url"] = author_json["url"][:-1]
-            obj = {"type": "author", "id": author_json["url"],
+            obj = {"type": "author", "id": clean_url(author_json["url"]),
                    "host": author_json["host"], "displayName": author_json["displayName"],
-                   "url": author_json["url"], "github": author_json["github"],
+                   "url": clean_url(author_json["url"]), "github": author_json["github"],
                    "profileImage": ""}
             author_objects.append(obj)
 
@@ -304,10 +300,9 @@ class Team8Connection(ConnectionInterface):
         posts_objects = []
         for posts_json in response_json['items']:
             author_json = posts_json["author"]
-            author_json["url"] = author_json["url"][:-1]
-            author_object = {"type": "author", "id": author_json["url"],
+            author_object = {"type": "author", "id": clean_url(author_json["url"]),
                              "host": author_json["host"], "displayName": author_json["displayName"],
-                             "url": author_json["url"], "github": author_json["github"],
+                             "url": clean_url(author_json["url"]), "github": author_json["github"],
                              "profileImage": ""}
             post_object = {"type": "post", "title": posts_json["title"], "id": posts_json["id"], "source": posts_json["source"],
                            "origin": posts_json["origin"], "description": "", "contentType": posts_json["contentType"], "content": posts_json["content"],
@@ -326,10 +321,9 @@ class Team8Connection(ConnectionInterface):
 
         posts_json = response.json()
         author_json = posts_json["author"]
-        author_json["url"] = author_json["url"][:-1]
-        author_object = {"type": "author", "id": author_json["url"],
+        author_object = {"type": "author", "id": clean_url(author_json["url"]),
                          "host": author_json["host"], "displayName": author_json["displayName"],
-                         "url": author_json["url"], "github": author_json["github"],
+                         "url": clean_url(author_json["url"]), "github": author_json["github"],
                          "profileImage": ""}
         post_object = {"type": "post", "title": posts_json["title"], "id": posts_json["id"], "source": posts_json["source"],
                        "origin": posts_json["origin"], "description": "", "contentType": posts_json["contentType"], "content": posts_json["content"],

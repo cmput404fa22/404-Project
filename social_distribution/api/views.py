@@ -1,6 +1,6 @@
 from .serializers import AuthorSerializer, PostSerializer
 from app.models import Author, Post, Follow, InboxItem
-from app.utils import url_is_local
+from app.utils import url_is_local, clean_url
 from urllib import response
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -15,6 +15,7 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsRemoteNode
 from .swagger import CustomSwaggerAutoSchema
+from app.connections.teams import RemoteNodeConnection
 
 
 class AuthorItems(APIView, LimitOffsetPagination):
@@ -125,47 +126,47 @@ class SinglePost(APIView, LimitOffsetPagination):
 def inbox_item(request, author_id):
     author = Author.objects.get(uuid=author_id)
 
-    new_objects = []
-    object_url = None
-    from_username = "TODO: get username"
-    from_author_url = None
+    from_author = request.data.get("author")
+    items = request.data.get("items")
+    if (items == None or from_author == None):
+        return Response("Bad request", status.HTTP_400_BAD_REQUEST)
 
-    for item in request.data.get("items"):
+    from_author_url = clean_url(from_author)
+    from_username = ""
+    new_objects = []
+    friends_post = None
+    for item in items:
         if (item.get("type") == 'post'):
 
             serializer = PostSerializer(data=item)
-            if serializer.is_valid():
-                # TODO: Get username for this author: object_url from remote node
-                # from_username = get()
-                object_url = serializer.validated_data.get("url")
-                from_author_url = request.data.get("author")
-
-                # only save posts with FRIENDS visibility,
-                # PUBLIC posts can be retrieved from remote nodes when needed
-                if (serializer.validated_data.get('visibility') == 'FRIENDS'):
-                    post = serializer.create(
-                        serializer.validated_data, author=author)
-                    post.received = True
-                    object_url = post.url
-                    new_objects.append(post)
-            else:
+            if (not serializer.is_valid()):
                 return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+            object_url = clean_url(serializer.validated_data.get("url"))
+
+            # only save posts with FRIENDS visibility,
+            # PUBLIC posts can be retrieved from remote nodes when needed
+            if (serializer.validated_data.get('visibility') == 'FRIENDS'):
+                post = serializer.create(
+                    serializer.validated_data, author=author)
+                post.received = True
+                friends_post = post
+                new_objects.append(post)
 
         if (item.get("type") == 'Follow'):
 
             serializer = AuthorSerializer(data=item.get('object'))
-            if serializer.is_valid():
-                from_author_url = item['actor']['id']
-                from_username = item['actor']['displayName']
-
-                author_uuid = serializer.validated_data.get(
-                    "url").split("/")[-1]
-                followed = Author.objects.get(uuid=author_uuid)
-                follow = Follow.objects.create(
-                    author=followed, target_url=from_author_url)
-                new_objects.append(follow)
-            else:
+            if (not serializer.is_valid()):
                 return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+            from_username = item['actor']['displayName']
+            author_uuid = serializer.validated_data.get("url").split("/")[-1]
+            object_url = "follow"
+
+            followed = Author.objects.get(uuid=author_uuid)
+            follow = Follow.objects.create(
+                author=followed, target_url=from_author_url)
+            new_objects.append(follow)
 
         if (item.get("type") == 'comment'):
             return Response({"posting comments is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
@@ -173,12 +174,23 @@ def inbox_item(request, author_id):
         if (item.get("type") == 'like'):
             return Response({"posting likes is not implemented yet"}, status.HTTP_501_NOT_IMPLEMENTED)
 
+        if from_username == "":
+            try:
+                author_uuid = from_author_url.split("/")[-1]
+                remote_node_conn = RemoteNodeConnection(from_author_url)
+                author = remote_node_conn.conn.get_author(author_uuid)
+                from_username = author["displayName"]
+            except Exception as e:
+                from_username = "Unknown"
+                print(e)
+
         inbox_item = InboxItem.objects.create(
             author=author,
             type=item.get("type").upper(),
             from_author_url=from_author_url,
             object_url=object_url,
-            from_username=from_username)
+            from_username=from_username,
+            friends_post=friends_post)
         new_objects.append(inbox_item)
 
     for obj in new_objects:
