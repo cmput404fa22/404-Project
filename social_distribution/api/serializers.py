@@ -26,7 +26,7 @@ class PostSerializer(serializers.ModelSerializer):
     type = serializers.ReadOnlyField(default='post')
     id = serializers.CharField(source='url')
     source = serializers.CharField()
-    title = serializers.CharField()
+    title = serializers.CharField(default="title :)")
     origin = serializers.CharField()
     description = serializers.CharField()
     contentType = serializers.ChoiceField(
