@@ -67,11 +67,11 @@ def get_posts_from_inbox(author, num_of_posts, page):
     for item in page:
         url = item.object_url
         uuid = url.split("/")[-1]
-        # this is weird but there's no other way of getting a friends post from our db
-        # url of the post is pointing to remote node, uuid is local to our node only
         received_post = item.friends_post
         if url_is_local(url) and received_post == None:
-            post = Post.objects.get(uuid=uuid)
+            post = Post.objects.filter(uuid=uuid).first()
+            if post is None:
+                continue
             post_objects.append(post.get_json_object())
         elif received_post:
             post = received_post.get_json_object()
