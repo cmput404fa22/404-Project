@@ -72,6 +72,12 @@ def get_posts_from_inbox(author, num_of_posts, page):
             if post is None:
                 continue
             post_objects.append(post.get_json_object())
+        elif item.friends_post:
+            post = item.friends_post.get_json_object()
+            post["author"]["id"] = item.from_author_url
+            post["author"]["displayName"] = item.from_username
+            post["received"] = True
+            post_objects.append(post)
         else:
             try:
                 author_uuid = item.from_author_url.split("/")[-1]
@@ -81,10 +87,5 @@ def get_posts_from_inbox(author, num_of_posts, page):
                 post_objects.append(post)
             except Exception as e:
                 print(e)
-                post = item.friends_post.get_json_object()
-                post["author"]["id"] = item.from_author_url
-                post["author"]["displayName"] = item.from_username
-                post["received"] = True
-                post_objects.append(post)
 
     return post_objects
