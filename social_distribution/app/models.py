@@ -51,27 +51,6 @@ class Follow(models.Model):
         Author, on_delete=models.CASCADE)  # author has followers
 
 
-class InboxItem(models.Model):
-    uuid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    TYPE_CHOICES = (
-        ('POST', 'post'),
-        ('COMMENT', 'comment'),
-        ('LIKE', 'like'),
-        ('FOLLOW', 'follow'),
-    )
-    type = models.CharField(max_length=13, choices=TYPE_CHOICES)
-    # url to the object InboxItem is referring to, ie the post, comment, like
-    object_url = models.TextField(null=True)
-    # url to the author that caused this InboxItem
-    from_author_url = models.TextField()
-    # username of the author that caused this InboxItem
-    from_username = models.TextField()
-    date_published = models.DateTimeField(default=timezone.now, null=True)
-    author = models.ForeignKey(
-        Author, on_delete=models.CASCADE)  # author has InboxItems
-
-
 class Post(models.Model):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
@@ -106,6 +85,29 @@ class Post(models.Model):
                        "author": self.author.get_json_object(), "count": self.comments_count, "comments": self.comments_url, "likes": self.likes_count,
                        "published": self.date_published.isoformat(), "visibility": self.visibility, "unlisted": self.unlisted}
         return post_object
+
+
+class InboxItem(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    TYPE_CHOICES = (
+        ('POST', 'post'),
+        ('COMMENT', 'comment'),
+        ('LIKE', 'like'),
+        ('FOLLOW', 'follow'),
+    )
+    type = models.CharField(max_length=13, choices=TYPE_CHOICES)
+    # url to the object InboxItem is referring to, ie the post, comment, like
+    object_url = models.TextField(null=True)
+    # url to the author that caused this InboxItem
+    from_author_url = models.TextField()
+    # username of the author that caused this InboxItem
+    from_username = models.TextField()
+    date_published = models.DateTimeField(default=timezone.now, null=True)
+    author = models.ForeignKey(
+        Author, on_delete=models.CASCADE)  # author has InboxItems
+    friends_post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, null=True)  # author has InboxItems
 
 
 class Comment(models.Model):

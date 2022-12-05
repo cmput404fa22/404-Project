@@ -134,6 +134,7 @@ def inbox_item(request, author_id):
     from_author_url = clean_url(from_author)
     from_username = ""
     new_objects = []
+    friends_post = None
     for item in items:
         if (item.get("type") == 'post'):
 
@@ -149,6 +150,7 @@ def inbox_item(request, author_id):
                 post = serializer.create(
                     serializer.validated_data, author=author)
                 post.received = True
+                friends_post = post
                 new_objects.append(post)
 
         if (item.get("type") == 'Follow'):
@@ -187,7 +189,8 @@ def inbox_item(request, author_id):
             type=item.get("type").upper(),
             from_author_url=from_author_url,
             object_url=object_url,
-            from_username=from_username)
+            from_username=from_username,
+            friends_post=friends_post)
         new_objects.append(inbox_item)
 
     for obj in new_objects:
