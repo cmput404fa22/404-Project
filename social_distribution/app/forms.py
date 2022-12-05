@@ -60,10 +60,11 @@ class FollowModelChoiceField(ModelMultipleChoiceField):
             remote_node_conn = RemoteNodeConnection(follower_url)
         try:
             author = remote_node_conn.conn.get_author(follower_uuid)
-            return f"{author['displayName']} ({author['host']})"
+            return f"{author['displayName']} (REMOTE)"
 
         except Exception as e:
             print(e)
+
 
 class SharePostForm(forms.Form):
     def __init__(self, author, *args, **kwargs):
@@ -73,6 +74,7 @@ class SharePostForm(forms.Form):
             to_field_name="target_url",
             required=False,
         )
+
 
 class CreatePostForm(forms.Form):
     def __init__(self, author, *args, **kwargs):
@@ -96,5 +98,6 @@ class CreatePostForm(forms.Form):
         choices=CONTENT_TYPE_CHOICES, label="Content type", initial='', widget=forms.Select(), required=True)
     content = forms.CharField(widget=forms.Textarea(attrs={"rows": "5"}),
                               label='Content')
-    
-    unlisted = forms.BooleanField(widget=forms.CheckboxInput(), label='Unlisted', initial=False, required=False)
+
+    unlisted = forms.BooleanField(widget=forms.CheckboxInput(
+    ), label='Unlisted', initial=False, required=False)
