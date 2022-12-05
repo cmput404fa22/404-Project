@@ -22,8 +22,10 @@ def list_posts(request):
     json_posts = []
     posts = Post.objects.filter(
         author=request.user.author, received=False).order_by("-date_published")
-    for post in posts:
-        json_posts.append(post) #.get_json_object())
+    for p in posts:
+        post = p.get_json_object()
+        post["image"] = p.image
+        json_posts.append(post)
 
     context = {'posts': json_posts}
     return render(request, 'app/author_posts.html', context)
@@ -31,25 +33,20 @@ def list_posts(request):
 @login_required
 def image_post(request, uuid):
     post = Post.objects.get(uuid=uuid, received=False)
-    # posts = []
-    # posts.append(post)
     context = {'post': post}
     return render(request, 'app/image.html', context)
 
 @login_required
-def view_post(request, uuid):
-    # posts = []
-    # post_url = request.GET.get('post_url')
-    # post = Post.objects.get(url=post_url)
-    post = Post.objects.get(uuid=uuid, received=False)
+def view_post(request):
     posts = []
+    post_url = request.GET.get('post_url')
+    p = Post.objects.filter(url=post_url).first()
+    post = p.get_json_object()
+    post["image"] = p.image
+
     posts.append(post)
     context = {'posts': posts}
     return render(request, 'app/view_post.html', context)
-    # posts.append(post)
-    # print(dir(posts[0]))
-    # return render(request, 'app/view_post.html', {"posts": posts})
-
 
 @login_required
 def create_public_post(request):
