@@ -107,7 +107,7 @@ class InboxItem(models.Model):
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE)  # author has InboxItems
     friends_post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, null=True)  # author has InboxItems
+        Post, on_delete=models.CASCADE, null=True, blank=True)  # author has InboxItems
 
 
 class Comment(models.Model):
