@@ -11,7 +11,7 @@
 
 body {
     overflow: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .horizontalFlex {
@@ -35,7 +35,7 @@ body {
 
 .contentContainer {
     width: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 10px;
     margin-left: 25vw;
 }
