@@ -1,6 +1,6 @@
 from datetime import timezone
 from django.shortcuts import render
-from ..forms import CreatePostForm
+from ..forms import CreatePostForm, SharePostForm
 from ..models import Post, Like, Follow, Author, InboxItem
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from ..utils import url_is_local
 from ..connections.teams import RemoteNodeConnection
-
+from django.http import JsonResponse
 
 def send_private_post(request):
     pass
@@ -152,3 +152,54 @@ def like_post(request):
         return redirect('/')
 
     return redirect('/')
+
+@login_required
+def share_post(request):
+    form = SharePostForm(request.user.author)
+    return render(request, 'app/share_post.html', {"share_form": form})
+
+@login_required
+def submit_share_post_form(request):
+    form = SharePostForm(request.user.author)
+    post_id = request.GET.get('post_id')
+    post = Post.objects.get(uuid=post_id)
+
+    if request.method == 'POST':
+        form = SharePostForm(request.user.author, request.POST)
+        if form.is_valid():
+            response = JsonResponse ({"message": 'success'})
+            response.status_code = 201
+            # send post to inbox of followers
+            
+            followers_to_send_to = form.cleaned_data['followers']
+
+            for follower in followers_to_send_to:
+                follower_url = follower.target_url
+                follower_uuid = follower_url.split("/")[-1]
+                if url_is_local(follower_url):
+                    author_to_send_to = Author.objects.get(uuid=follower_uuid)
+                    inbox_item = InboxItem.objects.create(
+                        author=author_to_send_to, type="POST", from_author_url=request.user.author.url, from_username=request.user.username, object_url=post.url)
+                    inbox_item.save()
+                else:
+                    try:
+                        remote_node_conn = RemoteNodeConnection(follower_url)
+                        remote_node_conn.conn.send_post(
+                            post, follower_uuid)
+                    except Exception as e:
+                        messages.error(
+                            request, 'Could not send post to all selected followers :(')
+                        print(e)
+        else:
+            response = JsonResponse ({"errors": form.errors.as_json ()})
+            response.status_code = 403
+    return response
+
+@login_required
+def view_post(request):
+    posts = []
+    post_url = request.GET.get('post_url')
+    post = Post.objects.get(url=post_url)
+    posts.append(post)
+    print(dir(posts[0]))
+    return render(request, 'app/view_post.html', {"posts": posts})

@@ -65,6 +65,14 @@ class FollowModelChoiceField(ModelMultipleChoiceField):
         except Exception as e:
             print(e)
 
+class SharePostForm(forms.Form):
+    def __init__(self, author, *args, **kwargs):
+        super(SharePostForm, self).__init__(*args, **kwargs)
+        self.fields['followers'] = FollowModelChoiceField(
+            queryset=Follow.objects.filter(author=author, accepted=True),
+            to_field_name="target_url",
+            required=False,
+        )
 
 class CreatePostForm(forms.Form):
     def __init__(self, author, *args, **kwargs):

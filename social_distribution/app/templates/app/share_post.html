@@ -1,0 +1,30 @@
+{% load bootstrap5 %}
+{% load crispy_forms_tags %}
+<head>
+    <style>
+    .modal-title {
+        color: black;
+    }
+    label {
+        color: black;
+    }
+    </style>
+</head>
+
+<div class="modal-dialog">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Share post</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <form id="sharePostForm" method="POST">
+            {% csrf_token %}
+            {{ share_form|crispy }}
+            <div class="form-group">
+                <button type="submit" class="btn btn-light mt-2 float-end">Submit</button>
+            </div>
+        </form>
+    </div>
+    </div>
+</div>
