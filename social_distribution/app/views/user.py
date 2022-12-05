@@ -8,7 +8,6 @@ from django.shortcuts import redirect
 from ..forms import SignupForm, LoginForm, UserUpdateForm, AuthorUpdateForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from uuid import UUID
 from ..utils import url_is_local
 from ..connections.teams import RemoteNodeConnection
 
@@ -111,7 +110,7 @@ def public_profile(request):
         follows_you = Follow.objects.filter(
             author=request.user.author, target_url=author.url).first()
         posts = Post.objects.filter(
-            author=author, visibility='PUBLIC', received=False)
+            author=author, visibility='PUBLIC', received=False, unlisted=False)
 
         authors_posts = []
         for post in posts:
