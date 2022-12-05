@@ -74,12 +74,13 @@ def get_posts_from_inbox(author, num_of_posts, page):
             post_objects.append(post.get_json_object())
         else:
             try:
-                author_uuid = item.from_author_url
+                author_uuid = item.from_author_url.split("/")[-1]
                 remote_node_conn = RemoteNodeConnection(item.object_url)
                 post = remote_node_conn.get_post(
                     author_uuid=author_uuid, post_uuid=uuid)
                 post_objects.append(post)
             except Exception as e:
+                print(e)
                 post = item.friends_post.get_json_object()
                 post["author"]["id"] = item.from_author_url
                 post["author"]["displayName"] = item.from_username
