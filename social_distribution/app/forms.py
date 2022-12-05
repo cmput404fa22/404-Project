@@ -92,12 +92,15 @@ class CreatePostForm(forms.Form):
     CONTENT_TYPE_CHOICES = (
         ("text/markdown", "text/markdown"),
         ("text/plain", "text/plain"),
-        ("image", "image"),
+        ("image/png;base64", "image/png"),
+        ("image/jpeg;base64", "image/jpeg"),
     )
     content_type = forms.ChoiceField(
         choices=CONTENT_TYPE_CHOICES, label="Content type", initial='', widget=forms.Select(), required=True)
     content = forms.CharField(widget=forms.Textarea(attrs={"rows": "5"}),
                               label='Content')
 
+    image = forms.FileField(required=False)
+    
     unlisted = forms.BooleanField(widget=forms.CheckboxInput(
     ), label='Unlisted', initial=False, required=False)

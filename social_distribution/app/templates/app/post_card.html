@@ -37,7 +37,7 @@
 
 <div class="card mt-2 rounded">
     <div class="card-header text-white bg-dark">
-        <h3 class="m-0">{{ post.title }}</h3>
+        <h3 class="m-0"><a style="text-decoration: none; color: white;" href="/authorposts/view_post/?post_url={{ post.id }}">{{ post.title }}</a></h3>
         {% if not post.received %}
             <a style="text-decoration: none; color: grey;" href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a>
         {% else %}
@@ -56,9 +56,16 @@
         <p> {{ post.content }}</p>
         {% endif %}
 
+        {% if post.image %}
+            {% if post.contentType == "image/png;base64" %}
+            <a href="{% url 'image' uuid=post.uuid  %}" > <img style="width:100px" src="data:image/jpeg;base64,{{ post.image }}"> </a>
+            {% elif post.contentType == "image/jpeg;base64" %} 
+            <a href="{% url 'image' uuid=post.uuid  %}" > <img style="width:100px" src="data:image/jpeg;base64,{{ post.image }}"> </a>
+            {% endif %} 
+        {% endif %}
         <span class="m-2">
             {% if user.is_authenticated %}
-                <a class="likebtn" href="/authorposts/like/?post_id={{ post.uuid.hex }}">
+                <a class="likebtn" style="text-decoration: none;" href="/authorposts/like/?post_id={{ post.uuid.hex }}">
                     <i class="fa fa-heart text-white"></i>
                 </a>
             {% else %}

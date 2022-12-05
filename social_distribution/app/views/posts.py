@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from ..utils import url_is_local
 from ..connections.teams import RemoteNodeConnection
 from django.http import JsonResponse
+import base64
 
 
 def send_private_post(request):
@@ -21,12 +22,31 @@ def list_posts(request):
     json_posts = []
     posts = Post.objects.filter(
         author=request.user.author, received=False).order_by("-date_published")
-    for post in posts:
-        json_posts.append(post.get_json_object())
+    for p in posts:
+        post = p.get_json_object()
+        post["image"] = p.image
+        json_posts.append(post)
 
     context = {'posts': json_posts}
     return render(request, 'app/author_posts.html', context)
 
+@login_required
+def image_post(request, uuid):
+    post = Post.objects.get(uuid=uuid, received=False)
+    context = {'post': post}
+    return render(request, 'app/image.html', context)
+
+@login_required
+def view_post(request):
+    posts = []
+    post_url = request.GET.get('post_url')
+    p = Post.objects.filter(url=post_url).first()
+    post = p.get_json_object()
+    post["image"] = p.image
+
+    posts.append(post)
+    context = {'posts': posts}
+    return render(request, 'app/view_post.html', context)
 
 @login_required
 def create_public_post(request):
@@ -34,7 +54,7 @@ def create_public_post(request):
                "form": CreatePostForm(request.user.author)}
 
     if request.method == 'POST':
-        form = CreatePostForm(request.user.author, request.POST)
+        form = CreatePostForm(request.user.author, request.POST, request.FILES or None)
         if form.is_valid():
             if list(form.cleaned_data['followers']) == []:
                 visibility = 'PUBLIC'
@@ -50,6 +70,11 @@ def create_public_post(request):
                                            visibility=visibility,
                                            author_url=request.user.author.url,
                                            received=False)
+            if new_post.content_type == "image/jpeg;base64" or new_post.content_type == "image/png;base64":           
+                form_img=form.cleaned_data['image']
+                new_post.image = base64.b64encode(form_img.file.read()).decode('utf-8')
+                print(new_post.image)
+                
             new_post.url = f'{request.user.author.url}/posts/{new_post.uuid.hex}'
             new_post.comments_url = f'{new_post.url}/comments'
 
@@ -114,6 +139,9 @@ def edit_post(request, uuid):
             post.content_type = form.cleaned_data['content_type']
             post.content = form.cleaned_data['content']
             post.unlisted = form.cleaned_data['unlisted']
+            if post.content_type == "image/jpeg;base64" or post.content_type == "image/png;base64":           
+                form_img=form.cleaned_data['image']
+                post.image = base64.b64encode(form_img.file.read())
             post.save()
             return redirect('author-posts')
 
@@ -198,12 +226,3 @@ def submit_share_post_form(request):
             response.status_code = 403
     return response
 
-
-@login_required
-def view_post(request):
-    posts = []
-    post_url = request.GET.get('post_url')
-    post = Post.objects.get(url=post_url)
-    posts.append(post)
-    print(dir(posts[0]))
-    return render(request, 'app/view_post.html', {"posts": posts})
