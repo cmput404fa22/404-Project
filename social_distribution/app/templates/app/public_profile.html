@@ -12,9 +12,7 @@
         <div class="col-xl">
             <h3>{{ author.displayName }}'s posts</h3>
                         {% for post in posts %}
-                            {% if not post.unlisted %}
-                                {% include './post_card.html' %}
-                            {% endif %}
+                            {% include './post_card.html' %}
                         {% endfor %}
                     <a class="btn btn-light mt-2 float-start" href="?page={{ paginated_posts.page|add:'-1' }}">previous</a>
                     <a class="btn btn-light mt-2 float-end" href="?page={{ paginated_posts.page|add:'1' }}">next</a>

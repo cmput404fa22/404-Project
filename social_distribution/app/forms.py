@@ -65,6 +65,8 @@ class FollowModelChoiceField(ModelMultipleChoiceField):
         except Exception as e:
             print(e)
 
+        return follower_url
+
 
 class SharePostForm(forms.Form):
     def __init__(self, author, *args, **kwargs):

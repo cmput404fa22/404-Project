@@ -13,7 +13,8 @@ class Team15Connection(ConnectionInterface):
             "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
-            return None
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         author_json = response.json()["items"]
         author_object = {"id": clean_url(author_json["id"]),
@@ -28,12 +29,12 @@ class Team15Connection(ConnectionInterface):
         response = requests.request(
             "GET", url, auth=(self.username, self.password))
         if (response.status_code != 200):
-            print(response.text)
-            return []
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
         response_json = response.json()
         if (response_json is None or len(response_json) == 0):
-            print(response.text)
             return []
+
         author_objects = []
         for author_json in response_json['items']:
             obj = {"id": clean_url(author_json["id"]),
@@ -54,7 +55,8 @@ class Team14Connection(ConnectionInterface):
             "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
-            return None
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         posts_json = response.json()
         author_json = posts_json["author"]
@@ -88,9 +90,8 @@ class Team14Connection(ConnectionInterface):
         response = requests.request(
             "POST", url, json=body, auth=(self.username, self.password))
         if (response.status_code != 201):
-            print(response.status_code)
-            print(response.text)
-            return None
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
         return body
 
     def send_follow_request(self, sender: Author, author_uuid):
@@ -118,9 +119,8 @@ class Team14Connection(ConnectionInterface):
             "POST", url, headers=headers, json=body, auth=(self.username, self.password))
 
         if (response.status_code != 201):
-            print(response.status_code)
-            print(response.text)
-            return None
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         return followed
 
@@ -130,7 +130,8 @@ class Team14Connection(ConnectionInterface):
             "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
-            return None
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         author_json = response.json()
         author_object = {"id": clean_url(author_json["url"]),
@@ -146,8 +147,8 @@ class Team14Connection(ConnectionInterface):
             "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
-            print(response.text)
-            return []
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         response_json = response.json()
         if (response_json is None or len(response_json) == 0):
@@ -170,8 +171,8 @@ class Team14Connection(ConnectionInterface):
             "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
-            print(response.text)
-            return []
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         response_json = response.json()
         if (response_json is None or len(response_json) == 0):
@@ -201,9 +202,8 @@ class Team8Connection(ConnectionInterface):
         body = post.get_json_object()
         response = requests.request("POST", url, json=body)
         if (response.status_code != 201):
-            print(response.status_code)
-            print(response.text)
-            return None
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
         return body
 
     def send_follow_request(self, sender: Author, author_uuid):
@@ -238,9 +238,8 @@ class Team8Connection(ConnectionInterface):
         }
         response = requests.request("POST", url, headers=headers, json=body)
         if (response.status_code != 201 or response.status_code != 200):
-            print(response.status_code)
-            print(response.text)
-            return None
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         return followed
 
@@ -249,7 +248,8 @@ class Team8Connection(ConnectionInterface):
         response = requests.request("GET", url)
 
         if (response.status_code != 200):
-            return None
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         author_json = response.json()
         author_json["url"] = author_json["url"][:-1]
@@ -265,8 +265,8 @@ class Team8Connection(ConnectionInterface):
         response = requests.request("GET", url)
 
         if (response.status_code != 200):
-            print(response.text)
-            return []
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         response_json = response.json()
         if (response_json.get('items') is None or len(response_json.get('items')) == 0):
@@ -288,8 +288,8 @@ class Team8Connection(ConnectionInterface):
         response = requests.request("GET", url)
 
         if (response.status_code != 200):
-            print(response.text)
-            return []
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         response_json = response.json()
         if (response_json.get('items') is None or len(response_json.get('items')) == 0):
@@ -316,7 +316,8 @@ class Team8Connection(ConnectionInterface):
             "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
-            return None
+            raise Exception(
+                f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
 
         posts_json = response.json()
         author_json = posts_json["author"]

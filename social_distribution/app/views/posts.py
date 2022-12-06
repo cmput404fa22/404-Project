@@ -102,9 +102,7 @@ def create_public_post(request):
                         remote_node_conn.conn.send_post(
                             new_post, follower_uuid)
                     except Exception as e:
-                        messages.error(
-                            request, f"Could not send post to {follower_url}. Error: {e}")
-                        print(e)
+                        messages.warning(request, str(e))
 
             return redirect('author-posts')
 
@@ -218,9 +216,7 @@ def submit_share_post_form(request):
                         remote_node_conn.conn.send_post(
                             post, follower_uuid)
                     except Exception as e:
-                        messages.error(
-                            request, 'Could not send post to all selected followers :(')
-                        print(e)
+                        messages.warning(request, str(e))
         else:
             response = JsonResponse({"errors": form.errors.as_json()})
             response.status_code = 403

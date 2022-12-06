@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage
 from ..connections.teams import RemoteNodeConnection
 from ..utils import url_is_local
+from django.contrib import messages
 
 
 def root(request):
@@ -20,7 +21,7 @@ def root(request):
         try:
             authors = remote_node_conn.conn.get_all_authors()[:5]
         except Exception as e:
-            print(e)
+            messages.warning(request, str(e))
             authors = []
         other_node = {"home_page": node.home_page,
                       "posts": posts, "authors": authors}
