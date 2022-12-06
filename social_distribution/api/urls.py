@@ -31,7 +31,7 @@ urlpatterns = [
     path("<uuid:author_id>/posts/", views.PostItems.as_view()),
     path("<uuid:author_id>/posts/<uuid:post_id>", views.SinglePost.as_view()),
     path("<uuid:author_id>/posts/<uuid:post_id>/image",
-         views.image_post, name='image'),
+         views.Image.as_view(), name='image'),
 
     path("<uuid:author_id>/inbox/", views.inbox_item),
 ]
