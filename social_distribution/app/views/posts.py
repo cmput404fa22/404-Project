@@ -148,9 +148,16 @@ def edit_post(request, uuid):
             post.content_type = form.cleaned_data['content_type']
             post.content = form.cleaned_data['content']
             post.unlisted = form.cleaned_data['unlisted']
-            if post.content_type == "image/jpeg;base64" or post.content_type == "image/png;base64":
-                form_img = form.cleaned_data['image']
-                post.image = base64.b64encode(form_img.file.read())
+            form_img = form.cleaned_data['image']
+            if form_img:
+                file_ext = request.FILES["image"].name.split(".")[-1]
+                if file_ext == "png":
+                    post.content_type = "image/png;base64"
+                elif file_ext == "jpeg" or file_ext == "jpg":
+                    post.content_type = "image/jpeg;base64"
+                    post.image = base64.b64encode(
+                        form_img.file.read()).decode('utf-8')
+                    post.content = post.url + "/image"
             post.save()
             return redirect('author-posts')
 
