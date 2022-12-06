@@ -73,7 +73,6 @@ def create_public_post(request):
 
             form_img = request.FILES["image"]
             if form_img:
-                new_post.content = new_post.url + "/image"
                 filename = form_img.name
                 filename_split = os.path.splitext(filename)
                 file_ext = filename_split[-1]
@@ -82,8 +81,9 @@ def create_public_post(request):
                     new_post.content_type = "image/png;base64"
                 elif file_ext == ".jpeg" or file_ext == ".jpg":
                     new_post.content_type = "image/jpeg;base64"
-                    new_post.image = base64.b64encode(
-                        form_img.file.read()).decode('utf-8')
+                new_post.content = new_post.url + "/image"
+                new_post.image = base64.b64encode(
+                    form_img.file.read()).decode('utf-8')
 
             new_post.save()
             messages.success(request, 'Post created')
@@ -146,7 +146,6 @@ def edit_post(request, uuid):
             post.unlisted = form.cleaned_data['unlisted']
             form_img = request.FILES["image"]
             if form_img:
-                post.content = post.url + "/image"
                 filename = form_img.name
                 filename_split = os.path.splitext(filename)
                 file_ext = filename_split[-1]
@@ -155,8 +154,9 @@ def edit_post(request, uuid):
                     post.content_type = "image/png;base64"
                 elif file_ext == ".jpeg" or file_ext == ".jpg":
                     post.content_type = "image/jpeg;base64"
-                    post.image = base64.b64encode(
-                        form_img.file.read()).decode('utf-8')
+                post.content = post.url + "/image"
+                post.image = base64.b64encode(
+                    form_img.file.read()).decode('utf-8')
             post.save()
             return redirect('author-posts')
 
