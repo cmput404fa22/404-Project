@@ -51,18 +51,14 @@
     </div>
     <div class="card-body text-white bg-secondary">
         {% if post.contentType == "text/markdown" %}
-        <p> {{post.content | markdown| safe }}</p>
+            <p> {{post.content | markdown| safe }}</p>
+        {% elif post.contentType == "text/plain" %}
+            <p> {{ post.content }}</p>
         {% else %}
-        <p> {{ post.content }}</p>
+            <a href="{{ post.content }}"> <img style="max-width:30%" src="{{ post.content }}"></a><br>
         {% endif %}
 
-        {% if post.image %}
-            {% if post.contentType == "image/png;base64" %}
-            <a href="{% url 'image' uuid=post.uuid  %}" > <img style="width:100px" src="data:image/jpeg;base64,{{ post.image }}"> </a>
-            {% elif post.contentType == "image/jpeg;base64" %} 
-            <a href="{% url 'image' uuid=post.uuid  %}" > <img style="width:100px" src="data:image/jpeg;base64,{{ post.image }}"> </a>
-            {% endif %} 
-        {% endif %}
+        <p>{{ post.description }}</p>
         <span class="m-2">
             {% if user.is_authenticated %}
                 <a class="likebtn" style="text-decoration: none;" href="/authorposts/like/?post_id={{ post.uuid.hex }}">

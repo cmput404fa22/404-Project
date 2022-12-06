@@ -16,6 +16,29 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsRemoteNode
 from .swagger import CustomSwaggerAutoSchema
 from app.connections.teams import RemoteNodeConnection
+from django.http import HttpResponse
+import base64
+from drf_yasg import openapi
+
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated, IsRemoteNode])
+# @swagger_auto_schema(responses={'200': openapi.Response('File Attachment', schema=openapi.Schema(type=openapi.TYPE_FILE))}, produces='application/octet-stream')
+# def image_post(request, uuid):
+#     post = Post.objects.get(uuid=uuid, received=False)
+#     image_bytes = str.encode(post.image)
+#     return HttpResponse(base64.decodebytes(image_bytes), content_type=post.content_type)
+
+
+class Image(APIView):
+
+    permission_classes = [IsAuthenticated, IsRemoteNode]
+
+    @swagger_auto_schema(responses={'200': openapi.Response('File Attachment', schema=openapi.Schema(type=openapi.TYPE_FILE))}, produces='application/octet-stream')
+    def get(self, request, author_id, post_id):
+        post = Post.objects.get(uuid=post_id, received=False)
+        image_bytes = str.encode(post.image)
+        return HttpResponse(base64.decodebytes(image_bytes), content_type=post.content_type)
 
 
 class AuthorItems(APIView, LimitOffsetPagination):
