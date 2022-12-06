@@ -10,6 +10,7 @@ from ..utils import url_is_local
 from ..connections.teams import RemoteNodeConnection
 from django.http import JsonResponse
 import base64
+import os
 from django.http import FileResponse
 
 
@@ -78,16 +79,19 @@ def create_public_post(request):
             new_post.url = f'{request.user.author.url}/posts/{new_post.uuid.hex}'
             new_post.comments_url = f'{new_post.url}/comments'
 
-            form_img = form.cleaned_data['image']
+            form_img = request.FILES["image"]
             if form_img:
-                file_ext = request.FILES["image"].name.split(".")[-1]
-                if file_ext == "png":
+                filename = form_img.name
+                filename_split = os.path.splitext(filename)
+                file_ext = filename_split[-1]
+
+                if file_ext == ".png":
                     new_post.content_type = "image/png;base64"
-                elif file_ext == "jpeg" or file_ext == "jpg":
+                elif file_ext == ".jpeg" or file_ext == ".jpg":
                     new_post.content_type = "image/jpeg;base64"
-                new_post.image = base64.b64encode(
-                    form_img.file.read()).decode('utf-8')
-                new_post.content = new_post.url + "/image"
+                    new_post.image = base64.b64encode(
+                        form_img.file.read()).decode('utf-8')
+                    new_post.content = new_post.url + "/image"
 
             new_post.save()
             messages.success(request, 'Post created')
@@ -148,12 +152,15 @@ def edit_post(request, uuid):
             post.content_type = form.cleaned_data['content_type']
             post.content = form.cleaned_data['content']
             post.unlisted = form.cleaned_data['unlisted']
-            form_img = form.cleaned_data['image']
+            form_img = request.FILES["image"]
             if form_img:
-                file_ext = request.FILES["image"].name.split(".")[-1]
-                if file_ext == "png":
+                filename = form_img.name
+                filename_split = os.path.splitext(filename)
+                file_ext = filename_split[-1]
+
+                if file_ext == ".png":
                     post.content_type = "image/png;base64"
-                elif file_ext == "jpeg" or file_ext == "jpg":
+                elif file_ext == ".jpeg" or file_ext == ".jpg":
                     post.content_type = "image/jpeg;base64"
                     post.image = base64.b64encode(
                         form_img.file.read()).decode('utf-8')
