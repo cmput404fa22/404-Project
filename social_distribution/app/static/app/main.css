@@ -36,7 +36,7 @@ body {
 .contentContainer {
     width: 100%;
     overflow-y: auto;
-    overflox-x: hidden;
+    overflow-x: hidden;
     padding: 10px;
     margin-left: 25vw;
 }
