@@ -11,7 +11,6 @@ from ..connections.teams import RemoteNodeConnection
 from django.http import JsonResponse
 import base64
 import os
-from django.http import FileResponse
 
 
 def send_private_post(request):
@@ -31,13 +30,6 @@ def list_posts(request):
 
     context = {'posts': json_posts}
     return render(request, 'app/author_posts.html', context)
-
-
-@login_required
-def image_post(request, uuid):
-    post = Post.objects.get(uuid=uuid, received=False)
-    image_bytes = str.encode(post.image)
-    return HttpResponse(base64.decodebytes(image_bytes), content_type=post.content_type)
 
 
 @login_required

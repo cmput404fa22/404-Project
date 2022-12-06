@@ -16,6 +16,14 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsRemoteNode
 from .swagger import CustomSwaggerAutoSchema
 from app.connections.teams import RemoteNodeConnection
+from django.http import HttpResponse
+import base64
+
+
+def image_post(request, uuid):
+    post = Post.objects.get(uuid=uuid, received=False)
+    image_bytes = str.encode(post.image)
+    return HttpResponse(base64.decodebytes(image_bytes), content_type=post.content_type)
 
 
 class AuthorItems(APIView, LimitOffsetPagination):
