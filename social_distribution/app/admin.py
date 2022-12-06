@@ -35,11 +35,9 @@ class InboxItemAdmin(admin.ModelAdmin):
 
     def title(self, obj):
         if (url_is_local(obj.from_author_url)):
-            from_author = Author.objects.get(
-                uuid=obj.from_author_url.split("/")[-1])
-            obj.from_author_url = f"{from_author.user.username} ({obj.from_author_url})"
+            return f"{obj.type} - (LOCAL -> LOCAL) -  from: {obj.from_author_url} to: {obj.author.user.username} ({str(obj.author.uuid)})"
 
-        return f"{obj.type}: {obj.from_author_url} -> {obj.author.user.username}"
+        return f"{obj.type} - (REMOTE -> LOCAL) -  from: {obj.from_author_url} to: {obj.author.user.username} ({str(obj.author.uuid)})"
 
 
 class FollowAdmin(admin.ModelAdmin):
