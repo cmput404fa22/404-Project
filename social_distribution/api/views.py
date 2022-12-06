@@ -30,7 +30,7 @@ from drf_yasg import openapi
 #     return HttpResponse(base64.decodebytes(image_bytes), content_type=post.content_type)
 
 
-class Image(APIView, LimitOffsetPagination):
+class Image(APIView):
 
     permission_classes = [IsAuthenticated, IsRemoteNode]
 
