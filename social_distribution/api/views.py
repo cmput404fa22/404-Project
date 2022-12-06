@@ -35,8 +35,8 @@ class Image(APIView):
     permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': openapi.Response('File Attachment', schema=openapi.Schema(type=openapi.TYPE_FILE))}, produces='application/octet-stream')
-    def get(self, request, author_id, uuid):
-        post = Post.objects.get(uuid=uuid, received=False)
+    def get(self, request, author_id, post_id):
+        post = Post.objects.get(uuid=post_id, received=False)
         image_bytes = str.encode(post.image)
         return HttpResponse(base64.decodebytes(image_bytes), content_type=post.content_type)
 
