@@ -94,6 +94,7 @@ class CreatePostForm(forms.Form):
     CONTENT_TYPE_CHOICES = (
         ("text/markdown", "text/markdown"),
         ("text/plain", "text/plain"),
+        ("image", "image"),
         # ("image/png;base64", "image/png"),
         # ("image/jpeg;base64", "image/jpeg"),
     )
