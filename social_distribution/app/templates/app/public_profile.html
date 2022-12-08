@@ -8,37 +8,53 @@
 
 {% block content %}
 <div class="container">
-    <div class="row">
-        <div class="col-xl">
-            <h3>{{ author.displayName }}'s posts</h3>
-                        {% for post in posts %}
-                            {% include './post_card.html' %}
-                        {% endfor %}
-                    <a class="btn btn-light mt-2 float-start" href="?page={{ paginated_posts.page|add:'-1' }}">previous</a>
-                    <a class="btn btn-light mt-2 float-end" href="?page={{ paginated_posts.page|add:'1' }}">next</a>
+    <div class="card flex-row flex-wrap p-4">
+        <img class="rounded me-2 img-fluid profileImage" src="{{ author.profileImage}}" alt="{{ author.displayName }}'s profile picture">
+        <div class="card-block px-2">
+            <h2>{{ author.displayName }}</h2>
+            <p>({{ author.url }})</p>
+            {% if follows_you %}
+                {% if follows_you.accepted %}
+                    <p>follows you</p>
+                {% endif %}
+            {% endif %}
+            <!-- <a class="btn btn-primary" href="/follow/user/?target_url={{ author.url }}">following</a> -->
+            <!-- <button class="btn btn-secondary" type="button" disabled>following...</a>
+            <button class="btn btn-secondary" type="button" disabled>follow pending</a> -->
+            <a class="btn btn-primary" href="/follow/user/?target_url={{ author.url }}" style="align-self: flex-start">follow</a>
         </div>
-        <div class="col-xl">
-            <div class="card">
-                <div class="card-body">
-                    <img class="rounded me-2 img-fluid w-25" src="{{ author.profileImage}}" alt="{{ author.displayName }}'s profile picture">
-                    <h2 class="">{{ author.displayName }}</h2>
-                    <p class="">({{ author.url }})</p>
-                    {% if follows_you %}
-                        {% if follows_you.accepted %}
-                            <p class="">follows you</p>
-                        {% endif %}
-                    {% endif %}
-                    
-                    <!-- <a class="btn btn-primary" href="/follow/user/?target_url={{ author.url }}">following</a> -->
-                    <!-- <button class="btn btn-secondary" type="button" disabled>following...</a>
-                    <button class="btn btn-secondary" type="button" disabled>follow pending</a> -->
-                    <a class="btn btn-primary" href="/follow/user/?target_url={{ author.url }}">follow</a>
-                    
-                </div>
-            </div>
+    </div>
+    <ul class="nav nav-tabs mt-4">
+        <li class="nav-item">
+            <a href="#posts" class="nav-link active" data-bs-toggle="tab">Posts</a>
+        </li>
+        <li class="nav-item">
+            <a href="#github" class="nav-link" data-bs-toggle="tab">Github Activity</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="posts">
+            {% for post in posts %}
+                {% include './post_card.html' %}
+            {% endfor %}
+            <a class="btn btn-light mt-2 float-start" href="?page={{ paginated_posts.page|add:'-1' }}">previous</a>
+            <a class="btn btn-light mt-2 float-end" href="?page={{ paginated_posts.page|add:'1' }}">next</a>
+        </div>
+        <div class="tab-pane fade" id="github">
+            {% if github_events %}
+                {% for event in github_events %}
+                    <div class="card mt-2">
+                        <div class="card-body">
+                            <h3>{{ event.type }}</h3>
+                            <h5>Repo: {{ event.repo }}</h3>
+                            <h5>Created at: {{ event.time }}</h3>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="mt-2">No github activity to show</p>
+            {% endif %}
         </div>
     </div>
 </div>
-
-
 {% endblock %}

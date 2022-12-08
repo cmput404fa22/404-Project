@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from ..utils import url_is_local
 from ..connections.teams import RemoteNodeConnection
+import requests
 
 
 def signup(request):
@@ -106,7 +107,7 @@ def public_profile(request):
     if url_is_local(author_url):
         uuid = author_url.split("/")[-1]
         author = Author.objects.get(uuid=uuid)
-
+        github_name = author.github.split('/')[-1]
         follows_you = Follow.objects.filter(
             author=request.user.author, target_url=author.url).first()
         posts = Post.objects.filter(
@@ -123,6 +124,7 @@ def public_profile(request):
         remote_node_conn = RemoteNodeConnection(author_url)
         try:
             author = remote_node_conn.conn.get_author(uuid)
+            github_name = author['github'].split('/')[-1]
             follows_you = Follow.objects.filter(
                 author=request.user.author, target_url=author['url']).first()
             authors_posts = remote_node_conn.conn.get_all_authors_posts(
@@ -132,8 +134,19 @@ def public_profile(request):
             follows_you = False
             authors_posts = []
 
+    github_events = []
+    git_url = f"https://api.github.com/users/{github_name}/events/public"
+    github_response = requests.get(git_url)
+    
+    if github_response.status_code == 200:
+        github_response = github_response.json()
+        for github_post in github_response:
+            github_event = {"type": github_post['type'], "repo": github_post['repo']['name'],
+                        "time": github_post['created_at']}
+            github_events.append(github_event)
+
     context = {"author": author,
-               "follows_you": follows_you, "posts": authors_posts}
+               "follows_you": follows_you, "posts": authors_posts, "github_events": github_events}
     return render(request, 'app/public_profile.html', context)
 
 
