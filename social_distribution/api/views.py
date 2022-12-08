@@ -32,7 +32,7 @@ from drf_yasg import openapi
 
 class Image(APIView):
 
-    permission_classes = [IsAuthenticated, IsRemoteNode]
+    # permission_classes = [IsAuthenticated, IsRemoteNode]
 
     @swagger_auto_schema(responses={'200': openapi.Response('File Attachment', schema=openapi.Schema(type=openapi.TYPE_FILE))}, produces='application/octet-stream')
     def get(self, request, author_id, post_id):
