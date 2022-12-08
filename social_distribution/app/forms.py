@@ -94,8 +94,8 @@ class CreatePostForm(forms.Form):
     CONTENT_TYPE_CHOICES = (
         ("text/markdown", "text/markdown"),
         ("text/plain", "text/plain"),
-        ("image/png;base64", "image/png"),
-        ("image/jpeg;base64", "image/jpeg"),
+        # ("image/png;base64", "image/png"),
+        # ("image/jpeg;base64", "image/jpeg"),
     )
     content_type = forms.ChoiceField(
         choices=CONTENT_TYPE_CHOICES, label="Content type", initial='', widget=forms.Select(), required=True)
