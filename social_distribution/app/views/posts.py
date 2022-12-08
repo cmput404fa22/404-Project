@@ -28,7 +28,7 @@ def list_posts(request):
         post["image"] = p.image
         json_posts.append(post)
 
-    context = {'posts': json_posts}
+    context = {'posts': json_posts, "has_author": hasattr(request.user, 'author')}
     return render(request, 'app/author_posts.html', context)
 
 
@@ -41,14 +41,15 @@ def view_post(request):
     post["image"] = p.image
 
     posts.append(post)
-    context = {'posts': posts}
+    context = {'posts': posts, "has_author": hasattr(request.user, 'author')}
     return render(request, 'app/view_post.html', context)
 
 
 @login_required
 def create_public_post(request):
     context = {"title": "create post",
-               "form": CreatePostForm(request.user.author)}
+               "form": CreatePostForm(request.user.author), 
+               "has_author": hasattr(request.user, 'author')}
 
     if request.method == 'POST':
         form = CreatePostForm(request.user.author,
@@ -71,7 +72,11 @@ def create_public_post(request):
             new_post.url = f'{request.user.author.url}/posts/{new_post.uuid.hex}'
             new_post.comments_url = f'{new_post.url}/comments'
 
-            form_img = request.FILES["image"]
+            try:
+                form_img = request.FILES["image"]
+            except:
+                form_img = None
+                
             if form_img:
                 filename = form_img.name
                 filename_split = os.path.splitext(filename)
@@ -126,9 +131,14 @@ def edit_post(request, uuid):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method != 'POST':
+
+        if 'image' in post.content_type:
+            prev_content_type = "image"
+        else:
+            prev_content_type = post.content_type
         form = CreatePostForm(post.author, initial={"title": post.title,
                                                     "description": post.description,
-                                                    "content_type": post.content_type,
+                                                    "content_type": prev_content_type,
                                                     "content": post.content,
                                                     "unlisted": post.unlisted})
 
@@ -144,7 +154,10 @@ def edit_post(request, uuid):
             post.content_type = form.cleaned_data['content_type']
             post.content = form.cleaned_data['content']
             post.unlisted = form.cleaned_data['unlisted']
-            form_img = request.FILES["image"]
+            try:
+                form_img = request.FILES["image"]
+            except:
+                form_img = None
             if form_img:
                 filename = form_img.name
                 filename_split = os.path.splitext(filename)
@@ -160,7 +173,7 @@ def edit_post(request, uuid):
             post.save()
             return redirect('author-posts')
 
-    context = {"post": post, "form": form}
+    context = {"post": post, "form": form, "has_author": hasattr(request.user, 'author')}
     return render(request, 'app/edit_post.html', context)
 
 
@@ -201,7 +214,7 @@ def like_post(request):
 @login_required
 def share_post(request):
     form = SharePostForm(request.user.author)
-    return render(request, 'app/share_post.html', {"share_form": form})
+    return render(request, 'app/share_post.html', {"share_form": form, "has_author": hasattr(request.user, 'author')})
 
 
 @login_required
