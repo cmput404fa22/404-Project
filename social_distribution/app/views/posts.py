@@ -28,8 +28,15 @@ def list_posts(request):
         post["image"] = p.image
         json_posts.append(post)
 
-    context = {'posts': json_posts}
+    context = {'posts': json_posts, "has_author": hasattr(request.user, 'author')}
     return render(request, 'app/author_posts.html', context)
+
+
+@login_required
+def image_post(request, uuid):
+    post = Post.objects.get(uuid=uuid, received=False)
+    context = {'post': post, "has_author": hasattr(request.user, 'author')}
+    return render(request, 'app/image.html', context)
 
 
 @login_required
@@ -41,14 +48,15 @@ def view_post(request):
     post["image"] = p.image
 
     posts.append(post)
-    context = {'posts': posts}
+    context = {'posts': posts, "has_author": hasattr(request.user, 'author')}
     return render(request, 'app/view_post.html', context)
 
 
 @login_required
 def create_public_post(request):
     context = {"title": "create post",
-               "form": CreatePostForm(request.user.author)}
+               "form": CreatePostForm(request.user.author),
+               "has_author": hasattr(request.user, 'author')}
 
     if request.method == 'POST':
         form = CreatePostForm(request.user.author,
@@ -71,7 +79,11 @@ def create_public_post(request):
             new_post.url = f'{request.user.author.url}/posts/{new_post.uuid.hex}'
             new_post.comments_url = f'{new_post.url}/comments'
 
-            form_img = request.FILES["image"]
+            try:
+                form_img = request.FILES["image"]
+            except:
+                form_img = None
+            
             if form_img:
                 filename = form_img.name
                 filename_split = os.path.splitext(filename)
@@ -81,8 +93,9 @@ def create_public_post(request):
                     new_post.content_type = "image/png;base64"
                 elif file_ext == ".jpeg" or file_ext == ".jpg":
                     new_post.content_type = "image/jpeg;base64"
-                new_post.content = new_post.url + "/image"
-                new_post.image = base64.b64encode(
+                    
+                # new_post.content = new_post.url + "/image"
+                new_post.content = base64.b64encode(
                     form_img.file.read()).decode('utf-8')
 
             new_post.save()
@@ -144,7 +157,12 @@ def edit_post(request, uuid):
             post.content_type = form.cleaned_data['content_type']
             post.content = form.cleaned_data['content']
             post.unlisted = form.cleaned_data['unlisted']
-            form_img = request.FILES["image"]
+
+            try:
+                form_img = request.FILES["image"]
+            except:
+                form_img = None
+
             if form_img:
                 filename = form_img.name
                 filename_split = os.path.splitext(filename)
@@ -154,13 +172,13 @@ def edit_post(request, uuid):
                     post.content_type = "image/png;base64"
                 elif file_ext == ".jpeg" or file_ext == ".jpg":
                     post.content_type = "image/jpeg;base64"
-                post.content = post.url + "/image"
-                post.image = base64.b64encode(
+                # post.content = post.url + "/image"
+                post.content = base64.b64encode(
                     form_img.file.read()).decode('utf-8')
             post.save()
             return redirect('author-posts')
 
-    context = {"post": post, "form": form}
+    context = {"post": post, "form": form, "has_author": hasattr(request.user, 'author')}
     return render(request, 'app/edit_post.html', context)
 
 
@@ -201,7 +219,7 @@ def like_post(request):
 @login_required
 def share_post(request):
     form = SharePostForm(request.user.author)
-    return render(request, 'app/share_post.html', {"share_form": form})
+    return render(request, 'app/share_post.html', {"share_form": form, "has_author": hasattr(request.user, 'author')})
 
 
 @login_required

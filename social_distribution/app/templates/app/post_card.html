@@ -43,7 +43,7 @@
         {% else %}
             <p style="color: grey;"> sent from: <a style="text-decoration: none;" href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a></p>
         {% endif %}
-        {% if post.unlisted %} 
+        {% if post.unlisted %}
             <p class="float-end" style="color: grey;">unlisted</p>
         {% endif %} 
 
@@ -54,8 +54,10 @@
             <p> {{post.content | markdown| safe }}</p>
         {% elif post.contentType == "text/plain" %}
             <p> {{ post.content }}</p>
-        {% else %}
-            <a href="{{ post.content }}"> <img style="max-width:30%" src="{{ post.content }}"></a><br>
+        {% elif post.contentType == "image/jpeg;base64" %}
+            <a href="{% url 'image' uuid=post.uuid  %}"> <img style="max-width:30%" src="data:image/jpeg;base64,{{ post.content }}"></a><br>
+        {% elif post.contentType == "image/png;base64" %}
+            <a href="{% url 'image' uuid=post.uuid  %}"> <img style="max-width:30%" src="data:image/png;base64,{{ post.content }}"></a><br>
         {% endif %}
 
         <p>{{ post.description }}</p>

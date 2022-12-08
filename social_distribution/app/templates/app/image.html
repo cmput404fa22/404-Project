@@ -6,9 +6,9 @@
 {% block content %}
 <div>
     {% if post.content_type == "image/png;base64" %}
-        <img style="width:300px" src="data:image/jpeg;base64,{{ post.image }}">
+        <img style="max-width:60%" src="data:image/jpeg;base64,{{ post.content }}">
     {% elif post.content_type == "image/jpeg;base64" %} 
-        <img style="width:300px" src="data:image/jpeg;base64,{{ post.image }}">
+        <img style="max-width:60%" src="data:image/jpeg;base64,{{ post.content }}">
     {% endif %} 
 </div>
 {% endblock %}

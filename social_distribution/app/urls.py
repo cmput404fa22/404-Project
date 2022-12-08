@@ -24,6 +24,9 @@ urlpatterns = [
     path('authorposts/share/', posts.submit_share_post_form),
     path('authorposts/share_post/', posts.share_post, name='share'),
     path('authorposts/view_post/', posts.view_post, name='post'),
+    path('authorposts/view_post/<uuid:uuid>/image/', posts.image_post, name='image'),
+
+
 
     path('follow/user/', friends.follow, name='follow_user'),
     path('follow/approve/<uuid:inbox_item_id>',
