@@ -13,7 +13,7 @@ from ..utils import url_is_local
 
 
 def signup_remote_node(request):
-    context = {"title": "signup", "form": RemoteNodeSignupForm(), "has_author": hasattr(request.user, 'author')}
+    context = {"title": "signup", "form": RemoteNodeSignupForm()}
 
     if request.method == 'POST':
 

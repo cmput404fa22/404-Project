@@ -13,7 +13,7 @@ from ..connections.teams import RemoteNodeConnection
 
 
 def signup(request):
-    context = {"title": "signup", "form": SignupForm(), "has_author": hasattr(request.user, 'author')}
+    context = {"title": "signup", "form": SignupForm()}
 
     if request.method == 'POST':
 
@@ -48,7 +48,7 @@ def signup(request):
 
 
 def login_user(request):
-    context = {"title": "login", "form": LoginForm(), "has_author": hasattr(request.user, 'author')}
+    context = {"title": "login", "form": LoginForm()}
 
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -91,8 +91,7 @@ def profile(request):
 
     context = {
         'user_form': user_form,
-        'author_form': author_form,
-        "has_author": hasattr(request.user, 'author')
+        'author_form': author_form
     }
 
     return render(request, 'app/profile.html', context)
@@ -134,7 +133,7 @@ def public_profile(request):
             authors_posts = []
 
     context = {"author": author,
-               "follows_you": follows_you, "posts": authors_posts, "has_author": hasattr(request.user, 'author')}
+               "follows_you": follows_you, "posts": authors_posts}
     return render(request, 'app/public_profile.html', context)
 
 
@@ -143,5 +142,5 @@ def notifications(request):
     notifs = InboxItem.objects.filter(
         author=request.user.author).order_by("-date_published")
 
-    context = {"notifs": notifs, "has_author": hasattr(request.user, 'author')}
+    context = {"notifs": notifs}
     return render(request, 'app/notifications.html', context)
