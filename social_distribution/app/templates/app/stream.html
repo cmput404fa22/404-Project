@@ -15,11 +15,12 @@
         </div>
         <div class="col-xl">
             <div class="card rounded">
-                <div class="card-header text-white bg-dark">Other authors (this is here just to have somewhere in the ui to see other authors in order to follow them)</div>
+                <div class="card-header text-white bg-dark">Discover other authors</div>
                 <div class="card-body text-white bg-secondary">
-                    <div class="card">
-                        <a href="/public_profile/?author_url={{ other_author.url }}">{{ other_author.user.username }}</a>
-                    </div>
+                    {% for other_author in other_authors %}
+                        <a style="text-decoration: none; color: white;" href="/public_profile/?author_url={{ other_author.url }}">{{ other_author.user.username }}</a>
+                        <br><br>
+                    {% endfor %}
                 </div>
             </div>
         </div>
