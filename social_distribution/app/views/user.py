@@ -16,6 +16,9 @@ import requests
 def signup(request):
     context = {"title": "signup", "form": SignupForm(), "has_author": hasattr(request.user, 'author')}
 
+    if (request.user.is_authenticated):
+        logout_user(request)
+
     if request.method == 'POST':
 
         # create a form instance and populate it with data from the request:
@@ -50,6 +53,9 @@ def signup(request):
 
 def login_user(request):
     context = {"title": "login", "form": LoginForm(), "has_author": hasattr(request.user, 'author')}
+
+    if (request.user.is_authenticated):
+        logout_user(request)
 
     if request.method == 'POST':
         form = LoginForm(request.POST)

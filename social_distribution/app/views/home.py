@@ -50,11 +50,11 @@ def stream(request):
         posts = []
 
     # ~Q negates
-    other_author = Author.objects.filter(
-        ~Q(uuid=request.user.author.uuid), registered=True).first()
+    other_authors = Author.objects.filter(
+        ~Q(uuid=request.user.author.uuid), registered=True)
 
     context = {"paginated_posts": {"posts": posts, "page": page,
-                                   "size": size}, "other_author": other_author, "has_author": hasattr(request.user, 'author')}
+                                   "size": size}, "other_authors": other_authors, "has_author": hasattr(request.user, 'author')}
     return render(request, "app/stream.html", context)
 
 
