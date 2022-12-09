@@ -210,9 +210,9 @@ def like_post(request):
 
         messages.success(request, 'Liked post')
     else:
-        return redirect('/')
+        return redirect('stream')
 
-    return redirect('/')
+    return redirect('stream')
 
 
 @login_required
