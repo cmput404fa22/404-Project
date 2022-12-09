@@ -15,7 +15,7 @@ class LoginTest(LiveServerTestCase):
         selenium.add_argument('--disable-gpu')
         driver = webdriver.Chrome(chrome_options=selenium)
 
-        driver.get('http://127.0.0.1:8000/signup')
+        driver.get('http://0.0.0.0:8000/signup/')  # Docker on Github does not accept localhost?
         username = driver.find_element(By.ID, 'id_username')
         email = driver.find_element(By.ID, 'id_email')
         password = driver.find_element(By.ID, 'id_password')
