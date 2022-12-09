@@ -14,7 +14,7 @@ import requests
 
 
 def signup(request):
-    context = {"title": "signup", "form": SignupForm()}
+    context = {"title": "signup", "form": SignupForm(), "has_author": hasattr(request.user, 'author')}
 
     if request.method == 'POST':
 
@@ -49,7 +49,7 @@ def signup(request):
 
 
 def login_user(request):
-    context = {"title": "login", "form": LoginForm()}
+    context = {"title": "login", "form": LoginForm(), "has_author": hasattr(request.user, 'author')}
 
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -92,7 +92,8 @@ def profile(request):
 
     context = {
         'user_form': user_form,
-        'author_form': author_form
+        'author_form': author_form,
+        "has_author": hasattr(request.user, 'author')
     }
 
     return render(request, 'app/profile.html', context)
@@ -146,7 +147,7 @@ def public_profile(request):
             github_events.append(github_event)
 
     context = {"author": author,
-               "follows_you": follows_you, "posts": authors_posts, "github_events": github_events}
+               "follows_you": follows_you, "posts": authors_posts, "github_events": github_events, "has_author": hasattr(request.user, 'author')}
     return render(request, 'app/public_profile.html', context)
 
 
@@ -155,5 +156,5 @@ def notifications(request):
     notifs = InboxItem.objects.filter(
         author=request.user.author).order_by("-date_published")
 
-    context = {"notifs": notifs}
+    context = {"notifs": notifs, "has_author": hasattr(request.user, 'author')}
     return render(request, 'app/notifications.html', context)

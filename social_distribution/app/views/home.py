@@ -34,7 +34,7 @@ def root(request):
         local_posts.append(post.get_json_object())
 
     context = {"title": "root", "nodes": other_nodes,
-               "local_url": settings.HOSTNAME, "local_posts": local_posts}
+               "local_url": settings.HOSTNAME, "local_posts": local_posts, "has_author": hasattr(request.user, 'author')}
     return render(request, "app/root.html", context)
 
 
@@ -54,7 +54,7 @@ def stream(request):
         ~Q(uuid=request.user.author.uuid), registered=True).first()
 
     context = {"paginated_posts": {"posts": posts, "page": page,
-                                   "size": size}, "other_author": other_author}
+                                   "size": size}, "other_author": other_author, "has_author": hasattr(request.user, 'author')}
     return render(request, "app/stream.html", context)
 
 

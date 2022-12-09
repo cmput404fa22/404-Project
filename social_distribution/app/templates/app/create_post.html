@@ -4,6 +4,24 @@
 
 
 {% block content %}
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+         function GetContentType() {
+            var content_type = $("#contentTypeField option:selected").val();
+            if (content_type == "image"){
+                document.getElementById("contentField").style.display="none";
+                document.getElementById("imageField").style.display="block";
+            } else {
+                document.getElementById("contentField").style.display="block";
+                document.getElementsById("contentField").value = "";
+                document.getElementById("imageField").style.display="none";
+            }
+        };
+    </script>
+</head>
+
 <div class="row d-flex align-items-center" >
 <div class="col-lg-6 col-md-12 col-sm-12">
 <div class="card rounded">
@@ -11,8 +29,14 @@
     <div class="card-body text-white bg-secondary">
         <form enctype="multipart/form-data" method="POST">
             {% csrf_token %}
-            {{ form|crispy }}
             <div class="form-group">
+                {{ form.title|as_crispy_field }}
+                {{ form.description|as_crispy_field }}
+                <div id="contentTypeField" oninput="GetContentType()"> {{ form.content_type|as_crispy_field }} </div>
+                <div style="display: block;" id="contentField"> {{ form.content|as_crispy_field }} </div>
+                <div style="display: none;" id="imageField"> {{ form.image|as_crispy_field }} </div>
+                {{ form.unlisted|as_crispy_field }}
+                {{ form.followers|as_crispy_field }}
                 <button type="submit" class="btn btn-light mt-2 float-end">Submit</button>
             </div>
         </form>
