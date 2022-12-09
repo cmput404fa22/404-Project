@@ -14,7 +14,7 @@ services:
       - DEBUG=True
       - HOSTNAME=web
   tests:
-    command: ./manage.py makemigrations && ./manage.py migrate && ./manage.py test
+    command: bash -c "./manage.py makemigrations && ./manage.py migrate && ./manage.py test"
     build:
       context: ./social_distribution
       dockerfile: ./Dockerfile
