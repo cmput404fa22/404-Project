@@ -17,7 +17,7 @@ class LoginTest(LiveServerTestCase):
         driver = webdriver.Chrome(chrome_options=selenium_driver_opts)
 
         try:
-            driver.get('http://web:8000/signup/')  # hostname from docker-compose.yaml
+            driver.get('http://web/signup/')  # hostname from docker-compose.yaml
         except Exception:
             driver.get('http://0.0.0.0:8000/signup/')  # try 0.0.0.0 locally
         username = driver.find_element(By.ID, 'id_username')
