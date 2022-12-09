@@ -15,6 +15,7 @@ Some of our authors are willing to showcase their accounts for you to observe an
 * user: michael --- pass: michael
 * user: sim --- pass: sim
 * user: cameron --- pass: cameron
+
 Our admins will be away on holidays after 5:00pm on December 9th, so if you wish to join *appname* and sign up a new account, make sure to register your new user [here](https://cmsjmnet.herokuapp.com/admin) with the super secret admin login: *user: admin --- pass: admin*
 
 ### Changes we've recently made
