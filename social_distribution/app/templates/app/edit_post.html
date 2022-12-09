@@ -15,7 +15,7 @@
                 {{ form.title|as_crispy_field }}
                 {{ form.description|as_crispy_field }}
                 <div style="display: none;"> {{ form.content_type|as_crispy_field }} </div>
-                {% if post.content_type == "text/plain" or post.contentType == "text/markdown" %}
+                {% if post.content_type == "text/plain" or post.content_type == "text/markdown" %}
                     {{ form.content|as_crispy_field }}
                 {% else %}
                     {{ form.image|as_crispy_field }}
