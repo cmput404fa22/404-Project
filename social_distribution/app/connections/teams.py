@@ -200,7 +200,8 @@ class Team8Connection(ConnectionInterface):
     def send_post(self, post: Post, author_uuid: str):
         url = self.base_url + f"authors/{author_uuid}/inbox/"
         body = post.get_json_object()
-        response = requests.request("POST", url, json=body)
+        response = requests.request(
+            "POST", url, json=body, auth=(self.username, self.password))
         if (response.status_code != 201):
             raise Exception(
                 f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
@@ -236,7 +237,8 @@ class Team8Connection(ConnectionInterface):
         headers = {
             'Content-Type': 'application/json'
         }
-        response = requests.request("POST", url, headers=headers, json=body)
+        response = requests.request(
+            "POST", url, headers=headers, json=body, auth=(self.username, self.password))
         if (response.status_code != 201 or response.status_code != 200):
             raise Exception(
                 f"error connecting to remote node\n Url: {url}\n Status:{str(response.status_code)}\n Error: {response.text}")
@@ -262,7 +264,8 @@ class Team8Connection(ConnectionInterface):
 
     def get_all_authors(self):
         url = self.base_url + "authors"
-        response = requests.request("GET", url)
+        response = requests.request(
+            "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
             raise Exception(
@@ -285,7 +288,8 @@ class Team8Connection(ConnectionInterface):
 
     def get_all_authors_posts(self, author_uuid: str):
         url = self.base_url + f"authors/{author_uuid}/posts"
-        response = requests.request("GET", url)
+        response = requests.request(
+            "GET", url, auth=(self.username, self.password))
 
         if (response.status_code != 200):
             raise Exception(
