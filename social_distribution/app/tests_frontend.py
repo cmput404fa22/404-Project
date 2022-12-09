@@ -1,3 +1,4 @@
+import exceptiongroup
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,14 +9,17 @@ import uuid
 class LoginTest(LiveServerTestCase):
 
     def test_account(self):
-        selenium = webdriver.ChromeOptions()
-        selenium.add_argument('--no-sandbox')
-        selenium.add_argument('--window-size=1920,1080')
-        selenium.add_argument('--headless')
-        selenium.add_argument('--disable-gpu')
-        driver = webdriver.Chrome(chrome_options=selenium)
+        selenium_driver_opts = webdriver.ChromeOptions()
+        selenium_driver_opts.add_argument('--no-sandbox')
+        selenium_driver_opts.add_argument('--window-size=1920,1080')
+        selenium_driver_opts.add_argument('--headless')
+        selenium_driver_opts.add_argument('--disable-gpu')
+        driver = webdriver.Chrome(chrome_options=selenium_driver_opts)
 
-        driver.get('http://0.0.0.0:8000/signup/')  # Docker on Github does not accept localhost?
+        try:
+            driver.get('http://web:8000/signup/')  # hostname from docker-compose.yaml
+        except Exception:
+            driver.get('http://0.0.0.0:8000/signup/')  # try 0.0.0.0 locally
         username = driver.find_element(By.ID, 'id_username')
         email = driver.find_element(By.ID, 'id_email')
         password = driver.find_element(By.ID, 'id_password')
