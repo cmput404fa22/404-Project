@@ -124,7 +124,7 @@ def public_profile(request):
 
         authors_posts = []
         for post in posts:
-            authors_posts.append(post)
+            authors_posts.append(post.get_json_object())
 
         author = author.get_json_object()
 
