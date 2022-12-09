@@ -45,10 +45,8 @@ def follow(request):
 def approve_follow(request, inbox_item_id):
 
     inbox_item = InboxItem.objects.get(uuid=inbox_item_id)
-    follow = Follow.objects.filter(
-        target_url=inbox_item.from_author_url).first()
-    if follow and follow.author != request.user.author:
-        return HttpResponse('Unauthorized', status=401)
+    follow = Follow.objects.filter(author=request.user.author,
+                                   target_url=inbox_item.from_author_url).first()
 
     follow.accepted = True
     follow.save()
