@@ -18,7 +18,7 @@ class LoginTest(LiveServerTestCase):
         driver = webdriver.Chrome(chrome_options=selenium_driver_opts)
 
         try:
-            driver.get('http://0.0.0.0:8000/signup/')  # try 0.0.0.0 locally
+            driver.get('http://web:8000/signup/')  # try 0.0.0.0 locally
         except Exception as e:
             print(e)
             return  # Selenium tests fail on Github because the connection is refused
