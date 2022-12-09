@@ -39,13 +39,14 @@
     <div class="card-header text-white bg-dark">
         <h3 class="m-0"><a style="text-decoration: none; color: white;" href="/authorposts/view_post/?post_url={{ post.id }}">{{ post.title }}</a></h3>
         {% if not post.received %}
-            <a style="text-decoration: none; color: grey;" href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a>
+            <a class="float-start" style="text-decoration: none; color: grey;" href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a>
         {% else %}
-            <p style="color: grey;"> sent from: <a style="text-decoration: none;" href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a></p>
+            <p class="float-start" style="color: grey;"> sent from: <a style="text-decoration: none;" href="/public_profile/?author_url={{ post.author.id }}">{{ post.author.displayName }}</a></p>
         {% endif %}
         {% if post.unlisted %} 
-            <p class="float-end" style="color: grey;">unlisted</p>
+            <br><p class="float-start" style="color: grey;">unlisted</p>
         {% endif %} 
+        <p class="float-end" style="color: grey;">{{ post.date }}</p>
 
 
     </div>

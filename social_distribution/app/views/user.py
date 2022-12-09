@@ -123,8 +123,11 @@ def public_profile(request):
             author=author, visibility='PUBLIC', received=False, unlisted=False)
 
         authors_posts = []
-        for post in posts:
-            authors_posts.append(post.get_json_object())
+        for p in posts:
+            post = p.get_json_object()
+            post["image"] = p.image
+            post["date"] = p.date_published.strftime('%Y-%m-%d %H:%M')
+            authors_posts.append(post)
 
         author = author.get_json_object()
 
