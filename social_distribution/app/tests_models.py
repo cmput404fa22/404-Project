@@ -30,8 +30,6 @@ class UserModelTest(TestCase):  # base Django User
         self.assertEqual(admin.username, username_admin)
         self.assertTrue(admin.check_password(password_admin))  # hashed
 
-    # TODO: TEST FOR UUID BEING GENERATED
-
 
 class AuthorModelTest(TestCase):  # our Author
 
@@ -42,14 +40,14 @@ class AuthorModelTest(TestCase):  # our Author
         self.url = "zombo.com"
         self.github = "github.com"
         self.profile_image_url = "9gag.com"
-        user = get_user_model().objects.create_user(
+        self.user = get_user_model().objects.create_user(
             username=username, password=password)
-        Author.objects.create(user=user,
+        Author.objects.create(user=self.user,
                               host=self.host,
                               url=self.url,
                               github=self.github,
                               profile_image_url=self.profile_image_url)
-        self.author = Author.objects.get(user=user)
+        self.author = Author.objects.get(user=self.user)
 
     def test_create_author(self):
         self.assertTrue(self.author)  # author created
@@ -71,12 +69,18 @@ class AuthorModelTest(TestCase):  # our Author
         self.assertEqual(self.url, json_author["id"])
         self.assertEqual(self.host, json_author["host"])
         self.assertEqual(self.author.user.username, json_author["displayName"])
-        # TODO: REDUNDANCY/ERROR IN MODEL? (URL/ID)
+        # REDUNDANCY IN MODEL? (URL/ID ARE IDENTICAL)
         self.assertEqual(self.url, json_author["url"])
         self.assertEqual(self.github, json_author["github"])
         self.assertEqual(self.profile_image_url, json_author["profileImage"])
 
-    # TODO: TEST FOR ON DELETE CASCADE, UUID GENERATION
+    def test_author_delete(self):
+        self.author.delete()
+        self.assertRaisesRegex(Exception, "Author matching query does not exist.", Author.objects.get, user=self.user)
+
+    def test_author_delete_cascade(self):  # setUp runs before each test, author restored each time
+        self.user.delete()
+        self.assertRaisesRegex(Exception, "Author matching query does not exist.", Author.objects.get, host=self.host)
 
 
 class RemoteNodeTest(TestCase):  # remote nodes
@@ -87,13 +91,13 @@ class RemoteNodeTest(TestCase):  # remote nodes
         self.team = 11
         self.remote_base = "remote.com"
         self.remote_home = "remote.com/home"
-        remote = get_user_model().objects.create_user(
+        self.remote = get_user_model().objects.create_user(
             username=username, password=password)
-        RemoteNode.objects.create(user=remote,
+        RemoteNode.objects.create(user=self.remote,
                                   team=self.team,
                                   base_url=self.remote_base,
                                   home_page=self.remote_home)
-        self.remote_node = RemoteNode.objects.get(user=remote)
+        self.remote_node = RemoteNode.objects.get(user=self.remote)
 
     def test_create_remote(self):
         self.assertTrue(self.remote_node)  # remote node created
@@ -106,7 +110,15 @@ class RemoteNodeTest(TestCase):  # remote nodes
         self.assertEqual(self.remote_node.base_url, self.remote_base)
         self.assertEqual(self.remote_node.home_page, self.remote_home)
 
-    # TODO: TEST FOR ON DELETE CASCADE, UUID GENERATION
+    def test_remote_node_delete(self):
+        self.remote_node.delete()
+        self.assertRaisesRegex(Exception, "RemoteNode matching query does not exist.", RemoteNode.objects.get,
+                               user=self.remote)
+
+    def test_remote_node_delete_cascade(self):  # setUp runs before each test, remote node restored each time
+        self.remote.delete()
+        self.assertRaisesRegex(Exception, "RemoteNode matching query does not exist.", RemoteNode.objects.get,
+                               team=self.team)
 
 
 class FollowTest(TestCase):  # following/friending
@@ -132,7 +144,15 @@ class FollowTest(TestCase):  # following/friending
     def test_link(self):
         self.assertEqual(self.follow.target_url, self.url)
 
-    # TODO: TEST FOR ON DELETE CASCADE, UUID GENERATION
+    def test_follow_delete(self):
+        self.follow.delete()
+        self.assertRaisesRegex(Exception, "Follow matching query does not exist.", Follow.objects.get,
+                               author=self.author)
+
+    def test_follow_delete_cascade(self):  # setUp runs before each test, follow restored each time
+        self.author.delete()
+        self.assertRaisesRegex(Exception, "Follow matching query does not exist.", Follow.objects.get,
+                               target_url=self.url)
 
 
 class InboxItemTest(TestCase):
@@ -159,7 +179,16 @@ class InboxItemTest(TestCase):
 
     def test_author_relationship(self):  # author having inbox items etc.
         self.assertEqual(self.inbox_item.author, self.author)
-    # TODO: TEST FOR ON DELETE CASCADE, UUID GENERATION, PROPERLY TESTING THE RELATIONSHIP, TYPE CHOICE INPUT VALIDATION
+
+    def test_inbox_item_delete(self):
+        self.inbox_item.delete()
+        self.assertRaisesRegex(Exception, "InboxItem matching query does not exist.", InboxItem.objects.get,
+                               author=self.author)
+
+    def test_inbox_item_delete_cascade(self):  # setUp runs before each test, inbox item restored each time
+        self.author.delete()
+        self.assertRaisesRegex(Exception, "InboxItem matching query does not exist.", InboxItem.objects.get,
+                               object_url=self.to_url)
 
 
 class PostTest(TestCase):
@@ -184,7 +213,6 @@ class PostTest(TestCase):
                             content_type=self.content_type,
                             content=self.content,
                             visibility=self.visibility)
-        # maybe test getting by other fields too
         self.post = Post.objects.get(author=self.author)
 
     def test_create_post(self):
@@ -230,9 +258,134 @@ class PostTest(TestCase):
 
         self.assertEqual(self.author.get_json_object(), json_post["author"])
 
-    # TODO: TEST FOR ON DELETE CASCADE, UUID GENERATION, TYPE CHOICE INPUT VALIDATION, OTHER FIELDS
+    def test_post_delete(self):
+        self.post.delete()
+        self.assertRaisesRegex(Exception, "Post matching query does not exist.", Post.objects.get,
+                               author=self.author)
 
-# TODO: COMMENT AND LIKE TESTING
+    def test_post_delete_cascade(self):  # setUp runs before each test, post restored each time
+        self.author.delete()
+        self.assertRaisesRegex(Exception, "Post matching query does not exist.", Post.objects.get,
+                               content=self.content)
 
-# TODO: SUBCLASS TEST CASE WITH COMMON SETUP TO NOT REDO CREATING USERS EACH TIME (SAME WITH TEARDOWN?)
-#  OR JUST MAKE A GLOBAL FUNCTION
+
+class CommentTest(TestCase):
+    def setUp(self):
+        username = "name"
+        password = "1234"
+        user = get_user_model().objects.create_user(
+            username=username, password=password)
+        self.author_url = "zombo.com"
+        Author.objects.create(user=user, url=self.author_url)
+        self.author = Author.objects.get(user=user)
+
+        self.url = "test.com"
+        self.title = "Title"
+        self.description = "Description"
+        self.content_type = "Markdown"
+        self.content = "*This is Markdown italics*"
+        self.visibility = "PUBLIC"
+        Post.objects.create(author=self.author,
+                            url=self.url,
+                            title=self.title,
+                            description=self.description,
+                            content_type=self.content_type,
+                            content=self.content,
+                            visibility=self.visibility)
+        self.post = Post.objects.get(author=self.author)
+
+        self.comment = "This is a comment"
+        Comment.objects.create(commenter_url=self.author_url,
+                               comment=self.comment,
+                               content_type=self.content_type,
+                               post=self.post)
+        self.comment_object = Comment.objects.get(comment=self.comment)
+
+    def test_create_comment(self):
+        self.assertTrue(self.post)
+
+    def test_comment_fields(self):
+        self.assertEqual(self.comment_object.commenter_url, self.author_url)
+        self.assertEqual(self.comment_object.comment, self.comment)
+        self.assertEqual(self.comment_object.content_type, self.content_type)
+        self.assertAlmostEqual(timezone.now().timestamp(
+        ), self.comment_object.date_published.timestamp(), delta=1)
+        # within a second, this will surely never come up as an issue
+
+    def test_comment_relationship(self):
+        self.assertEqual(self.comment_object.commenter_url, self.author.url)
+
+    def test_comment_delete(self):
+        self.comment_object.delete()
+        self.assertRaisesRegex(Exception, "Comment matching query does not exist.", Comment.objects.get,
+                               comment=self.comment)
+
+    def test_comment_delete_cascade(self):  # setUp runs before each test, comment restored each time
+        self.post.delete()
+        self.assertRaisesRegex(Exception, "Comment matching query does not exist.", Comment.objects.get,
+                               post=self.post)
+
+
+class LikeTest(TestCase):
+    def setUp(self):
+        username = "name"
+        password = "1234"
+        user = get_user_model().objects.create_user(
+            username=username, password=password)
+        self.liker_url = "zombo.com"
+        Author.objects.create(user=user, url=self.liker_url)
+        self.author = Author.objects.get(user=user)
+
+        self.url = "test.com"
+        self.title = "Title"
+        self.description = "Description"
+        self.content_type = "Markdown"
+        self.content = "*This is Markdown italics*"
+        self.visibility = "PUBLIC"
+        Post.objects.create(author=self.author,
+                            url=self.url,
+                            title=self.title,
+                            description=self.description,
+                            content_type=self.content_type,
+                            content=self.content,
+                            visibility=self.visibility)
+        self.post = Post.objects.get(author=self.author)
+
+        self.comment = "This is a comment"
+        Comment.objects.create(commenter_url=self.liker_url,
+                               comment=self.comment,
+                               content_type=self.content_type,
+                               post=self.post)
+        self.comment_object = Comment.objects.get(comment=self.comment)
+
+        Like.objects.create(liker_url=self.liker_url, post=self.post)
+        Like.objects.create(liker_url=self.liker_url, comment=self.comment_object)
+        self.like_post = Like.objects.get(post=self.post)
+        self.like_comment = Like.objects.get(comment=self.comment_object)
+
+    def test_create_like(self):
+        self.assertTrue(self.like_post)
+        self.assertTrue(self.like_comment)
+
+    def test_like_fields(self):
+        self.assertEqual(self.like_post.liker_url, self.liker_url)
+
+    def test_like_relationship(self):
+        self.assertEqual(self.like_post.liker_url, self.author.url)
+        self.assertEqual(self.like_comment.liker_url, self.author.url)
+
+    def test_like_delete(self):
+        self.like_post.delete()
+        self.assertRaisesRegex(Exception, "Like matching query does not exist.", Like.objects.get,
+                               post=self.post)
+        self.like_comment.delete()
+        self.assertRaisesRegex(Exception, "Like matching query does not exist.", Like.objects.get,
+                               comment=self.comment_object)
+
+    def test_like_delete_cascade(self):  # setUp runs before each test, likes restored each time
+        self.post.delete()
+        self.assertRaisesRegex(Exception, "Like matching query does not exist.", Like.objects.get,
+                               post=self.post)
+        self.comment_object.delete()
+        self.assertRaisesRegex(Exception, "Like matching query does not exist.", Like.objects.get,
+                               comment=self.comment_object)

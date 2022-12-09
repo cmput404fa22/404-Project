@@ -12,4 +12,4 @@ jobs:
 
       - name: Run tests
         run: |-
-          docker compose -f ./docker-compose-tests.yaml up --exit-code-from web --build
+          docker compose -f ./docker-compose-tests.yaml up --exit-code-from tests --build
