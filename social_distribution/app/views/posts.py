@@ -143,6 +143,10 @@ def edit_post(request, uuid):
                                                     "unlisted": post.unlisted})
 
     else:
+        if 'image' in post.content_type:
+            prev_content_type = "image"
+        else:
+            prev_content_type = post.content_type
         form = CreatePostForm(post.author, request.POST, initial={"title": post.title,
                                                                   "description": post.description,
                                                                   "content_type": post.content_type,

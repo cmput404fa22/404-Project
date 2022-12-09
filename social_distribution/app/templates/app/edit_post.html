@@ -11,8 +11,17 @@
     <div class="card-body text-white bg-secondary">
         <form enctype="multipart/form-data" method="POST">
             {% csrf_token %}
-            {{ form|crispy }}
             <div class="form-group">
+                {{ form.title|as_crispy_field }}
+                {{ form.description|as_crispy_field }}
+                <div style="display: none;"> {{ form.content_type|as_crispy_field }} </div>
+                {% if post.content_type == "text/plain" or post.contentType == "text/markdown" %}
+                    {{ form.content|as_crispy_field }}
+                {% else %}
+                    {{ form.image|as_crispy_field }}
+                {% endif %}
+                {{ form.unlisted|as_crispy_field }}
+                {{ form.followers|as_crispy_field }}
                 <button type="submit" class="btn btn-light mt-2 float-end">Submit</button>
             </div>
         </form>
