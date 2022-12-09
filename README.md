@@ -10,7 +10,7 @@ Starting at the beginning, you can [signup](https://cmsjmnet.herokuapp.com/signu
 
 ### For marking
 Some of our authors are willing to showcase their accounts for you to observe and use as you see fit. Below are their login information. 
-* user: jesse --- pass: jesse
+* user: jess --- pass: jess
 * user: mark --- pass: mark
 * user: michael --- pass: michael
 * user: sim --- pass: sim
