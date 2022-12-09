@@ -38,3 +38,6 @@ For admins:
 - Go to /admin dashboard -> authors
 - Select authors with username (hostname) of the remote node
 - go to action drop down and select 'Register selected nodes'
+
+### Testing
+Some tests will not be checked after pushing to GitHub. Make sure you test locally with a production copy of the database to verify that operations with preexisting users succeed.
