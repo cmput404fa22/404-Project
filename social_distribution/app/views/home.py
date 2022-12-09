@@ -72,7 +72,10 @@ def get_posts_from_inbox(author, num_of_posts, page):
             post = Post.objects.filter(uuid=uuid).first()
             if post is None:
                 continue
-            post_objects.append(post.get_json_object())
+            p = post.get_json_object()
+            p["image"] = post.image
+            p["date"] = post.date_published.strftime('%Y-%m-%d %H:%M')
+            post_objects.append(p)
         elif item.friends_post:
             post = item.friends_post.get_json_object()
             post["author"]["id"] = item.from_author_url

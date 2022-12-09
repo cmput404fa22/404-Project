@@ -26,6 +26,7 @@ def list_posts(request):
     for p in posts:
         post = p.get_json_object()
         post["image"] = p.image
+        post["date"] = p.date_published.strftime('%Y-%m-%d %H:%M')
         json_posts.append(post)
 
     context = {'posts': json_posts, "has_author": hasattr(request.user, 'author')}
@@ -39,6 +40,7 @@ def view_post(request):
     p = Post.objects.filter(url=post_url).first()
     post = p.get_json_object()
     post["image"] = p.image
+    post["date"] = p.date_published.strftime('%Y-%m-%d %H:%M')
 
     posts.append(post)
     context = {'posts': posts, "has_author": hasattr(request.user, 'author')}
