@@ -20,8 +20,6 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       - ./social_distribution:/code
-    ports:
-      - "8000:8000"
     environment:
       - SECRET_KEY=super-secret
       - DEBUG=True
