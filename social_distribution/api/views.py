@@ -108,7 +108,7 @@ class PostItems(APIView, LimitOffsetPagination):
     )
     def get(self, request, author_id):
         author = Author.objects.get(uuid=author_id)
-        posts = Post.objects.filter(author=author, visibility='PUBLIC')
+        posts = Post.objects.filter(author=author, unlisted=False)
 
         results = self.paginate_queryset(posts, request, view=self)
         serializer = PostSerializer(results, many=True)
